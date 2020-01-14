@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+     <Compile Update="Validation.Designer.cs">
+       <DesignTime>True</DesignTime>
+       <AutoGen>True</AutoGen>
+       <DependentUpon>Validation.resx</DependentUpon>
+     </Compile>
+     <Compile Update="Template.Designer.cs">
+       <DesignTime>True</DesignTime>
+       <AutoGen>True</AutoGen>
+       <DependentUpon>Template.resx</DependentUpon>
+     </Compile>
+     <Compile Update="Internal.Designer.cs">
+       <DesignTime>True</DesignTime>
+       <AutoGen>True</AutoGen>
+       <DependentUpon>Internal.resx</DependentUpon>
+     </Compile>
+  </ItemGroup>
+
+ <ItemGroup>
+    <EmbeddedResource Update="Validation.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Validation.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Template.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Template.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Internal.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Internal.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
