@@ -142,13 +142,13 @@ namespace Scheduledo.Service.Concrete
                 return result;
             }
 
-            var existingCompany = await _context.Companies.FirstOrDefaultAsync(x => x.Url == model.Url);
-            if (existingCompany != null)
-            {
-                result.ErrorMessage = Resource.Validation.UrlTaken;
-                result.Error = ErrorType.BadRequest;
-                return result;
-            }
+            //var existingCompany = await _context.Companies.FirstOrDefaultAsync(x => x.Url == model.Url);
+            //if (existingCompany != null)
+            //{
+            //    result.ErrorMessage = Resource.Validation.UrlTaken;
+            //    result.Error = ErrorType.BadRequest;
+            //    return result;
+            //}
 
             var user = new User();
             user.Role = UserRole.CompanyAdmin;
@@ -158,7 +158,7 @@ namespace Scheduledo.Service.Concrete
             user.UserName = model.Email;
             user.Company = new Company()
             {
-                Url = model.Url,
+                //Url = model.Url,
                 Plan = PricingPlan.Trial,
                 PlanExpiredOn = _dateTimeService.Now().AddDays(30)
             };
@@ -175,11 +175,11 @@ namespace Scheduledo.Service.Concrete
                     return result;
                 }
 
-                var subscribeResult = await _emailMarketingService.Subscribe(user);
-                if (subscribeResult.Success)
-                    user.SubscriberId = subscribeResult.Data;
-                else
-                    _logger.LogCritical("Can't subscribe to email marketing", user.UserName);
+                //var subscribeResult = await _emailMarketingService.Subscribe(user);
+                //if (subscribeResult.Success)
+                //    user.SubscriberId = subscribeResult.Data;
+                //else
+                //    _logger.LogCritical("Can't subscribe to email marketing", user.UserName);
 
                 var addToRoleResult = await _userManager.AddToRoleAsync(user, user.Role.GetName());
                 if (!addToRoleResult.Succeeded)

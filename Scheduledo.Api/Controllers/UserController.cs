@@ -45,15 +45,15 @@ namespace Scheduledo.Api.Controllers
             return GetResult(result);
         }
 
-        [HttpGet("users/company")]
-        [AuthorizePolicy(UserRole.User)]
-        [ProducesResponseType(typeof(CompanyOutput), 200)]
-        public async Task<IActionResult> GetCompany()
-        {
-            var id = CurrentUser.Id;
-            var result = await _userService.GetCompany(id);
-            return GetResult(result);
-        }
+        //[HttpGet("users/company")]
+        //[AuthorizePolicy(UserRole.User)]
+        //[ProducesResponseType(typeof(CompanyOutput), 200)]
+        //public async Task<IActionResult> GetCompany()
+        //{
+        //    var id = CurrentUser.Id;
+        //    var result = await _userService.GetCompany(id);
+        //    return GetResult(result);
+        //}
 
         [HttpPost("users/register")]
         public async Task<IActionResult> Register([FromBody]RegisterUserInput model)
@@ -91,24 +91,24 @@ namespace Scheduledo.Api.Controllers
             return GetResult(result);
         }
 
-        [HttpPut("users/company")]
-        [AuthorizePolicy(UserRole.User)]
-        [ProducesResponseType(typeof(long), 200)]
-        public async Task<IActionResult> UpdateCompany([FromBody]UpdateCompanyInput model)
-        {
-            model.UserId = CurrentUser.Id;
-            var result = await _userService.UpdateCompany(model);
-            return GetResult(result);
-        }
+        //[HttpPut("users/company")]
+        //[AuthorizePolicy(UserRole.User)]
+        //[ProducesResponseType(typeof(long), 200)]
+        //public async Task<IActionResult> UpdateCompany([FromBody]UpdateCompanyInput model)
+        //{
+        //    model.UserId = CurrentUser.Id;
+        //    var result = await _userService.UpdateCompany(model);
+        //    return GetResult(result);
+        //}
 
-        [HttpDelete("users/{id}")]
-        [AuthorizePolicy(UserRole.CompanyAdmin)]
-        [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> Delete(string id)
-        {
-            var result = await _userService.Delete(CurrentUser.Id, id);
-            return GetResult(result);
-        }
+        //[HttpDelete("users/{id}")]
+        //[AuthorizePolicy(UserRole.CompanyAdmin)]
+        //[ProducesResponseType(typeof(string), 200)]
+        //public async Task<IActionResult> Delete(string id)
+        //{
+        //    var result = await _userService.Delete(CurrentUser.Id, id);
+        //    return GetResult(result);
+        //}
 
         [HttpPost("users/token")]
         [ProducesResponseType(typeof(TokenOutput), 200)]
@@ -118,16 +118,16 @@ namespace Scheduledo.Api.Controllers
             return GetResult(result);
         }
 
-        [HttpPost("users/token/super")]
-        [AuthorizePolicy(UserRole.SuperAdmin)]
-        [ProducesResponseType(typeof(TokenOutput), 200)]
-        public async Task<IActionResult> CreateSuperToken([FromBody]CreateSuperTokenInput model)
-        {
-            var result = await _userService.CreateToken(
-                new CreateTokenInput { Email = model.Email }, false);
+        //[HttpPost("users/token/super")]
+        //[AuthorizePolicy(UserRole.SuperAdmin)]
+        //[ProducesResponseType(typeof(TokenOutput), 200)]
+        //public async Task<IActionResult> CreateSuperToken([FromBody]CreateSuperTokenInput model)
+        //{
+        //    var result = await _userService.CreateToken(
+        //        new CreateTokenInput { Email = model.Email }, false);
 
-            return GetResult(result);
-        }
+        //    return GetResult(result);
+        //}
 
         [HttpPost("users/token/refresh")]
         [ProducesResponseType(typeof(TokenOutput), 200)]
@@ -144,18 +144,18 @@ namespace Scheduledo.Api.Controllers
             return GetResult(result);
         }
 
-        [HttpPost("users/password/forgot")]
-        public async Task<IActionResult> ForgotPassword([FromBody]ForgotPasswordInput model)
-        {
-            var result = await _userService.ForgotPassword(model.Email);
-            return GetResult(result);
-        }
+        //[HttpPost("users/password/forgot")]
+        //public async Task<IActionResult> ForgotPassword([FromBody]ForgotPasswordInput model)
+        //{
+        //    var result = await _userService.ForgotPassword(model.Email);
+        //    return GetResult(result);
+        //}
 
-        [HttpPost("users/password/reset")]
-        public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordInput model)
-        {
-            var result = await _userService.ResetPassword(model);
-            return GetResult(result);
-        }
+        //[HttpPost("users/password/reset")]
+        //public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordInput model)
+        //{
+        //    var result = await _userService.ResetPassword(model);
+        //    return GetResult(result);
+        //}
     }
 }

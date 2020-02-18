@@ -47,10 +47,10 @@ namespace Scheduledo.Service
             services.AddScoped<IDateTimeService, UtcDateTimeService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailService, SendGridService>();
-            services.AddScoped<ITextMessageService, NexmoService>();
+            //services.AddScoped<ITextMessageService, NexmoService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IEmailMarketingService, ActiveCampaignService>();
-            services.AddScoped<IBillingService, StripeService>();
+            //services.AddScoped<IBillingService, StripeService>();
             services.AddScoped<ISupportService, SupportService>();
         }
     }

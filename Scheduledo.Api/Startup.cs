@@ -118,8 +118,8 @@ namespace Scheduledo.Api
                 });
             });
 
-            services.AddHangfire(x => x.UseSqlServerStorage(Configuration["ConnectionStrings:LogConnection"]));
-            services.AddHangfireServer();
+            //.AddHangfire(x => x.UseSqlServerStorage(Configuration["ConnectionStrings:LogConnection"]));
+            //services.AddHangfireServer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -153,7 +153,7 @@ namespace Scheduledo.Api
             app.UseMiddleware<RequestCultureMiddleware>();
             app.UseMvc();
 
-            app.UseHangfireDashboard();
+            //app.UseHangfireDashboard();
         }
     }
 }
