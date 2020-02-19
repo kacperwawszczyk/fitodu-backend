@@ -5,8 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Concrete\" />
-    <Folder Include="Abstract\" />
     <Folder Include="Models\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Models\Common\" />

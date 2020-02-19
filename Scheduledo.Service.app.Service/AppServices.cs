@@ -50,8 +50,9 @@ namespace Scheduledo.Service
             //services.AddScoped<ITextMessageService, NexmoService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IEmailMarketingService, ActiveCampaignService>();
-            //services.AddScoped<IBillingService, StripeService>();
+            services.AddScoped<IBillingService, StripeService>();
             services.AddScoped<ISupportService, SupportService>();
+            services.AddScoped<IPrivateNotesService, PrivateNotesService>();
         }
     }
 }

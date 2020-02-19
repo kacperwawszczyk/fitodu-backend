@@ -14,9 +14,15 @@ namespace Scheduledo.Model
         public DbSet<Company> Companies { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
+        public DbSet<PrivateNote> PrivateNotes { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<PrivateNote>()
+            .HasKey(o => new { o.IdCoach, o.IdClient });
 
             builder.ApplyAllConfigurations();
         }

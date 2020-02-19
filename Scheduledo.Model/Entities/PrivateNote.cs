@@ -8,9 +8,9 @@ namespace Scheduledo.Model.Entities
     public partial class PrivateNote
     {
         [Required]
-        public int IdTrainer { get; set; }
+        public string IdCoach { get; set; }
         [Required]
-        public int IdClient { get; set; }
+        public string IdClient { get; set; }
         public string Note { get; set; }
     }
 }
