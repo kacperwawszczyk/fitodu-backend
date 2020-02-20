@@ -19,3 +19,4 @@ namespace Scheduledo.Model.Entities
         public TimeSpan? EndHour { get; set; }
     }
 }
+// test comment
