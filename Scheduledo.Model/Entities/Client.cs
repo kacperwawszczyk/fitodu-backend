@@ -22,7 +22,20 @@ namespace Scheduledo.Model.Entities
         public decimal? Height { get; set; }
         [Column(TypeName = "decimal(2, 2)")]
         public decimal? FatPercentage { get; set; }
+        public string AddressLine1 { get; set; }
+        public string AddressLine2 { get; set; }
+        public string AddressPostalCode { get; set; }
+        public string AddressCity { get; set; }
+        public string AddressState { get; set; }
+        public string AddressCountry { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+        public virtual ICollection<CoachClient> ClientCoaches { get; set; }
+        public virtual ICollection<Maximum> Maximums { get; set; }
+        public virtual ICollection<AwaitingTraining> AwaitingTrainings { get; set; }
+        public virtual ICollection<PrivateNote> PrivateNotes { get; set; }
+        public virtual ICollection<PublicNote> PublicNotes { get; set; }
+        public virtual ICollection<Training> Trainings { get; set; }
 
-        public ICollection<CoachClient> ClientCoaches { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Scheduledo.Model.Entities
 {
-    public partial class TrainingExercise
+    public partial class TrainingResult
     {
         [Required]
         public int IdExercise { get; set; }
@@ -17,6 +17,6 @@ namespace Scheduledo.Model.Entities
         [Column(TypeName = "text")]
         public string Description { get; set; }
         [Column(TypeName = "text")]
-        public string TrainerNote { get; set; }
+        public string Note { get; set; }
     }
 }

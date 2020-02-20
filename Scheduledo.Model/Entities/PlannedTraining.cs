@@ -8,10 +8,8 @@ namespace Scheduledo.Model.Entities
 {
     public partial class PlannedTraining
     {
-        [Key]
-        public int Id { get; set; }
         [Required]
-        public int IdTrainer { get; set; }
+        public string IdCoach { get; set; }
         [Required]
         public int IdTraining { get; set; }
         [Column(TypeName = "datetime")]

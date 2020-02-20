@@ -9,8 +9,9 @@ namespace Scheduledo.Model.Entities
     {
         [Key]
         public int Id { get; set; }
-        public int IdTrainer { get; set; }
+        public string IdCoach { get; set; }
         [StringLength(30)]
         public string Name { get; set; }
+        public string Description { get; set; }
     }
 }
