@@ -22,7 +22,7 @@ namespace Scheduledo.Model
             base.OnModelCreating(builder);
 
             builder.Entity<PrivateNote>()
-            .HasKey(o => new { o.IdCoach, o.IdClient });
+            .HasKey(x => new { x.IdCoach, x.IdClient });
 
             builder.ApplyAllConfigurations();
         }
