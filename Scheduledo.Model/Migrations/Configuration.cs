@@ -23,7 +23,7 @@ namespace Scheduledo.Model.Migrations
             context.Database.Migrate();
 
             await AddUserRoles(context);
-            await AddSuperAdmin(context);
+            //await AddSuperAdmin(context);
         }
 
         private async Task AddUserRoles(Context context)
@@ -43,38 +43,38 @@ namespace Scheduledo.Model.Migrations
             await context.SaveChangesAsync();
         }
 
-        private async Task AddSuperAdmin(Context context)
-        {
-            string email = "admin@scheduledo.com";
+        //private async Task AddSuperAdmin(Context context)
+        //{
+        //    string email = "admin@scheduledo.com";
 
-            if (!context.Users.Any(u => u.UserName == email))
-            {
-                var user = new User
-                {
-                    Role = UserRole.SuperAdmin,
-                    FullName = "Jan Kowalski",
-                    Email = email,
-                    PhoneNumber = "+48 000 000 000",
-                    NormalizedEmail = email.ToUpper(),
-                    UserName = email,
-                    NormalizedUserName = email.ToUpper(),
-                    Company = new Company
-                    {
-                        Url = "kowalski"
-                    },
-                    SecurityStamp = Guid.NewGuid().ToString()
-                };
+        //    if (!context.Users.Any(u => u.UserName == email))
+        //    {
+        //        var user = new User
+        //        {
+        //            Role = UserRole.SuperAdmin,
+        //            //FullName = "Jan Kowalski",
+        //            Email = email,
+        //            PhoneNumber = "+48 000 000 000",
+        //            NormalizedEmail = email.ToUpper(),
+        //            UserName = email,
+        //            NormalizedUserName = email.ToUpper(),
+        //            Company = new Company
+        //            {
+        //                Url = "kowalski"
+        //            },
+        //            SecurityStamp = Guid.NewGuid().ToString()
+        //        };
 
-                var password = new PasswordHasher<User>();
-                var hash = password.HashPassword(user, "Admin123?");
-                user.PasswordHash = hash;
+        //        var password = new PasswordHasher<User>();
+        //        var hash = password.HashPassword(user, "Admin123?");
+        //        user.PasswordHash = hash;
 
-                var userStore = new UserStore<User>(context);
-                await userStore.CreateAsync(user);
-                await userStore.AddToRoleAsync(user, user.Role.GetName());
-            }
+        //        var userStore = new UserStore<User>(context);
+        //        await userStore.CreateAsync(user);
+        //        await userStore.AddToRoleAsync(user, user.Role.GetName());
+        //    }
 
-            await context.SaveChangesAsync();
-        }
+        //    await context.SaveChangesAsync();
+        //}
     }
 }
