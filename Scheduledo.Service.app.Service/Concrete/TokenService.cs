@@ -50,7 +50,7 @@ namespace Scheduledo.Service.Concrete
 
             if (user != null) //istnieje user z takim emailem
             {
-				var coach = await _context.Coach.Where(x => x.Id == user.Id).FirstOrDefaultAsync();
+				var coach = await _context.Coaches.Where(x => x.Id == user.Id).FirstOrDefaultAsync();
 				if(coach != null)
 				{
 					result.Data = coach.Id;

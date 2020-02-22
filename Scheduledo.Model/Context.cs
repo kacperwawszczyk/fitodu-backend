@@ -28,7 +28,6 @@ namespace Scheduledo.Model
         public DbSet<TrainingResult> TrainingResults { get; set; }
         public DbSet<WorkTime> WorkTimes { get; set; }
 
-        public DbSet<Coach> Coach { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
