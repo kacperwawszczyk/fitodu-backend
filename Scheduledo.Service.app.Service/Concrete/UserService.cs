@@ -63,34 +63,34 @@ namespace Scheduledo.Service.Concrete
             _billingService = billingService;
         }
 
-        public async Task<Result<ICollection<UserListItemOutput>>> GetList(string userId)
-        {
-            var result = new Result<ICollection<UserListItemOutput>>();
+        //public async Task<Result<ICollection<UserListItemOutput>>> GetList(string userId)
+        //{
+        //    var result = new Result<ICollection<UserListItemOutput>>();
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user == null)
-            {
-                result.Error = ErrorType.NotFound;
-                return result;
-            }
+        //    var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        //    if (user == null)
+        //    {
+        //        result.Error = ErrorType.NotFound;
+        //        return result;
+        //    }
 
-            IQueryable users = null;
+        //    IQueryable users = null;
 
-            if (user.Role != UserRole.SuperAdmin)
-            {
-                users = _context.Users.Where(x => x.CompanyId == user.CompanyId);
-            }
-            else
-            {
-                users = _context.Users.Where(x => x.Id != user.Id);
-            }
+        //    if (user.Role != UserRole.SuperAdmin)
+        //    {
+        //        users = _context.Users.Where(x => x.CompanyId == user.CompanyId);
+        //    }
+        //    else
+        //    {
+        //        users = _context.Users.Where(x => x.Id != user.Id);
+        //    }
 
-            result.Data = await users
-                .ProjectTo<UserListItemOutput>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+        //    result.Data = await users
+        //        .ProjectTo<UserListItemOutput>(_mapper.ConfigurationProvider)
+        //        .ToListAsync();
 
-            return result;
-        }
+        //    return result;
+        //}
 
         public async Task<Result<UserOutput>> Get(string userId)
         {
@@ -151,17 +151,23 @@ namespace Scheduledo.Service.Concrete
             //}
 
             var user = new User();
-            user.Role = UserRole.CompanyAdmin;
+            user.Role = UserRole.Coach;
             user.FullName = model.FullName;
             user.Email = model.Email;
             user.PhoneNumber = model.PhoneNumber;
             user.UserName = model.Email;
+            user.Id = Guid.NewGuid().ToString();
             user.Company = new Company()
             {
                 //Url = model.Url,
                 Plan = PricingPlan.Trial,
                 PlanExpiredOn = _dateTimeService.Now().AddDays(30)
             };
+
+            var coach = new Coach();
+            coach.Id = user.Id;
+            coach.Name = model.Name;
+            coach.Surname = model.Surname;
 
             user.SetCredentials(model.Password);
 
@@ -194,79 +200,88 @@ namespace Scheduledo.Service.Concrete
                     return result;
                 }
 
+                var createCoachResult = await _context.Coaches.AddAsync(coach);
+
+                if (createCoachResult.State != EntityState.Added)
+                {
+                    transaction.Rollback();
+
+                }
+                _context.SaveChanges();
+
                 transaction.Commit();
             }
 
             return result;
         }
 
-        public async Task<Result<string>> Create(CreateUserInput model)
-        {
-            var result = new Result<string>();
+        //public async Task<Result<string>> Create(CreateUserInput model)
+        //{
+        //    var result = new Result<string>();
 
-            var admin = await _context.Users.Include(x => x.Company)
-                .FirstOrDefaultAsync(x => x.Id == model.AdminId);
+        //    var admin = await _context.Users.Include(x => x.Company)
+        //        .FirstOrDefaultAsync(x => x.Id == model.AdminId);
 
-            if (admin == null)
-            {
-                result.Error = ErrorType.NotFound;
-                return result;
-            }
+        //    if (admin == null)
+        //    {
+        //        result.Error = ErrorType.NotFound;
+        //        return result;
+        //    }
 
-            var existingUser = await _userManager.FindByNameAsync(model.Email);
-            if (existingUser != null)
-            {
-                result.ErrorMessage = Resource.Validation.EmailTaken;
-                result.Error = ErrorType.BadRequest;
-                return result;
-            }
+        //    var existingUser = await _userManager.FindByNameAsync(model.Email);
+        //    if (existingUser != null)
+        //    {
+        //        result.ErrorMessage = Resource.Validation.EmailTaken;
+        //        result.Error = ErrorType.BadRequest;
+        //        return result;
+        //    }
 
-            var userLimit = int.Parse(_configuration[$"Limits:{admin.Company.Plan.GetDescription()}User"]);
-            if (userLimit != 0)
-            {
-                var userCount = await _context.Users.CountAsync(x => x.CompanyId == admin.CompanyId);
-                if (userCount >= userLimit)
-                {
-                    result.ErrorMessage = Resource.Validation.LimitReached;
-                    result.Error = ErrorType.BadRequest;
-                    return result;
-                }
-            }
+        //    var userLimit = int.Parse(_configuration[$"Limits:{admin.Company.Plan.GetDescription()}User"]);
+        //    if (userLimit != 0)
+        //    {
+        //        var userCount = await _context.Users.CountAsync(x => x.CompanyId == admin.CompanyId);
+        //        if (userCount >= userLimit)
+        //        {
+        //            result.ErrorMessage = Resource.Validation.LimitReached;
+        //            result.Error = ErrorType.BadRequest;
+        //            return result;
+        //        }
+        //    }
 
-            var user = new User();
-            user.Role = UserRole.User;
-            user.FullName = model.FullName;
-            user.Email = model.Email;
-            user.PhoneNumber = model.PhoneNumber;
-            user.UserName = model.Email;
-            user.Company = admin.Company;
+        //    var user = new User();
+        //    user.Role = UserRole.User;
+        //    //user.FullName = model.FullName;
+        //    user.Email = model.Email;
+        //    user.PhoneNumber = model.PhoneNumber;
+        //    user.UserName = model.Email;
+        //    user.Company = admin.Company;
 
-            user.SetCredentials(model.Password);
+        //    user.SetCredentials(model.Password);
 
-            using (var transaction = _context.Database.BeginTransaction())
-            {
-                var createResult = await _userManager.CreateAsync(user);
-                if (!createResult.Succeeded)
-                {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    return result;
-                }
+        //    using (var transaction = _context.Database.BeginTransaction())
+        //    {
+        //        var createResult = await _userManager.CreateAsync(user);
+        //        if (!createResult.Succeeded)
+        //        {
+        //            transaction.Rollback();
+        //            result.Error = ErrorType.InternalServerError;
+        //            return result;
+        //        }
 
-                var addToRoleResult = await _userManager.AddToRoleAsync(user, user.Role.GetName());
-                if (!addToRoleResult.Succeeded)
-                {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    return result;
-                }
+        //        var addToRoleResult = await _userManager.AddToRoleAsync(user, user.Role.GetName());
+        //        if (!addToRoleResult.Succeeded)
+        //        {
+        //            transaction.Rollback();
+        //            result.Error = ErrorType.InternalServerError;
+        //            return result;
+        //        }
 
-                transaction.Commit();
-                result.Data = user.Id;
-            }
+        //        transaction.Commit();
+        //        result.Data = user.Id;
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
         public async Task<Result<string>> Update(UpdateUserInput model)
         {
@@ -330,116 +345,116 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result<string>> UpdateMe(UpdateUserInput model)
-        {
-            var result = new Result<string>();
+        //public async Task<Result<string>> UpdateMe(UpdateUserInput model)
+        //{
+        //    var result = new Result<string>();
 
-            using (var transaction = _context.Database.BeginTransaction())
-            {
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == model.Id);
-                if (user == null)
-                {
-                    result.Error = ErrorType.NotFound;
-                    return result;
-                }
+        //    using (var transaction = _context.Database.BeginTransaction())
+        //    {
+        //        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == model.Id);
+        //        if (user == null)
+        //        {
+        //            result.Error = ErrorType.NotFound;
+        //            return result;
+        //        }
 
-                var existingUser = await _userManager.FindByNameAsync(model.Email);
-                if (existingUser != null && existingUser.Id != user.Id)
-                {
-                    result.ErrorMessage = Resource.Validation.EmailTaken;
-                    result.Error = ErrorType.BadRequest;
-                    return result;
-                }
+        //        var existingUser = await _userManager.FindByNameAsync(model.Email);
+        //        if (existingUser != null && existingUser.Id != user.Id)
+        //        {
+        //            result.ErrorMessage = Resource.Validation.EmailTaken;
+        //            result.Error = ErrorType.BadRequest;
+        //            return result;
+        //        }
 
-                user.FullName = model.FullName;
-                user.Email = model.Email;
-                user.PhoneNumber = model.PhoneNumber;
-                user.UserName = model.Email;
-                user.UpdatedOn = _dateTimeService.Now();
+        //        //user.FullName = model.FullName;
+        //        user.Email = model.Email;
+        //        user.PhoneNumber = model.PhoneNumber;
+        //        user.UserName = model.Email;
+        //        user.UpdatedOn = _dateTimeService.Now();
 
-                if (!string.IsNullOrEmpty(model.Password))
-                {
-                    user.SetCredentials(model.Password);
-                }
+        //        if (!string.IsNullOrEmpty(model.Password))
+        //        {
+        //            user.SetCredentials(model.Password);
+        //        }
 
-                var updateResult = await _userManager.UpdateAsync(user);
-                if (!updateResult.Succeeded)
-                {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    return result;
-                }
+        //        var updateResult = await _userManager.UpdateAsync(user);
+        //        if (!updateResult.Succeeded)
+        //        {
+        //            transaction.Rollback();
+        //            result.Error = ErrorType.InternalServerError;
+        //            return result;
+        //        }
 
-                if (user.Role == UserRole.CompanyAdmin)
-                {
-                    var emailUpdateResult = await _emailMarketingService.AddOrUpdate(user);
-                    if (emailUpdateResult.Success)
-                        user.SubscriberId = emailUpdateResult.Data;
-                    else
-                        _logger.LogCritical("Can't update email marketing contact", user.UserName);
+        //        if (user.Role == UserRole.CompanyAdmin)
+        //        {
+        //            var emailUpdateResult = await _emailMarketingService.AddOrUpdate(user);
+        //            if (emailUpdateResult.Success)
+        //                user.SubscriberId = emailUpdateResult.Data;
+        //            else
+        //                _logger.LogCritical("Can't update email marketing contact", user.UserName);
 
-                    if (user.Company.BillingCustomerId != null)
-                    {
-                        await _billingService.UpdateCustomer(user);
-                    }
-                }
+        //            if (user.Company.BillingCustomerId != null)
+        //            {
+        //                await _billingService.UpdateCustomer(user);
+        //            }
+        //        }
 
-                transaction.Commit();
-                result.Data = user.Id;
-            }
+        //        transaction.Commit();
+        //        result.Data = user.Id;
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        public async Task<Result<long>> UpdateCompany(UpdateCompanyInput model)
-        {
-            var result = new Result<long>();
+        //public async Task<Result<long>> UpdateCompany(UpdateCompanyInput model)
+        //{
+        //    var result = new Result<long>();
 
-            using (var transaction = _context.Database.BeginTransaction())
-            {
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == model.UserId);
-                if (user == null)
-                {
-                    result.Error = ErrorType.NotFound;
-                    return result;
-                }
+        //    using (var transaction = _context.Database.BeginTransaction())
+        //    {
+        //        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == model.UserId);
+        //        if (user == null)
+        //        {
+        //            result.Error = ErrorType.NotFound;
+        //            return result;
+        //        }
 
-                var admin = await _context.Users.FirstAsync(
-                    x => x.CompanyId == user.CompanyId && x.Role == UserRole.CompanyAdmin);
+        //        var admin = await _context.Users.FirstAsync(
+        //            x => x.CompanyId == user.CompanyId && x.Role == UserRole.CompanyAdmin);
 
-                var company = admin.Company;
+        //        var company = admin.Company;
 
-                company.Name = model.Name;
-                company.AddressLine1 = model.AddressLine1;
-                company.AddressLine2 = model.AddressLine2;
-                company.AddressPostalCode = model.AddressPostalCode;
-                company.AddressCity = model.AddressCity;
-                company.AddressState = model.AddressState;
-                company.AddressCountry = model.AddressCountry;
-                company.VatIn = model.VatIn;
+        //        company.Name = model.Name;
+        //        company.AddressLine1 = model.AddressLine1;
+        //        company.AddressLine2 = model.AddressLine2;
+        //        company.AddressPostalCode = model.AddressPostalCode;
+        //        company.AddressCity = model.AddressCity;
+        //        company.AddressState = model.AddressState;
+        //        company.AddressCountry = model.AddressCountry;
+        //        company.VatIn = model.VatIn;
 
-                company.UpdatedOn = _dateTimeService.Now();
+        //        company.UpdatedOn = _dateTimeService.Now();
 
-                _context.Update(company);
+        //        _context.Update(company);
 
-                if (await _context.SaveChangesAsync() == 0)
-                {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    return result;
-                }
+        //        if (await _context.SaveChangesAsync() == 0)
+        //        {
+        //            transaction.Rollback();
+        //            result.Error = ErrorType.InternalServerError;
+        //            return result;
+        //        }
 
-                if (user.Company.BillingCustomerId != null)
-                {
-                    await _billingService.UpdateCustomer(admin);
-                }
+        //        if (user.Company.BillingCustomerId != null)
+        //        {
+        //            await _billingService.UpdateCustomer(admin);
+        //        }
 
-                transaction.Commit();
-                result.Data = company.Id;
-            }
+        //        transaction.Commit();
+        //        result.Data = company.Id;
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
         public async Task<Result<string>> Delete(string adminId, string userId)
         {

@@ -101,20 +101,20 @@ namespace Scheduledo.Api
 
             services.AddAuthorization(x =>
             {
-                x.AddPolicy(UserRole.User.GetName(), policy =>
+                //x.AddPolicy(UserRole.User.GetName(), policy =>
+                //{
+                //    policy.RequireAuthenticatedUser();
+                //    policy.RequireRole(UserRole.User.GetName(), UserRole.CompanyAdmin.GetName(), UserRole.SuperAdmin.GetName());
+                //});
+                x.AddPolicy(UserRole.Client.GetName(), policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireRole(UserRole.User.GetName(), UserRole.CompanyAdmin.GetName(), UserRole.SuperAdmin.GetName());
+                    policy.RequireRole(UserRole.Client.GetName(), UserRole.Coach.GetName());
                 });
-                x.AddPolicy(UserRole.CompanyAdmin.GetName(), policy =>
+                x.AddPolicy(UserRole.Coach.GetName(), policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireRole(UserRole.CompanyAdmin.GetName(), UserRole.SuperAdmin.GetName());
-                });
-                x.AddPolicy(UserRole.SuperAdmin.GetName(), policy =>
-                {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireRole(UserRole.SuperAdmin.GetName());
+                    policy.RequireRole(UserRole.Coach.GetName());
                 });
             });
 
@@ -129,7 +129,7 @@ namespace Scheduledo.Api
                 .WithExposedHeaders("Content-Disposition")
                 //.WithOrigins(Configuration["Environment:ClientUrl"])
                 .AllowAnyOrigin()
-                .AllowAnyHeader().AllowAnyMethod().AllowCredentials());
+                .AllowAnyHeader().AllowAnyMethod());//.AllowCredentials());
 
             if (env.IsDevelopment())
             {
