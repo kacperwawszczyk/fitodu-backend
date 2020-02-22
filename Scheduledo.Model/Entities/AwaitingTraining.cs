@@ -10,8 +10,9 @@ namespace Scheduledo.Model.Entities
         [Key]
         public int Id { get; set; }
         [Required]
-        public int IdTrainer { get; set; }
+        public string IdCoach { get; set; }
         [Required]
-        public int IdTraining { get; set; }
+        public string IdClient { get; set; }
+        public DateTime Date { get; set; }
     }
 }

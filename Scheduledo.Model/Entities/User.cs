@@ -23,6 +23,9 @@ namespace Scheduledo.Model.Entities
         public long CompanyId { get; set; }
         public virtual Company Company { get; set; }
 
+        // Do rozwiązania jeszcze
+        // public UserType Type { get; set; }
+
         public User()
         {
             CreatedOn = DateTime.UtcNow;

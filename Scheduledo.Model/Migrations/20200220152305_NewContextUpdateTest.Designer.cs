@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Scheduledo.Model;
 
 namespace Scheduledo.Model.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20200220152305_NewContextUpdateTest")]
+    partial class NewContextUpdateTest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -347,15 +349,19 @@ namespace Scheduledo.Model.Migrations
 
             modelBuilder.Entity("Scheduledo.Model.Entities.Maximum", b =>
                 {
-                    b.Property<string>("IdExercise");
-
-                    b.Property<string>("IdClient");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClientId");
 
+                    b.Property<string>("IdClient");
+
+                    b.Property<string>("IdExercise");
+
                     b.Property<string>("Max");
 
-                    b.HasKey("IdExercise", "IdClient");
+                    b.HasKey("Id");
 
                     b.HasIndex("ClientId");
 
@@ -509,7 +515,7 @@ namespace Scheduledo.Model.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int>("Repetitions");
+                    b.Property<int>("Repeats");
 
                     b.Property<TimeSpan?>("Time");
 
@@ -533,7 +539,7 @@ namespace Scheduledo.Model.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
-                    b.Property<int>("Repetitions");
+                    b.Property<int>("Repeats");
 
                     b.Property<TimeSpan?>("Time");
 

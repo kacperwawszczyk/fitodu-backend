@@ -12,7 +12,7 @@ namespace Scheduledo.Model.Entities
         [Required]
         public int Id { get; set; }
         [Required]
-        public int IdTrainer { get; set; }
+        public string IdCoach { get; set; }
         [Column(TypeName = "date")]
         public DateTime? Day { get; set; }
         public TimeSpan? StartHour { get; set; }

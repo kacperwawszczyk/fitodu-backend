@@ -10,10 +10,10 @@ namespace Scheduledo.Model.Entities
     {
         [Required]
         public string IdClient { get; set; }
-       // public Client Cli { get; set; }
+        //public virtual Client Cli { get; set; }
         [Required]
         public string IdCoach { get; set; }
-       // public Coach Coa { get; set; }
+        //public virtual Coach Coa { get; set; }
         [Column(TypeName = "text")]
         public string Place { get; set; }
         public int PurchasedTrainings { get; set; }

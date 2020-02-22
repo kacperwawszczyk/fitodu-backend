@@ -7,10 +7,8 @@ namespace Scheduledo.Model.Entities
 {
     public partial class Maximum
     {
-        [Key]
-        public int Id { get; set; }
-        public int IdClient { get; set; }
-        public int IdExercise { get; set; }
-        public int? Max { get; set; }
+        public string IdClient { get; set; }
+        public string IdExercise { get; set; }
+        public string Max { get; set; }
     }
 }
