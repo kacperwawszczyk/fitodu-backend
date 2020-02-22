@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Scheduledo.Model.Entities;
@@ -17,33 +18,57 @@ namespace Scheduledo.Api.Controllers
     public class CoachController : BaseController
     {
         private readonly ICoachService _coachService;
+        private readonly ITokenService _tokenService;
 
-        public CoachController(ICoachService coachService)
+        public CoachController(ICoachService coachService, ITokenService tokenService)
         {
             _coachService = coachService;
+            _tokenService = tokenService;
         }
 
-        [HttpGet("all")]
+        [HttpGet("allCoaches")]
         public async Task<Result<List<Coach>>> GetAllCoaches()
         {
             var result = await _coachService.GetAllCoaches();
             return result;
         }
 
-        [HttpGet("{id}")]
-        public async Task<Result<Coach>> GetCoach(string id)
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetCoach([FromHeader] string Authorization)
         {
-            var result = await _coachService.GetCoach(id);
-            return result;
+            var coachId = await _tokenService.GetRequesterCoachId(Authorization);
+            if(coachId.Data == null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                string Id = coachId.Data;
+                var result = await _coachService.GetCoach(Id);
+                return GetResult(result);
+            }
         }
 
-        //[HttpPut("modify")]
-        //public async Task<Result> ModifyCoach([FromBody] Coach coach)
-        //{
-        //    var updatedCoach = 
-        //    var result = await _coachService.ModifyCoach();
-        //}
-        
+        [HttpPut("modify")]
+        [Authorize]
+        public async Task<IActionResult> ModifyCoach([FromHeader] string Authorization, [FromBody] Coach coach)
+        {
+            var coachId = await _tokenService.GetRequesterCoachId(Authorization);
+            if (coachId.Data == null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                string Id = coachId.Data;
+                var result = await _coachService.ModifyCoach(Id, coach);
+                return GetResult(result);
+            }
+            //var updatedCoach =
+            //var result = await _coachService.ModifyCoach();
+        }
+
 
         //[HttpPost]
         //public async Task<IActionResult> RegisterCoach([FromBody] Coach coach)
@@ -57,7 +82,7 @@ namespace Scheduledo.Api.Controllers
         //        return BadRequest("Empty Surname!");
         //    }
         //    await _coachService.RegisterCoach(coach);
-            
+
         //    return Ok();
         //}
     }

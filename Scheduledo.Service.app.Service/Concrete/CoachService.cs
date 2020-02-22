@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Scheduledo.Core.Enums;
@@ -24,7 +25,7 @@ namespace Scheduledo.Service.Concrete
        // private readonly UserManager<User> _userManager;
 
         private readonly Context _context;
-        //private readonly IMapper _mapper;
+        private readonly IMapper _mapper;
 
         //private readonly IEmailService _emailService;
         //private readonly IEmailMarketingService _emailMarketingService;
@@ -32,10 +33,12 @@ namespace Scheduledo.Service.Concrete
 
         public CoachService(
             IConfiguration configuration,
-            Context context)
+            Context context,
+            IMapper mapper)
         {
             _configuration = configuration;
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<Result<List<Coach>>> GetAllCoaches()
@@ -52,28 +55,64 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result<Coach>> GetCoach(string id)
+        public async Task<Result<Coach>> GetCoach(string Id)
         {
             var result = new Result<Coach>();
-            var coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == id);
+            var coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
             if (coach == null)
             {
                 result.Error = ErrorType.NotFound;
                 return result;
             }
-            result.Data = coach;
-            return result;
+            else
+            {
+                result.Data = coach;
+                return result;
+            }
         }
 
-        public async Task<Result> RegisterCoach(Coach coach)
+        //public async Task<Result> RegisterCoach(Coach coach)
+        //{
+        //    var result = new Result();
+
+        //    await _context.AddAsync(coach);
+        //    await _context.SaveChangesAsync();
+        //    return result;
+        //}
+
+        public async Task<Result> ModifyCoach(string Id, Coach coachNew)
         {
             var result = new Result();
+            var coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
 
-            await _context.AddAsync(coach);
-            await _context.SaveChangesAsync();
+            coach.Name = coachNew.Name;
+            coach.Surname = coachNew.Surname;
+            coach.TimeToResign = coachNew.TimeToResign;
+            coach.Rules = coachNew.Rules;
+            coach.VatIn = coachNew.VatIn;
+            coach.AddressCity = coachNew.AddressCity;
+            coach.AddressCountry = coachNew.AddressCountry;
+            coach.AddressLine1 = coachNew.AddressLine1;
+            coach.AddressLine2 = coachNew.AddressLine2;
+
+            coach.UpdatedOn = DateTime.UtcNow;
+
+            
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                _context.Update(coach);
+                if(await _context.SaveChangesAsync() > 0)
+                {
+                    result = new Result(true);
+                    transaction.Commit();
+                }
+                else
+                {
+                    result.Error = ErrorType.Forbidden;
+                    transaction.Rollback();
+                }
+            }
             return result;
         }
-
-
     }
 }
