@@ -40,6 +40,34 @@ namespace Scheduledo.Service.Concrete
 			return email;
 		}
 
+		public async Task<Result<string>> GetRequesterClientId(string token)
+		{
+			string email = GetEmailFromToken(token);
+
+			var result = new Result<string>();
+
+			User user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+
+			if (user != null) //istnieje user z takim emailem
+			{
+				var client = await _context.Clients.Where(x => x.Id == user.Id).FirstOrDefaultAsync();
+				if (client != null)
+				{
+					result.Data = client.Id;
+				}
+				else //user z takim Id nie jest w tablicy Clients
+				{
+					result.Error = ErrorType.NotFound; //może inny?
+				}
+			}
+			else //nie istnieje user z takim emailem
+			{
+				result.Error = ErrorType.NotFound;
+			}
+			return result;
+		}
+	
+
 		public async Task<Result<string>> GetRequesterCoachId(string token)
 		{
 			string email = GetEmailFromToken(token);
@@ -55,7 +83,7 @@ namespace Scheduledo.Service.Concrete
 				{
 					result.Data = coach.Id;
 				}
-				else //user z takim Id nie jest w tablicy Coach
+				else //user z takim Id nie jest w tablicy Coaches
 				{
 					result.Error = ErrorType.NotFound; //może inny?
 				}

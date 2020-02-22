@@ -16,12 +16,12 @@ namespace Scheduledo.Api.Controllers
     [Route("api/privateNotes")]
     [ApiController]
     //[Authorize]
-    public class PrivateNotesController : BaseController
+    public class PrivateNoteController : BaseController
     {
         private readonly IPrivateNoteService _privateNoteService;
         private readonly ITokenService _tokenService;
 
-        public PrivateNotesController(IPrivateNoteService privateNoteService, ITokenService tokenService)
+        public PrivateNoteController(IPrivateNoteService privateNoteService, ITokenService tokenService)
         {
             _privateNoteService = privateNoteService;
             _tokenService = tokenService;
@@ -36,12 +36,12 @@ namespace Scheduledo.Api.Controllers
         public async Task<IActionResult> GetAllNotes([FromHeader]string Authorization)
         {
 
-            var coachId = await _tokenService.GetRequesterCoachId(Authorization);
+            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
 
-            if (coachId.Data != null)
+            if (coachIdResult.Data != null)
             {
-                string Id = coachId.Data;
-                var result = await _privateNoteService.GetAllNotes(Id);
+                string coachId = coachIdResult.Data;
+                var result = await _privateNoteService.GetAllNotes(coachId);
                 return GetResult(result);
 
             }
@@ -52,28 +52,37 @@ namespace Scheduledo.Api.Controllers
         }
 
         //all private notes of a coach's client
-        [HttpGet("allNotes/{coachId}/{clientId}")]
+        [HttpGet("allNotes/{clientId}")]
+        [Authorize]
         //[AuthorizePolicy(UserRole.Coach)]
         //[ProducesResponseType(PrivateNote), 200)]
-        public async Task<IActionResult> GetUsersNote(string coachId, string clientId)
+        public async Task<IActionResult> GetUsersNote([FromHeader]string Authorization, string clientId)
         {
-            var result = await _privateNoteService.GetClientsNote(coachId, clientId);
-            return GetResult(result);
+            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
+            if (coachIdResult.Data != null)
+            {
+                string coachId = coachIdResult.Data;
+                var result = await _privateNoteService.GetClientsNote(coachId, clientId);
+                return GetResult(result);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost]
         //[AuthorizePolicy(UserRole.Coach)]
         //[ProducesResponseType(StatusCodes.Status201Created)]
         //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateNote([FromBody]PrivateNote note)
+        public async Task<IActionResult> CreateNote([FromHeader]string Authorization, [FromBody]PrivateNote note)
         {
-            if (note == null)
+            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
+            if (note == null || note.IdCoach!=coachIdResult.Data)
             {
                 return BadRequest();
             }
-
             var result = await _privateNoteService.CreateNote(note);
-
             return GetResult(result);
         }
 
@@ -82,25 +91,28 @@ namespace Scheduledo.Api.Controllers
         //[AuthorizePolicy(UserRole.Coach)]
         //[ProducesResponseType(StatusCodes.Status201Created)]
         //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateNote([FromBody]PrivateNote note)
+        public async Task<IActionResult> UpdateNote([FromHeader]string Authorization, [FromBody]PrivateNote note)
         {
-            if (note == null)
+            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
+            if (note == null || note.IdCoach != coachIdResult.Data)
             {
                 return BadRequest();
             }
-
             var result = await _privateNoteService.UpdateNote(note);
-
             return GetResult(result);
         }
 
-        [HttpDelete("deleteNote/{coachId}/{clientId}")]
+        [HttpDelete]
         //[AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteNote(string coachId, string clientId)
+        public async Task<IActionResult> DeleteNote([FromHeader]string Authorization, [FromBody]PrivateNote note)
         {
-
-            var result = await _privateNoteService.DeleteNote(coachId, clientId);
-
+            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
+            if (note == null || note.IdCoach != coachIdResult.Data)
+            {
+                return BadRequest();
+            }
+            string coachId = coachIdResult.Data;
+            var result = await _privateNoteService.DeleteNote(coachId, note.IdClient);
             return GetResult(result);
         }
 

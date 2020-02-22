@@ -55,6 +55,7 @@ namespace Scheduledo.Service
             services.AddScoped<ICoachService, CoachService>();
             services.AddScoped<IPrivateNoteService, PrivateNoteService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IPublicNoteService, PublicNoteService>();
         }
     }
 }
