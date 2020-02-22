@@ -9,6 +9,7 @@ using Scheduledo.Service.Abstract;
 using System.IdentityModel.Tokens.Jwt;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Scheduledo.Service.Concrete;
 
 namespace Scheduledo.Api.Controllers
 {
@@ -18,23 +19,36 @@ namespace Scheduledo.Api.Controllers
     public class PrivateNotesController : BaseController
     {
         private readonly IPrivateNoteService _privateNoteService;
+        private readonly ITokenService _tokenService;
 
-        public PrivateNotesController(IPrivateNoteService privateNoteService)
+        public PrivateNotesController(IPrivateNoteService privateNoteService, ITokenService tokenService)
         {
             _privateNoteService = privateNoteService;
+            _tokenService = tokenService;
         }
 
 
         //all private notes of a coach
-        [HttpGet("allNotes/{id}")]
+        [HttpGet("allNotes")]
         [Authorize]
         //[AuthorizePolicy(UserRole.Coach)]
         //[ProducesResponseType(typeof(ICollection<PrivateNote>), 200)]
-        public async Task<IActionResult> GetAllNotes(string coachId)
+        public async Task<IActionResult> GetAllNotes([FromHeader]string Authorization)
         {
 
-            var result = await _privateNoteService.GetAllNotes(coachId);
-            return GetResult(result);
+            var coachId = await _tokenService.GetRequesterCoachId(Authorization);
+
+            if (coachId.Data != null)
+            {
+                string Id = coachId.Data;
+                var result = await _privateNoteService.GetAllNotes(Id);
+                return GetResult(result);
+
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         //all private notes of a coach's client
