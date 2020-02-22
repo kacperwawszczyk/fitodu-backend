@@ -29,6 +29,7 @@ namespace Scheduledo.Model
         public DbSet<WorkTime> WorkTimes { get; set; }
 
 
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

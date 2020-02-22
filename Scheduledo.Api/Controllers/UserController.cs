@@ -17,33 +17,33 @@ namespace Scheduledo.Api.Controllers
             _userService = userService;
         }
 
-        [HttpGet("users")]
-        [AuthorizePolicy(UserRole.User)]
-        [ProducesResponseType(typeof(ICollection<UserListItemOutput>), 200)]
-        public async Task<IActionResult> GetList()
-        {
-            var result = await _userService.GetList(CurrentUser.Id);
-            return GetResult(result);
-        }
+        //[HttpGet("users")]
+        //[AuthorizePolicy(UserRole.User)]
+        //[ProducesResponseType(typeof(ICollection<UserListItemOutput>), 200)]
+        //public async Task<IActionResult> GetList()
+        //{
+        //    var result = await _userService.GetList(CurrentUser.Id);
+        //    return GetResult(result);
+        //}
 
-        [HttpGet("users/{id}")]
-        [AuthorizePolicy(UserRole.CompanyAdmin)]
-        [ProducesResponseType(typeof(UserOutput), 200)]
-        public async Task<IActionResult> Get(string id)
-        {
-            var result = await _userService.Get(id);
-            return GetResult(result);
-        }
+        //[HttpGet("users/{id}")]
+        //[AuthorizePolicy(UserRole.CompanyAdmin)]
+        //[ProducesResponseType(typeof(UserOutput), 200)]
+        //public async Task<IActionResult> Get(string id)
+        //{
+        //    var result = await _userService.Get(id);
+        //    return GetResult(result);
+        //}
 
-        [HttpGet("users/me")]
-        [AuthorizePolicy(UserRole.User)]
-        [ProducesResponseType(typeof(UserOutput), 200)]
-        public async Task<IActionResult> GetMe()
-        {
-            var id = CurrentUser.Id;
-            var result = await _userService.Get(id);
-            return GetResult(result);
-        }
+        //[HttpGet("users/me")]
+        //[AuthorizePolicy(UserRole.User)]
+        //[ProducesResponseType(typeof(UserOutput), 200)]
+        //public async Task<IActionResult> GetMe()
+        //{
+        //    var id = CurrentUser.Id;
+        //    var result = await _userService.Get(id);
+        //    return GetResult(result);
+        //}
 
         //[HttpGet("users/company")]
         //[AuthorizePolicy(UserRole.User)]
@@ -55,41 +55,41 @@ namespace Scheduledo.Api.Controllers
         //    return GetResult(result);
         //}
 
-        [HttpPost("users/register")]
-        public async Task<IActionResult> Register([FromBody]RegisterUserInput model)
+        [HttpPost("users/CoachRegister")]
+        public async Task<IActionResult> CoachRegister([FromBody]RegisterUserInput model)
         {
             var result = await _userService.Register(model);
             return GetResult(result);
         }
 
-        [HttpPost("users")]
-        [AuthorizePolicy(UserRole.CompanyAdmin)]
-        [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> Create([FromBody]CreateUserInput model)
-        {
-            model.AdminId = CurrentUser.Id;
-            var result = await _userService.Create(model);
-            return GetResult(result);
-        }
+        //[HttpPost("users")]
+        //[AuthorizePolicy(UserRole.CompanyAdmin)]
+        //[ProducesResponseType(typeof(string), 200)]
+        //public async Task<IActionResult> Create([FromBody]CreateUserInput model)
+        //{
+        //    model.AdminId = CurrentUser.Id;
+        //    var result = await _userService.Create(model);
+        //    return GetResult(result);
+        //}
 
-        [HttpPut("users")]
-        [AuthorizePolicy(UserRole.CompanyAdmin)]
-        [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> Update([FromBody]UpdateUserInput model)
-        {
-            model.AdminId = CurrentUser.Id;
-            var result = await _userService.Update(model);
-            return GetResult(result);
-        }
+        //[HttpPut("users")]
+        //[AuthorizePolicy(UserRole.CompanyAdmin)]
+        //[ProducesResponseType(typeof(string), 200)]
+        //public async Task<IActionResult> Update([FromBody]UpdateUserInput model)
+        //{
+        //    model.AdminId = CurrentUser.Id;
+        //    var result = await _userService.Update(model);
+        //    return GetResult(result);
+        //}
 
-        [HttpPut("users/me")]
-        [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> UpdateMe([FromBody]UpdateUserInput model)
-        {
-            model.Id = CurrentUser.Id;
-            var result = await _userService.UpdateMe(model);
-            return GetResult(result);
-        }
+        //[HttpPut("users/me")]
+        //[ProducesResponseType(typeof(string), 200)]
+        //public async Task<IActionResult> UpdateMe([FromBody]UpdateUserInput model)
+        //{
+        //    model.Id = CurrentUser.Id;
+        //    var result = await _userService.UpdateMe(model);
+        //    return GetResult(result);
+        //}
 
         //[HttpPut("users/company")]
         //[AuthorizePolicy(UserRole.User)]
@@ -144,12 +144,12 @@ namespace Scheduledo.Api.Controllers
             return GetResult(result);
         }
 
-        //[HttpPost("users/password/forgot")]
-        //public async Task<IActionResult> ForgotPassword([FromBody]ForgotPasswordInput model)
-        //{
-        //    var result = await _userService.ForgotPassword(model.Email);
-        //    return GetResult(result);
-        //}
+        [HttpPost("users/password/forgot")]
+        public async Task<IActionResult> ForgotPassword([FromBody]ForgotPasswordInput model)
+        {
+            var result = await _userService.ForgotPassword(model.Email);
+            return GetResult(result);
+        }
 
         //[HttpPost("users/password/reset")]
         //public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordInput model)
