@@ -53,6 +53,7 @@ namespace Scheduledo.Service
             services.AddScoped<IBillingService, StripeService>();
             services.AddScoped<ISupportService, SupportService>();
             services.AddScoped<IPrivateNotesService, PrivateNotesService>();
+            services.AddScoped<ICoachService, CoachService>();
         }
     }
 }
