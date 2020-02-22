@@ -29,7 +29,7 @@ namespace Scheduledo.Test
             var email = $"{Guid.NewGuid()}@gmail.com";
             var password = Guid.NewGuid().ToString();
 
-            var registerResult = await _userService.Register(new RegisterUserInput()
+            var registerResult = await _userService.CoachRegister(new RegisterCoachInput()
             {
                 Email = email,
                 Password = password,
@@ -73,7 +73,7 @@ namespace Scheduledo.Test
             var email = "testowy@scheduledo.com";
             var password = Guid.NewGuid().ToString();
 
-            await _userService.Register(new RegisterUserInput()
+            await _userService.CoachRegister(new RegisterCoachInput()
             {
                 FullName = fullName,
                 Email = email,

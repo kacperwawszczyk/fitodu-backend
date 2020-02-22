@@ -7,7 +7,6 @@
   <ItemGroup>
     <Folder Include="Infrastructure\" />
     <Folder Include="Models\Common\" />
-    <Folder Include="Models\User\" />
     <Folder Include="Extensions\" />
     <Folder Include="Models\Email\" />
     <Folder Include="Infrastructure\Attributes\" />

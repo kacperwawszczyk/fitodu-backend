@@ -45,7 +45,7 @@ namespace Scheduledo.Test
             var userService = SP.GetService<IUserService>();
             var email = $"{Guid.NewGuid()}@gmail.com";
 
-            var result = userService.Register(new RegisterUserInput
+            var result = userService.CoachRegister(new RegisterCoachInput
             {
                 FullName = $"{Guid.NewGuid()} {Guid.NewGuid()}",
                 Email = email,

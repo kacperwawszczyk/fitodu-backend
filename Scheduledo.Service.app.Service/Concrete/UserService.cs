@@ -130,7 +130,7 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result> Register(RegisterUserInput model)
+        public async Task<Result> CoachRegister(RegisterCoachInput model)
         {
             var result = new Result();
 
@@ -212,6 +212,55 @@ namespace Scheduledo.Service.Concrete
                 transaction.Commit();
             }
 
+            return result;
+        }
+
+        public async Task<Result> DummyClientRegister(string CoachId, RegisterDummyClientInput model)
+        {
+            var result = new Result();
+
+            var newClient = new Client
+            {
+                Name = model.Name,
+                Surname = model.Surname,
+                Id = Guid.NewGuid().ToString()
+            };
+
+            using(var transaction = _context.Database.BeginTransaction())
+            {
+                var addClientResult = await _context.Clients.AddAsync(newClient);
+
+                if (addClientResult.State != EntityState.Added)
+                {
+                    transaction.Rollback();
+
+                    result.Error = ErrorType.InternalServerError;
+
+                    return result;
+                }
+
+                var coachClient = new CoachClient
+                {
+                    IdCoach = CoachId,
+                    IdClient = newClient.Id
+                };
+
+                var addCoachClientResult = await _context.CoachClients.AddAsync(coachClient);
+
+                if(addCoachClientResult.State != EntityState.Added)
+                {
+                    transaction.Rollback();
+
+                    result.Error = ErrorType.InternalServerError;
+
+                    return result;
+                }
+
+                _context.SaveChanges();
+
+                transaction.Commit();
+
+            }
             return result;
         }
 
@@ -622,7 +671,7 @@ namespace Scheduledo.Service.Concrete
             }
 
             var encodedToken = WebUtility.UrlEncode(user.ResetToken);
-            var url = $"{_configuration["Environment:ClientUrl"]}/reset?id={user.Id}&token={encodedToken}";
+            var url = $"{_configuration["Environment:ClientUrl"]}/auth/reset?id={user.Id}&token={encodedToken}";
 
             var model = new EmailInput()
             {
