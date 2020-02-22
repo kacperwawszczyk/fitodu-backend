@@ -48,7 +48,7 @@ namespace Scheduledo.Service.Concrete
             if(coaches == null)
             {
                 result.Error = ErrorType.NoContent;
-                result.ErrorMessage = "No coaches available";
+                result.ErrorMessage = "No coaches found";
                 return result;
             }
             result.Data = coaches;
@@ -80,21 +80,38 @@ namespace Scheduledo.Service.Concrete
         //    return result;
         //}
 
-        public async Task<Result> ModifyCoach(string Id, Coach coachNew)
+        public async Task<Result> UpdateCoach(string Id, UpdateCoachInput coachNew)
         {
             var result = new Result();
             var coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
 
-            coach.Name = coachNew.Name;
-            coach.Surname = coachNew.Surname;
-            coach.TimeToResign = coachNew.TimeToResign;
+            if (!String.IsNullOrEmpty(coachNew.Name))
+            {
+                coach.Name = coachNew.Name;
+            }
+            if (!String.IsNullOrEmpty(coachNew.Surname))
+            {
+                coach.Surname = coachNew.Surname;
+            }
+            if (!String.IsNullOrEmpty(coachNew.TimeToResign))
+            {
+                coach.TimeToResign = coachNew.TimeToResign;
+            }
+            if(!String.IsNullOrEmpty(coachNew.AddressCity))
+            {
+                coach.AddressCity = coachNew.AddressCity;
+            }
+            if(!String.IsNullOrEmpty(coachNew.AddressCountry))
+            {
+                coach.AddressCountry = coachNew.AddressCountry;
+            }
+            if(!String.IsNullOrEmpty(coachNew.AddressPostalCode))
+            {
+                coach.AddressPostalCode = coachNew.AddressPostalCode;
+            }
             coach.Rules = coachNew.Rules;
-            coach.VatIn = coachNew.VatIn;
-            coach.AddressCity = coachNew.AddressCity;
-            coach.AddressCountry = coachNew.AddressCountry;
             coach.AddressLine1 = coachNew.AddressLine1;
             coach.AddressLine2 = coachNew.AddressLine2;
-
             coach.UpdatedOn = DateTime.UtcNow;
 
             

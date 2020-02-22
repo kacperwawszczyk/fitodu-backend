@@ -50,9 +50,9 @@ namespace Scheduledo.Api.Controllers
             }
         }
 
-        [HttpPut("modify")]
+        [HttpPut("update")]
         [Authorize]
-        public async Task<IActionResult> ModifyCoach([FromHeader] string Authorization, [FromBody] Coach coach)
+        public async Task<IActionResult> UpdateCoach([FromHeader] string Authorization, [FromBody] UpdateCoachInput coach)
         {
             var coachId = await _tokenService.GetRequesterCoachId(Authorization);
             if (coachId.Data == null)
@@ -62,11 +62,9 @@ namespace Scheduledo.Api.Controllers
             else
             {
                 string Id = coachId.Data;
-                var result = await _coachService.ModifyCoach(Id, coach);
+                var result = await _coachService.UpdateCoach(Id, coach);
                 return GetResult(result);
             }
-            //var updatedCoach =
-            //var result = await _coachService.ModifyCoach();
         }
 
 
