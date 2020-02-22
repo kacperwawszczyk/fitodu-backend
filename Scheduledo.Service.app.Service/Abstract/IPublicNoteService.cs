@@ -9,8 +9,8 @@ namespace Scheduledo.Service.Abstract
 {
     public interface IPublicNoteService
     {
-        Task<List<PublicNote>> GetAllNotes(string Id);
-        Task<PublicNote> GetClientsNote(string coachId, string clientId);
+        Task<Result<List<PublicNote>>> GetAllNotes(string coachId);
+        Task<Result<PublicNote>> GetClientsNote(string clientId);
         Task<Result> CreateNote(PublicNote note);
         Task<Result> UpdateNote(PublicNote note);
         Task<Result> DeleteNote(string coachId, string clientId);

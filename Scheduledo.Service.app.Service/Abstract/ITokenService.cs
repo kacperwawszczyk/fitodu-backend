@@ -11,5 +11,7 @@ namespace Scheduledo.Service.Abstract
 		string GetEmailFromToken(string token);
 
 		Task<Result<string>> GetRequesterCoachId(string token);
+
+		Task<Result<string>> GetRequesterClientId(string token);
 	}
 }
