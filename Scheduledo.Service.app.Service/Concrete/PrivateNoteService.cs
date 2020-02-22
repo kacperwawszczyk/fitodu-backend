@@ -26,24 +26,41 @@ namespace Scheduledo.Service.Concrete
             _mapper = mapper;
         }
 
-        public async Task <List<PrivateNote> > GetAllNotes(string Id)
+        public async Task <Result<List<PrivateNote>>> GetAllNotes(string Id)
         {
 
-            //var result = new Result<PrivateNote>();
+            var result = new Result<List<PrivateNote>>();
 
             var notes = await _context.PrivateNotes.Where(x => x.IdCoach == Id)
                                                   .ToListAsync();
 
-            //var data = _mapper.Map<>
-            return notes;
+            if(notes != null)
+            {
+                result.Data = notes;
+
+            }
+            else
+            {
+                result.Error = ErrorType.NoContent; //może inny?
+            }
+            return result;
         }
 
-        public async Task<PrivateNote> GetClientsNote(string coachId, string clientId)
+        public async Task<Result<PrivateNote>> GetClientsNote(string coachId, string clientId)
         {
+
+            var result = new Result<PrivateNote>();
             var note = await _context.PrivateNotes.FindAsync(coachId, clientId);
-                //Where(x => x.IdCoach == coachId && x.IdClient == clientId);
-                                                  
-            return note;
+
+            if (note != null)
+            {
+                result.Data = note;
+            }
+            else
+            {
+                result.Error = ErrorType.NoContent; //może inny?
+            }
+            return result;
         }
 
         public async Task<Result> CreateNote(PrivateNote note)
@@ -109,7 +126,7 @@ namespace Scheduledo.Service.Concrete
         {
             var result = new Result();
 
-            var noteInDatabase = await _context.PrivateNotes.FindAsync(coachId, coachId);
+            var noteInDatabase = await _context.PrivateNotes.FindAsync(coachId, clientId);
 
             if (noteInDatabase != null)
             {

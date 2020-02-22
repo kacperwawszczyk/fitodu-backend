@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduledo.Model.Entities;
 using Scheduledo.Service.Abstract;
+using System.IdentityModel.Tokens.Jwt;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Scheduledo.Api.Controllers
 {
@@ -24,23 +27,24 @@ namespace Scheduledo.Api.Controllers
 
         //all private notes of a coach
         [HttpGet("allNotes/{id}")]
+        [Authorize]
         //[AuthorizePolicy(UserRole.Coach)]
         //[ProducesResponseType(typeof(ICollection<PrivateNote>), 200)]
-        public async Task<List<PrivateNote>> GetAllNotes(string id)
+        public async Task<IActionResult> GetAllNotes(string coachId)
         {
 
-            var result = await _privateNoteService.GetAllNotes(id);
-            return result;
+            var result = await _privateNoteService.GetAllNotes(coachId);
+            return GetResult(result);
         }
 
         //all private notes of a coach's client
         [HttpGet("allNotes/{coachId}/{clientId}")]
         //[AuthorizePolicy(UserRole.Coach)]
         //[ProducesResponseType(PrivateNote), 200)]
-        public async Task<PrivateNote> GetUsersNote(string coachId, string clientId)
+        public async Task<IActionResult> GetUsersNote(string coachId, string clientId)
         {
             var result = await _privateNoteService.GetClientsNote(coachId, clientId);
-            return result;
+            return GetResult(result);
         }
 
         [HttpPost]

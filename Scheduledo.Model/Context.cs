@@ -16,6 +16,8 @@ namespace Scheduledo.Model
 
         public DbSet<PrivateNote> PrivateNotes { get; set; }
 
+        public DbSet<Coach> Coach { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
