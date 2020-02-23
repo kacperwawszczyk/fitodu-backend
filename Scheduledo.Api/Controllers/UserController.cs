@@ -11,10 +11,12 @@ namespace Scheduledo.Api.Controllers
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
+        private readonly ITokenService _tokenService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, ITokenService tokenService)
         {
             _userService = userService;
+            _tokenService = tokenService;
         }
 
         //[HttpGet("users")]
@@ -56,9 +58,9 @@ namespace Scheduledo.Api.Controllers
         //}
 
         [HttpPost("users/CoachRegister")]
-        public async Task<IActionResult> CoachRegister([FromBody]RegisterUserInput model)
+        public async Task<IActionResult> CoachRegister([FromBody]RegisterCoachInput model)
         {
-            var result = await _userService.Register(model);
+            var result = await _userService.CoachRegister(model);
             return GetResult(result);
         }
 

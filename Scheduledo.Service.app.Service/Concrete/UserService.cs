@@ -130,7 +130,7 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result> Register(RegisterUserInput model)
+        public async Task<Result> CoachRegister(RegisterCoachInput model)
         {
             var result = new Result();
 
@@ -622,7 +622,7 @@ namespace Scheduledo.Service.Concrete
             }
 
             var encodedToken = WebUtility.UrlEncode(user.ResetToken);
-            var url = $"{_configuration["Environment:ClientUrl"]}/reset?id={user.Id}&token={encodedToken}";
+            var url = $"{_configuration["Environment:ClientUrl"]}/auth/reset?id={user.Id}&token={encodedToken}";
 
             var model = new EmailInput()
             {

@@ -10,8 +10,8 @@ using Scheduledo.Model;
 namespace Scheduledo.Model.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20200221184032_FixForMaximumModel")]
-    partial class FixForMaximumModel
+    [Migration("20200222203330_FixForMaximumsPrimaryKeyRemoveColumns")]
+    partial class FixForMaximumsPrimaryKeyRemoveColumns
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -327,20 +327,17 @@ namespace Scheduledo.Model.Migrations
 
             modelBuilder.Entity("Scheduledo.Model.Entities.Exercise", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("IdCoach")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("CoachId");
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("IdCoach");
-
                     b.Property<string>("Name")
                         .HasMaxLength(30);
 
-                    b.HasKey("Id");
+                    b.HasKey("IdCoach");
 
                     b.HasIndex("CoachId");
 
@@ -349,15 +346,14 @@ namespace Scheduledo.Model.Migrations
 
             modelBuilder.Entity("Scheduledo.Model.Entities.Maximum", b =>
                 {
-                    b.Property<int>("IdExercise");
-
-                    b.Property<string>("IdClient");
+                    b.Property<string>("IdClient")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClientId");
 
                     b.Property<string>("Max");
 
-                    b.HasKey("IdExercise", "IdClient");
+                    b.HasKey("IdClient");
 
                     b.HasIndex("ClientId");
 

@@ -10,8 +10,8 @@ using Scheduledo.Model;
 namespace Scheduledo.Model.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20200221185019_FixForMaximumModel2")]
-    partial class FixForMaximumModel2
+    [Migration("20200222203458_FixForMaximumsPrimaryKeyAddColumns")]
+    partial class FixForMaximumsPrimaryKeyAddColumns
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

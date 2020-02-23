@@ -6,6 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200221184032_FixForMaximumModel.cs" />
+    <Compile Remove="Migrations\20200221184032_FixForMaximumModel.Designer.cs" />
+    <Compile Remove="Migrations\20200221185019_FixForMaximumModel2.cs" />
+    <Compile Remove="Migrations\20200221185019_FixForMaximumModel2.Designer.cs" />
+    <Compile Remove="Migrations\20200222202628_FixForMaximumsPrimaryKey.cs" />
+    <Compile Remove="Migrations\20200222202628_FixForMaximumsPrimaryKey.Designer.cs" />
+    <Compile Remove="Migrations\20200222202929_FixForMaximumsPrimaryKey.cs" />
+    <Compile Remove="Migrations\20200222202929_FixForMaximumsPrimaryKey.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Extensions\" />
     <Folder Include="Configurations\" />
   </ItemGroup>

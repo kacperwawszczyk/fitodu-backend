@@ -2,10 +2,11 @@
 
 namespace Scheduledo.Service.Models
 {
-    public class RegisterUserInput
+    public class RegisterCoachInput
     {
         [Required(AllowEmptyStrings = false, ErrorMessage = "RequiredError")]
         public string Name { get; set; }
+        [Required(AllowEmptyStrings = false, ErrorMessage = "RequiredError")]
         public string Surname { get; set; }
 
         //[Required(AllowEmptyStrings = false, ErrorMessage = "RequiredError")]
