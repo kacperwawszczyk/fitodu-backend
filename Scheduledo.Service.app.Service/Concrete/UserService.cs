@@ -215,55 +215,6 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result> DummyClientRegister(string CoachId, RegisterDummyClientInput model)
-        {
-            var result = new Result();
-
-            var newClient = new Client
-            {
-                Name = model.Name,
-                Surname = model.Surname,
-                Id = Guid.NewGuid().ToString()
-            };
-
-            using(var transaction = _context.Database.BeginTransaction())
-            {
-                var addClientResult = await _context.Clients.AddAsync(newClient);
-
-                if (addClientResult.State != EntityState.Added)
-                {
-                    transaction.Rollback();
-
-                    result.Error = ErrorType.InternalServerError;
-
-                    return result;
-                }
-
-                var coachClient = new CoachClient
-                {
-                    IdCoach = CoachId,
-                    IdClient = newClient.Id
-                };
-
-                var addCoachClientResult = await _context.CoachClients.AddAsync(coachClient);
-
-                if(addCoachClientResult.State != EntityState.Added)
-                {
-                    transaction.Rollback();
-
-                    result.Error = ErrorType.InternalServerError;
-
-                    return result;
-                }
-
-                _context.SaveChanges();
-
-                transaction.Commit();
-
-            }
-            return result;
-        }
-
         //public async Task<Result<string>> Create(CreateUserInput model)
         //{
         //    var result = new Result<string>();

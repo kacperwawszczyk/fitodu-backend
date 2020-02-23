@@ -64,15 +64,6 @@ namespace Scheduledo.Api.Controllers
             return GetResult(result);
         }
 
-        [AuthorizePolicy(UserRole.Coach)]
-        [HttpPost("users/DummyClientRegister")]
-        public async Task<IActionResult> DummyClientRegister([FromHeader] string Authorization, [FromBody]RegisterDummyClientInput model)
-        {
-            var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
-            var result = await _userService.DummyClientRegister(CoachId.Data, model);
-            return GetResult(result);
-        }
-
         //[HttpPost("users")]
         //[AuthorizePolicy(UserRole.CompanyAdmin)]
         //[ProducesResponseType(typeof(string), 200)]
