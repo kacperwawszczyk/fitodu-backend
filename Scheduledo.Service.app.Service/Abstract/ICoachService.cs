@@ -10,7 +10,7 @@ namespace Scheduledo.Service.Abstract
 {
     public interface ICoachService
     {
-        Task<Result<List<UpdateCoachInput>>> GetAllCoaches();
+        Task<Result<List<Coach>>> GetAllCoaches();
         Task<Result<Coach>> GetCoach(string id);
         //Task<Result> RegisterCoach(Coach coach);
 
