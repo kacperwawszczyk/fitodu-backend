@@ -41,9 +41,9 @@ namespace Scheduledo.Service.Concrete
             _mapper = mapper;
         }
 
-        public async Task<Result<List<Coach>>> GetAllCoaches()
+        public async Task<Result<List<UpdateCoachInput>>> GetAllCoaches()
         {
-            var result = new Result<List<Coach>>();
+            var result = new Result<List<UpdateCoachInput>>();
             var coaches = await _context.Coaches.ToListAsync();
             if(coaches == null)
             {
@@ -51,7 +51,23 @@ namespace Scheduledo.Service.Concrete
                 result.ErrorMessage = "No coaches found";
                 return result;
             }
-            result.Data = coaches;
+            var coachesResult = new List<UpdateCoachInput>();
+            foreach (Coach c in coaches)
+            {
+                UpdateCoachInput nc = new UpdateCoachInput();
+                nc.AddressCity = c.AddressCity;
+                nc.AddressCountry = c.AddressCountry;
+                nc.AddressLine1 = c.AddressLine1;
+                nc.AddressLine2 = c.AddressLine2;
+                nc.AddressPostalCode = c.AddressPostalCode;
+                nc.AddressState = c.AddressState;
+                nc.Name = c.Name;
+                nc.Rules = c.Rules;
+                nc.Surname = c.Surname;
+                nc.TimeToResign = c.TimeToResign;
+                coachesResult.Add(nc);
+            }
+            result.Data = coachesResult;
             return result;
         }
 

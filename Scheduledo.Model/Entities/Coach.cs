@@ -38,5 +38,11 @@ namespace Scheduledo.Model.Entities
         public virtual ICollection<PlannedTraining> PlannedTrainings { get; set; }
         public virtual ICollection<Training> Trainings { get; set; }
         public virtual ICollection<WorkTime> WorkTimes { get; set; }
+
+        public Coach()
+        {
+            CreatedOn = DateTime.UtcNow;
+            UpdatedOn = DateTime.UtcNow;
+        }
     }
 }

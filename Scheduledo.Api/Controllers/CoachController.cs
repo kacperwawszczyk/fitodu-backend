@@ -27,7 +27,7 @@ namespace Scheduledo.Api.Controllers
         }
 
         [HttpGet("allCoaches")]
-        public async Task<Result<List<Coach>>> GetAllCoaches()
+        public async Task<Result<List<UpdateCoachInput>>> GetAllCoaches()
         {
             var result = await _coachService.GetAllCoaches();
             return result;

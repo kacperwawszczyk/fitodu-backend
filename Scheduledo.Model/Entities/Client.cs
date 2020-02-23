@@ -37,5 +37,11 @@ namespace Scheduledo.Model.Entities
         public virtual ICollection<PublicNote> PublicNotes { get; set; }
         public virtual ICollection<Training> Trainings { get; set; }
 
+        public Client()
+        {
+            CreatedOn = DateTime.UtcNow;
+            UpdatedOn = DateTime.UtcNow;
+        }
+
     }
 }
