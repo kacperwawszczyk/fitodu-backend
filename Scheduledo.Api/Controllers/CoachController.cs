@@ -27,9 +27,10 @@ namespace Scheduledo.Api.Controllers
         }
 
         [HttpGet("allCoaches")]
-        public async Task<Result<List<UpdateCoachInput>>> GetAllCoaches()
+        public async Task<Result<ICollection<UpdateCoachInput>>> GetAllCoaches()
         {
-            var result = await _coachService.GetAllCoaches();
+            var result = new Result<ICollection<UpdateCoachInput>>();
+            result = await _coachService.GetAllCoaches();
             return result;
         }
 
@@ -55,16 +56,21 @@ namespace Scheduledo.Api.Controllers
         public async Task<IActionResult> UpdateCoach([FromHeader] string Authorization, [FromBody] UpdateCoachInput coach)
         {
             var coachId = await _tokenService.GetRequesterCoachId(Authorization);
-            if (coachId.Data == null)
-            {
-                return BadRequest();
-            }
-            else
-            {
-                string Id = coachId.Data;
-                var result = await _coachService.UpdateCoach(Id, coach);
-                return GetResult(result);
-            }
+            string Id = coachId.Data;
+            var result = await _coachService.UpdateCoach(Id, coach);
+            return GetResult(result);
+
+        }
+
+        [HttpGet("myClients")]
+        [Authorize]
+        public async Task<Result<ICollection<UpdateClientInput>>> GetAllClients([FromHeader] string Authorization)
+        {
+            var coachId = await _tokenService.GetRequesterCoachId(Authorization);
+            var result = new Result<ICollection<UpdateClientInput>>();
+            string Id = coachId.Data;
+            result = await _coachService.GetAllClients(Id);
+            return result;
         }
 
 
