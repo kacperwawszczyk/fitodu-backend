@@ -50,6 +50,13 @@ namespace Scheduledo.Service.Concrete
                 return result;
             }
 
+            if (exist.ExpiresOn < DateTime.Now)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Code expired";
+                return result;
+            }
+
             var client = await _context.Clients.Where(x => x.Id == model.Id).FirstOrDefaultAsync();
 
             if (client == null)
@@ -192,6 +199,13 @@ namespace Scheduledo.Service.Concrete
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Invalid token";
+                return result;
+            }
+
+            if(creationToken.ExpiresOn < DateTime.Now)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Code expired";
                 return result;
             }
 
