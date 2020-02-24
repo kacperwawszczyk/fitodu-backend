@@ -26,10 +26,10 @@ namespace Scheduledo.Service.Concrete
             _mapper = mapper;
         }
 
-        public async Task <Result<List<PublicNote>>> GetAllNotes(string coachId)
+        public async Task <Result<ICollection<PublicNote>>> GetAllNotes(string coachId)
         {
 
-            var result = new Result<List<PublicNote>>();
+            var result = new Result<ICollection<PublicNote>>();
 
             var notes = await _context.PublicNotes.Where(x => x.IdCoach == coachId)
                                                   .ToListAsync();
