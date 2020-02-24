@@ -41,9 +41,9 @@ namespace Scheduledo.Service.Concrete
             _mapper = mapper;
         }
 
-        public async Task<Result<List<Coach>>> GetAllCoaches()
+        public async Task<Result<ICollection<UpdateCoachInput>>> GetAllCoaches()
         {
-            var result = new Result<List<Coach>>();
+            var result = new Result<ICollection<UpdateCoachInput>>();
             var coaches = await _context.Coaches.ToListAsync();
             if(coaches == null)
             {
@@ -51,13 +51,29 @@ namespace Scheduledo.Service.Concrete
                 result.ErrorMessage = "No coaches found";
                 return result;
             }
-            result.Data = coaches;
+            var coachesResult = new List<UpdateCoachInput>();
+            foreach (Coach c in coaches)
+            {
+                UpdateCoachInput nc = new UpdateCoachInput();
+                nc.AddressCity = c.AddressCity;
+                nc.AddressCountry = c.AddressCountry;
+                nc.AddressLine1 = c.AddressLine1;
+                nc.AddressLine2 = c.AddressLine2;
+                nc.AddressPostalCode = c.AddressPostalCode;
+                nc.AddressState = c.AddressState;
+                nc.Name = c.Name;
+                nc.Rules = c.Rules;
+                nc.Surname = c.Surname;
+                nc.TimeToResign = c.TimeToResign;
+                coachesResult.Add(nc);
+            }
+            result.Data = coachesResult;
             return result;
         }
 
-        public async Task<Result<Coach>> GetCoach(string Id)
+        public async Task<Result<UpdateCoachInput>> GetCoach(string Id)
         {
-            var result = new Result<Coach>();
+            var result = new Result<UpdateCoachInput>();
             var coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
             if (coach == null)
             {
@@ -66,7 +82,18 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
-                result.Data = coach;
+                UpdateCoachInput nc = new UpdateCoachInput();
+                nc.AddressCity = coach.AddressCity;
+                nc.AddressCountry = coach.AddressCountry;
+                nc.AddressLine1 = coach.AddressLine1;
+                nc.AddressLine2 = coach.AddressLine2;
+                nc.AddressPostalCode = coach.AddressPostalCode;
+                nc.AddressState = coach.AddressState;
+                nc.Name = coach.Name;
+                nc.Rules = coach.Rules;
+                nc.Surname = coach.Surname;
+                nc.TimeToResign = coach.TimeToResign;
+                result.Data = nc;
                 return result;
             }
         }
@@ -85,30 +112,12 @@ namespace Scheduledo.Service.Concrete
             var result = new Result();
             var coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
 
-            if (!String.IsNullOrEmpty(coachNew.Name))
-            {
-                coach.Name = coachNew.Name;
-            }
-            if (!String.IsNullOrEmpty(coachNew.Surname))
-            {
-                coach.Surname = coachNew.Surname;
-            }
-            if (!String.IsNullOrEmpty(coachNew.TimeToResign))
-            {
-                coach.TimeToResign = coachNew.TimeToResign;
-            }
-            if(!String.IsNullOrEmpty(coachNew.AddressCity))
-            {
-                coach.AddressCity = coachNew.AddressCity;
-            }
-            if(!String.IsNullOrEmpty(coachNew.AddressCountry))
-            {
-                coach.AddressCountry = coachNew.AddressCountry;
-            }
-            if(!String.IsNullOrEmpty(coachNew.AddressPostalCode))
-            {
-                coach.AddressPostalCode = coachNew.AddressPostalCode;
-            }
+            coach.Name = coachNew.Name;
+            coach.Surname = coachNew.Surname;
+            coach.TimeToResign = coachNew.TimeToResign;
+            coach.AddressCity = coachNew.AddressCity;
+            coach.AddressCountry = coachNew.AddressCountry;
+            coach.AddressPostalCode = coachNew.AddressPostalCode;
             coach.Rules = coachNew.Rules;
             coach.AddressLine1 = coachNew.AddressLine1;
             coach.AddressLine2 = coachNew.AddressLine2;
@@ -129,6 +138,45 @@ namespace Scheduledo.Service.Concrete
                     transaction.Rollback();
                 }
             }
+            return result;
+        }
+
+        public async Task<Result<ICollection<UpdateClientInput>>> GetAllClients(string Id)
+        {
+            var result = new Result<ICollection<UpdateClientInput>>();
+            Coach coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
+            if(coach == null)
+            {
+                result.Error = ErrorType.NoContent;
+                result.ErrorMessage = "No coach found";
+                return result;
+            }
+            List<CoachClient> coachClients = await _context.CoachClients.Where(x => x.IdCoach == Id).ToListAsync();
+            if(coachClients.Count == 0)
+            {
+                result.Error = ErrorType.NoContent;
+                result.ErrorMessage = "No clients found";
+                return result;
+            }
+            List<UpdateClientInput> clients = new List<UpdateClientInput>();
+            foreach(var x in coachClients)
+            {
+                Client client = await _context.Clients.FirstOrDefaultAsync(z => z.Id == x.IdClient);
+                UpdateClientInput nClient = new UpdateClientInput();
+                nClient.AddressCity = client.AddressCity;
+                nClient.AddressCountry = client.AddressCountry;
+                nClient.AddressLine1 = client.AddressLine1;
+                nClient.AddressLine2 = client.AddressLine2;
+                nClient.AddressPostalCode = client.AddressPostalCode;
+                nClient.AddressState = client.AddressState;
+                nClient.FatPercentage = client.FatPercentage;
+                nClient.Height = client.Height;
+                nClient.Name = client.Name;
+                nClient.Surname = client.Surname;
+                nClient.Weight = client.Weight;
+                clients.Add(nClient);
+            }
+            result.Data = clients;
             return result;
         }
     }
