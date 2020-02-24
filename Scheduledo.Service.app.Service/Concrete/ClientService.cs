@@ -57,6 +57,8 @@ namespace Scheduledo.Service.Concrete
                 return result;
             }
 
+            client.IsRegistered = true;
+
             var user = new User
             {
                 Role = UserRole.Client,
@@ -93,7 +95,21 @@ namespace Scheduledo.Service.Concrete
                     return result;
                 }
 
-                _context.SaveChanges();
+                var updateRegisteredStatus = _context.Clients.Update(client);
+
+                if(updateRegisteredStatus.State != EntityState.Modified)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+
+                if(await _context.SaveChangesAsync() <= 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
 
                 transaction.Commit();
             }
@@ -109,7 +125,8 @@ namespace Scheduledo.Service.Concrete
             {
                 Name = model.Name,
                 Surname = model.Surname,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid().ToString(),
+                IsRegistered = false
             };
 
             using (var transaction = _context.Database.BeginTransaction())

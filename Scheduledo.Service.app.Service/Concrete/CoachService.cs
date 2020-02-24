@@ -141,9 +141,9 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result<ICollection<UpdateClientInput>>> GetAllClients(string Id)
+        public async Task<Result<ICollection<ClientOutput>>> GetAllClients(string Id)
         {
-            var result = new Result<ICollection<UpdateClientInput>>();
+            var result = new Result<ICollection<ClientOutput>>();
             Coach coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
             if(coach == null)
             {
@@ -158,11 +158,11 @@ namespace Scheduledo.Service.Concrete
                 result.ErrorMessage = "No clients found";
                 return result;
             }
-            List<UpdateClientInput> clients = new List<UpdateClientInput>();
+            List<ClientOutput> clients = new List<ClientOutput>();
             foreach(var x in coachClients)
             {
                 Client client = await _context.Clients.FirstOrDefaultAsync(z => z.Id == x.IdClient);
-                UpdateClientInput nClient = new UpdateClientInput();
+                ClientOutput nClient = new ClientOutput();
                 nClient.AddressCity = client.AddressCity;
                 nClient.AddressCountry = client.AddressCountry;
                 nClient.AddressLine1 = client.AddressLine1;
@@ -174,6 +174,8 @@ namespace Scheduledo.Service.Concrete
                 nClient.Name = client.Name;
                 nClient.Surname = client.Surname;
                 nClient.Weight = client.Weight;
+                nClient.Id = client.Id;
+                nClient.IsRegistered = client.IsRegistered;
                 clients.Add(nClient);
             }
             result.Data = clients;

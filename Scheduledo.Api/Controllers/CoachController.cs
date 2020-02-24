@@ -64,10 +64,10 @@ namespace Scheduledo.Api.Controllers
 
         [HttpGet("myClients")]
         [Authorize]
-        public async Task<Result<ICollection<UpdateClientInput>>> GetAllClients([FromHeader] string Authorization)
+        public async Task<Result<ICollection<ClientOutput>>> GetAllClients([FromHeader] string Authorization)
         {
             var coachId = await _tokenService.GetRequesterCoachId(Authorization);
-            var result = new Result<ICollection<UpdateClientInput>>();
+            var result = new Result<ICollection<ClientOutput>>();
             string Id = coachId.Data;
             result = await _coachService.GetAllClients(Id);
             return result;
