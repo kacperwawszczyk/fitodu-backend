@@ -12,5 +12,7 @@ namespace Scheduledo.Service.Abstract
     {
         Task<Result<ICollection<Exercise>>> GetAllExercises(string coachId);
         Task<Result> CreateExercise(ExerciseInput exercise);
+        Task<Result> EditExercise(Exercise exercise);
+        Task<Result> DeleteExercise(Exercise exercise);
     }
 }

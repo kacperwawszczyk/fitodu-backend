@@ -76,5 +76,84 @@ namespace Scheduledo.Service.Concrete
             }
             return result;
         }
+
+        public async Task<Result> EditExercise(Exercise exercise)
+        {
+            var result = new Result();
+
+            if(exercise == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                return result;
+            }
+
+            Exercise existingExercise = await _context.Exercises
+                .Where(x => x.Id == exercise.Id && x.IdCoach == exercise.IdCoach)
+                .FirstOrDefaultAsync();
+
+            if (existingExercise == null) //this coach does not have an exercise with that Id
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "this coach does not have an exercise with given Id";
+                return result;
+            }
+            else
+            {
+                existingExercise.Name = exercise.Name;
+                existingExercise.Description = exercise.Description;
+                try
+                {
+                    if (await _context.SaveChangesAsync() > 0)
+                    {
+                        result = new Result(true);
+                    }
+                    return result;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    result.Error = ErrorType.InternalServerError; //może być co innego, może dodać nowy?
+                    return result;
+                }
+            }
+        }
+
+        public async Task<Result> DeleteExercise(Exercise exercise)
+        {
+            var result = new Result();
+
+            if (exercise == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                return result;
+            }
+
+            Exercise existingExercise = await _context.Exercises
+                .Where(x => x.Id == exercise.Id && x.IdCoach == exercise.IdCoach)
+                .FirstOrDefaultAsync();
+
+            if (existingExercise == null) //this coach does not have an exercise with that Id
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "this coach does not have an exercise with given Id";
+                return result;
+            }
+            else
+            {
+                _context.Exercises.Remove(existingExercise);
+                try
+                {
+                    if (await _context.SaveChangesAsync() > 0)
+                    {
+                        result = new Result(true);
+                    }
+                    return result;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    result.Error = ErrorType.InternalServerError; //może być co innego, może dodać nowy?
+                    return result;
+                }
+            }
+        }
     }
 }

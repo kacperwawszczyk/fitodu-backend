@@ -26,7 +26,7 @@ namespace Scheduledo.Api.Controllers
         }
 
 
-        [HttpGet("allNotes")]
+        [HttpGet("allExercises")]
         [Authorize]
         //[AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> GetAllExercises([FromHeader]string Authorization) //all exercises of a coach
@@ -62,6 +62,33 @@ namespace Scheduledo.Api.Controllers
             return GetResult(result);
         }
 
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> EditExercise([FromHeader]string Authorization, [FromBody]Exercise exercise)
+        {
+            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
 
+            if (exercise == null || exercise.IdCoach != coachIdResult.Data)
+            {
+                return BadRequest();
+            }
+
+            var result = await _exerciseService.EditExercise(exercise);
+            return GetResult(result);
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeleteExercise([FromHeader]string Authorization, [FromBody]Exercise exercise)
+        {
+            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
+
+            if (exercise == null || exercise.IdCoach != coachIdResult.Data)
+            {
+                return BadRequest();
+            }
+            var result = await _exerciseService.DeleteExercise(exercise);
+            return GetResult(result);
+        }
     }
 }
