@@ -11,6 +11,8 @@ namespace Scheduledo.Service.Abstract
 	{
 		Task<Result> DummyClientRegister(string CoachId, RegisterDummyClientInput model);
 		Task<Result> CreateClientAccount(RegisterClientInput model);
+		Task<Result> SelfCreateClientAccount(SelfRegisterClientInput model);
 		Task<Result> SendCreationLinkToClient(string CoachId, CreateClientVerificationTokenInput model);
+		Task<Result> SendSelfCreationLinkToClient(string CoachId, CreateSelfClientVerificationTokenInput model);
 	}
 }

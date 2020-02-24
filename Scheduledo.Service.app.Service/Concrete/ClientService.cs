@@ -46,6 +46,7 @@ namespace Scheduledo.Service.Concrete
             if(exist == null)
             {
                 result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Invalid verification code";
                 return result;
             }
 
@@ -54,6 +55,7 @@ namespace Scheduledo.Service.Concrete
             if (client == null)
             {
                 result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Invalid User";
                 return result;
             }
 
@@ -83,6 +85,7 @@ namespace Scheduledo.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot create User";
                     return result;
                 }
 
@@ -92,6 +95,7 @@ namespace Scheduledo.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot add User to role.";
                     return result;
                 }
 
@@ -101,6 +105,7 @@ namespace Scheduledo.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot update Client register state";
                     return result;
                 }
 
@@ -108,6 +113,7 @@ namespace Scheduledo.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot save changes";
                     return result;
                 }
 
@@ -121,6 +127,15 @@ namespace Scheduledo.Service.Concrete
         {
             var result = new Result();
 
+            var coach = await _context.Coaches.Where(x => x.Id == CoachId).FirstOrDefaultAsync();
+
+            if(coach == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Coach doesn't exist";
+                return result;
+            }
+            
             var newClient = new Client
             {
                 Name = model.Name,
@@ -138,7 +153,7 @@ namespace Scheduledo.Service.Concrete
                     transaction.Rollback();
 
                     result.Error = ErrorType.InternalServerError;
-
+                    result.ErrorMessage = "Cannot create client";
                     return result;
                 }
 
@@ -155,7 +170,7 @@ namespace Scheduledo.Service.Concrete
                     transaction.Rollback();
 
                     result.Error = ErrorType.InternalServerError;
-
+                    result.ErrorMessage = "Cannot add Client to Coach";
                     return result;
                 }
 
@@ -165,6 +180,115 @@ namespace Scheduledo.Service.Concrete
 
             }
             return result;
+        }
+
+        public async Task<Result> SelfCreateClientAccount(SelfRegisterClientInput model)
+        {
+            var result = new Result();
+
+            var creationToken = await _context.CreateClientTokens.Where(x => x.Token == model.Token).FirstOrDefaultAsync();
+
+            if(creationToken == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Invalid token";
+                return result;
+            }
+
+            var coach = await _context.Coaches.Where(x => x.Id == model.IdCoach).FirstOrDefaultAsync();
+
+            if(coach == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Coach doesn't exist";
+                return result;
+            }
+
+            var newClient = new Client
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = model.Name,
+                Surname = model.Surname,
+                IsRegistered = true
+            };
+
+            var newUser = new User
+            {
+                Id = newClient.Id,
+                Role = UserRole.Client,
+                FullName = $"{model.Name} {model.Surname}",
+                Email = model.Email,
+                UserName = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                Company = new Company()
+                {
+                    Plan = PricingPlan.Trial,
+                    PlanExpiredOn = _dateTimeService.Now().AddDays(30)
+                }
+            };
+
+            newUser.SetCredentials(model.Password);
+
+            var coachClient = new CoachClient
+            {
+                IdClient = newClient.Id,
+                IdCoach = model.IdCoach
+            };
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                var createResult = await _userManager.CreateAsync(newUser);
+                if (!createResult.Succeeded)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot create User.";
+                    return result;
+                }
+
+                var addToRoleResult = await _userManager.AddToRoleAsync(newUser, newUser.Role.GetName());
+
+                if (!addToRoleResult.Succeeded)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot add User to role.";
+                    return result;
+                }
+
+                var createClient = await _context.Clients.AddAsync(newClient);
+
+                if (createClient.State != EntityState.Added)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot create Client.";
+                    return result;
+                }
+
+                var addCoachClient = await _context.CoachClients.AddAsync(coachClient);
+
+                if(addCoachClient.State != EntityState.Added)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot add Client to Coach.";
+                    return result;
+                }
+
+                if (await _context.SaveChangesAsync() <= 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot save changes";
+                    return result;
+                }
+
+                transaction.Commit();
+            }
+
+            return result;
+
         }
 
         public async Task<Result> SendCreationLinkToClient(string CoachId, CreateClientVerificationTokenInput model)
@@ -209,9 +333,8 @@ namespace Scheduledo.Service.Concrete
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Issuer"],
                 claims,
-                expires: expires);
-            //,
-            //    signingCredentials: credentials);
+                expires: expires,
+                signingCredentials: credentials);
 
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
@@ -231,7 +354,7 @@ namespace Scheduledo.Service.Concrete
                     transaction.Rollback();
 
                     result.Error = ErrorType.InternalServerError;
-
+                    result.ErrorMessage = "Cannot create token";
                     return result;
                 }
 
@@ -257,6 +380,80 @@ namespace Scheduledo.Service.Concrete
             if(response.Code != HttpStatusCode.Accepted && response.Code != HttpStatusCode.OK)
             {
                 result.Error = ErrorType.InternalServerError;
+                result.ErrorMessage = "Cannot send email.";
+            }
+
+            return result;
+        }
+
+        public async Task<Result> SendSelfCreationLinkToClient(string CoachId, CreateSelfClientVerificationTokenInput model)
+        {
+            var result = new Result();
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "noId"),
+                new Claim(ClaimTypes.Role, UserRole.Client.GetName()),
+                new Claim(ClaimTypes.Name, "noName")
+            };
+
+            var expires = _dateTimeService.Now().AddMinutes(30);
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var jwtSecurityToken = new JwtSecurityToken(
+                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Issuer"],
+                claims,
+                expires: expires,
+                signingCredentials: credentials);
+
+            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+
+            var createClientToken = new CreateClientToken
+            {
+                UserId = "noId",
+                Token = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken),
+                ExpiresOn = _dateTimeService.Now().AddMinutes(30)
+            };
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                var addTokenResult = await _context.CreateClientTokens.AddAsync(createClientToken);
+
+                if (addTokenResult.State != EntityState.Added)
+                {
+                    transaction.Rollback();
+
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot create token.";
+                    return result;
+                }
+
+                await _context.SaveChangesAsync();
+
+                transaction.Commit();
+            }
+
+            var encodedToken = WebUtility.UrlEncode(jwtSecurityTokenHandler.WriteToken(jwtSecurityToken));
+            var url = $"{_configuration["Environment:ClientUrl"]}/auth/clientSelfRegister?token={encodedToken}";
+
+            var message = new EmailInput()
+            {
+                To = model.Email,
+                Subject = Resource.VerifyClientTemplate.VerifyClientSubject,
+                HtmlBody = Resource.VerifyClientTemplate.VerifyClientBody
+            };
+
+            message.HtmlBody = message.HtmlBody.Replace("-fullName-", model.Email).Replace("-url-", url);
+
+            var response = await _emailService.Send(message);
+
+            if (response.Code != HttpStatusCode.Accepted && response.Code != HttpStatusCode.OK)
+            {
+                result.Error = ErrorType.InternalServerError;
+                result.ErrorMessage = "Cannot send email.";
             }
 
             return result;

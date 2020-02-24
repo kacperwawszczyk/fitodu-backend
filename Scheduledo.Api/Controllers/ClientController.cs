@@ -22,28 +22,71 @@ namespace Scheduledo.Api.Controllers
 			_clientService = clientService;
 		}
 
+		/// <summary>
+		/// Coach create dummy Client account.
+		/// </summary>
+		/// <param name="Authorization"></param>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Coach)]
-		[HttpPost("clients/DummyClientRegister")]
+		[HttpPost("clients/dummyregister")]
 		public async Task<IActionResult> DummyClientRegister([FromHeader] string Authorization, [FromBody]RegisterDummyClientInput model)
 		{
 			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
 			var result = await _clientService.DummyClientRegister(CoachId.Data, model);
 			return GetResult(result);
 		}
-
-		[HttpPost("clients/CreateClientAccount")]
+		/// <summary>
+		/// Client create User account from dummy Client account.
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost("clients/create")]
 		public async Task<IActionResult> CreateClientAccount([FromBody]RegisterClientInput model)
 		{
 			var result = await _clientService.CreateClientAccount(model);
 			return GetResult(result);
 		}
 
+		/// <summary>
+		/// Coach send invitation to Client and Client create User account from dummy Client account.
+		/// </summary>
+		/// <param name="Authorization"></param>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Coach)]
-		[HttpPost("clients/SendCreationLinkToClient")]
+		[HttpPost("clients/sendlink")]
 		public async Task<IActionResult> SendCreationLinkToClient([FromHeader] string Authorization, [FromBody]CreateClientVerificationTokenInput model)
 		{
 			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
 			var result = await _clientService.SendCreationLinkToClient(CoachId.Data, model);
+			return GetResult(result);
+		}
+
+		/// <summary>
+		/// Client create User account by self (from invitation from Coach)
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost("clients/selfcreateaccount")]
+		public async Task<IActionResult> SelfCreateClientAccount([FromBody]SelfRegisterClientInput model)
+		{
+			var result = await _clientService.SelfCreateClientAccount(model);
+			return GetResult(result);
+		}
+
+		/// <summary>
+		/// Coach send invitation to Client and Client create his User account by self.
+		/// </summary>
+		/// <param name="Authorization"></param>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[AuthorizePolicy(UserRole.Coach)]
+		[HttpPost("clients/selfsendlink")]
+		public async Task<IActionResult> SendSelfCreationLinkToClient([FromHeader] string Authorization, [FromBody]CreateSelfClientVerificationTokenInput model)
+		{
+			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
+			var result = await _clientService.SendSelfCreationLinkToClient(CoachId.Data, model);
 			return GetResult(result);
 		}
 	}
