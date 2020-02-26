@@ -58,6 +58,7 @@ namespace Scheduledo.Service
             services.AddScoped<IPublicNoteService, PublicNoteService>();
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<IExerciseService, ExerciseService>();
+            services.AddScoped<IMaximumService, MaximumService>();
         }
     }
 }
