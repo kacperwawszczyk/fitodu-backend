@@ -16,11 +16,11 @@ namespace Scheduledo.Model.Entities
         [Required]
         [StringLength(30)]
         public string Surname { get; set; }
-        [Column(TypeName = "decimal(3, 2)")]
+        [Column(TypeName = "decimal(5, 2)")]
         public decimal? Weight { get; set; }
-        [Column(TypeName = "decimal(3, 2)")]
+        [Column(TypeName = "decimal(5, 2)")]
         public decimal? Height { get; set; }
-        [Column(TypeName = "decimal(2, 2)")]
+        [Column(TypeName = "decimal(4, 2)")]
         public decimal? FatPercentage { get; set; }
         public string AddressLine1 { get; set; }
         public string AddressLine2 { get; set; }

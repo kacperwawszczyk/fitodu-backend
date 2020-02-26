@@ -23,7 +23,7 @@ namespace Scheduledo.Api.Controllers
 		}
 
 		/// <summary>
-		/// Coach create dummy Client account.
+		/// Used by Coach to create dummy Client account.
 		/// </summary>
 		/// <param name="Authorization"></param>
 		/// <param name="model"></param>
@@ -37,7 +37,7 @@ namespace Scheduledo.Api.Controllers
 			return GetResult(result);
 		}
 		/// <summary>
-		/// Client create User account from dummy Client account.
+		/// Used by Client to create User account from dummy Client account.
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
@@ -49,7 +49,7 @@ namespace Scheduledo.Api.Controllers
 		}
 
 		/// <summary>
-		/// Coach send invitation to Client and Client create User account from dummy Client account.
+		/// Used by Coach to send invitation to Client and by Client to create User account from dummy Client account.
 		/// </summary>
 		/// <param name="Authorization"></param>
 		/// <param name="model"></param>
@@ -64,7 +64,7 @@ namespace Scheduledo.Api.Controllers
 		}
 
 		/// <summary>
-		/// Client create User account by self (from invitation from Coach)
+		/// Used by Client to create User account by oneself (from invitation from Coach)
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
@@ -76,7 +76,7 @@ namespace Scheduledo.Api.Controllers
 		}
 
 		/// <summary>
-		/// Coach send invitation to Client and Client create his User account by self.
+		/// Used by Coach to send invitation to Client and by Client to create his User account by oneself.
 		/// </summary>
 		/// <param name="Authorization"></param>
 		/// <param name="model"></param>
@@ -87,6 +87,46 @@ namespace Scheduledo.Api.Controllers
 		{
 			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
 			var result = await _clientService.SendSelfCreationLinkToClient(CoachId.Data, model);
+			return GetResult(result);
+		}
+		/// <summary>
+		/// Used by Client to get information about oneself.
+		/// </summary>
+		/// <param name="Authorization"></param>
+		/// <returns></returns>
+		[AuthorizePolicy(UserRole.Client)]
+		[HttpGet("clients/me")]
+		public async Task<IActionResult> GetClient([FromHeader] string Authorization)
+		{
+			var clientId = await _tokenService.GetRequesterClientId(Authorization);
+			var result = await _clientService.GetClient(clientId.Data);
+			return GetResult(result);
+		}
+		/// <summary>
+		/// Used by Client to update information about onself.
+		/// </summary>
+		/// <param name="Authorization"></param>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[AuthorizePolicy(UserRole.Client)]
+		[HttpPut("clients/update")]
+		public async Task<IActionResult> UpdateClient([FromHeader] string Authorization, [FromBody] UpdateClientInput model)
+		{
+			var clientId = await _tokenService.GetRequesterClientId(Authorization);
+			var result = await _clientService.UpdateClient(clientId.Data, model);
+			return GetResult(result);
+		}
+		/// <summary>
+		/// Used by Client to get information about its Coach.
+		/// </summary>
+		/// <param name="Authorization"></param>
+		/// <returns></returns>
+		[AuthorizePolicy(UserRole.Client)]
+		[HttpGet("clients/myCoach")]
+		public async Task<IActionResult> GetClientCoach([FromHeader] string Authorization)
+		{
+			var clientId = await _tokenService.GetRequesterClientId(Authorization);
+			var result = await _clientService.GetClientCoach(clientId.Data);
 			return GetResult(result);
 		}
 	}

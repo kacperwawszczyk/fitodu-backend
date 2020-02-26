@@ -472,5 +472,104 @@ namespace Scheduledo.Service.Concrete
 
             return result;
         }
+
+        public async Task<Result<ClientOutput>> GetClient(string Id)
+        {
+            Client client = await _context.Clients.Where(x => x.Id == Id).FirstOrDefaultAsync();
+            var result = new Result<ClientOutput>();
+            if(client == null)
+            {
+                result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Client not found";
+                return result;
+            }
+            else
+            {
+                ClientOutput clientOutput = ClientOutput.Convert(client);
+                result.Data = clientOutput;
+                return result;
+            }
+        }
+
+        public async Task<Result> UpdateClient(string Id, UpdateClientInput model)
+        {
+            Client client = await _context.Clients.Where(x => x.Id == Id).FirstOrDefaultAsync();
+            var result = new Result();
+            if (client == null)
+            {
+                result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Client not found";
+                return result;
+            }
+            else
+            {
+                client.Name = model.Name;
+                client.Surname = model.Surname;
+                client.Height = model.Height;
+                client.Weight = model.Weight;
+                client.FatPercentage = model.FatPercentage;
+                client.AddressCity = model.AddressCity;
+                client.AddressCountry = model.AddressCountry;
+                client.AddressLine1 = model.AddressLine1;
+                client.AddressLine2 = model.AddressLine2;
+                client.AddressPostalCode = model.AddressPostalCode;
+                client.AddressState = model.AddressState;
+                client.UpdatedOn = DateTime.UtcNow;
+                using (var transaction = _context.Database.BeginTransaction())
+                {
+                    _context.Update(client);
+                    if(await _context.SaveChangesAsync() <= 0)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        return result;
+                    }
+                    else
+                    {
+                        transaction.Commit();
+                        return result;
+                    }
+                }
+
+            }
+        }
+
+        public async Task<Result<CoachOutput>> GetClientCoach(string Id)
+        {
+            Client client = await _context.Clients.Where(x => x.Id == Id).FirstOrDefaultAsync();
+            var result = new Result<CoachOutput>();
+            if (client == null)
+            {
+                result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Client not found";
+                return result;
+            }
+            else
+            {
+                CoachClient coachClient = await _context.CoachClients.Where(x => Id == x.IdClient).FirstOrDefaultAsync();
+                if (coachClient == null)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "Coach not found";
+                    return result;
+                }
+                else
+                {
+                    Coach coach = await _context.Coaches.Where(x => x.Id == coachClient.IdCoach).FirstOrDefaultAsync();
+                    if (coach == null)
+                    {
+                        result.Error = ErrorType.NotFound;
+                        result.ErrorMessage = "Coach does not exist";
+                        return result;
+                    }
+                    else
+                    {
+                        CoachOutput coachOutput = CoachOutput.GetCoachOutput(coach);
+                        result.Data = coachOutput;
+                        return result;
+                    }
+                }
+            }
+        }
     }
 }
