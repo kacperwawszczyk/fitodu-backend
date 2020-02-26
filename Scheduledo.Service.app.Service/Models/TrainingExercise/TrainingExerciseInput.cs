@@ -4,12 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Scheduledo.Model.Entities
+namespace Scheduledo.Service.Models.TrainingExercise
 {
-    public partial class TrainingExercise
+    public class TrainingExerciseInput
     {
-        [Key]
-        public int IdTrainingExercise { get; set; }
         [Required]
         public int IdExercise { get; set; }
         [Required]
