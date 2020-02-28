@@ -5,9 +5,7 @@ using Scheduledo.Service.Models;
 namespace Scheduledo.Service.Abstract
 {
     public interface IUserService
-    {
-        Task<Result> CoachRegister(RegisterCoachInput model);
-        
+    {    
         //Task<Result<ICollection<UserListItemOutput>>> GetList(string adminId);
         Task<Result<UserOutput>> Get(string userId);
         Task<Result<CompanyOutput>> GetCompany(string userId);

@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Scheduledo.Core.Enums;
+using Scheduledo.Core.Extensions;
 using Scheduledo.Model;
 using Scheduledo.Model.Entities;
+using Scheduledo.Model.Extensions;
 using Scheduledo.Service.Abstract;
 using Scheduledo.Service.Models;
 using System;
@@ -17,28 +21,119 @@ namespace Scheduledo.Service.Concrete
 {
     public class CoachService : ICoachService
     {
-        //private readonly ILogger<UserService> _logger;
+        private readonly ILogger<UserService> _logger;
         private readonly IConfiguration _configuration;
-        //private readonly IDateTimeService _dateTimeService;
+        private readonly IDateTimeService _dateTimeService;
 
         //private readonly SignInManager<User> _signInManager;
-       // private readonly UserManager<User> _userManager;
+        private readonly UserManager<User> _userManager;
 
         private readonly Context _context;
         private readonly IMapper _mapper;
 
         //private readonly IEmailService _emailService;
-        //private readonly IEmailMarketingService _emailMarketingService;
+        private readonly IEmailMarketingService _emailMarketingService;
         //private readonly IBillingService _billingService;
 
         public CoachService(
             IConfiguration configuration,
             Context context,
-            IMapper mapper)
+            IMapper mapper,
+            IDateTimeService dateTimeService,
+            UserManager<User> userManager,
+            IEmailMarketingService emailMarketingService)
         {
             _configuration = configuration;
             _context = context;
             _mapper = mapper;
+            _dateTimeService = dateTimeService;
+            _userManager = userManager;
+            _emailMarketingService = emailMarketingService;
+        }
+
+        public async Task<Result> CoachRegister(RegisterCoachInput model)
+        {
+            var result = new Result();
+
+            var existingUser = await _userManager.FindByNameAsync(model.Email);
+            if (existingUser != null)
+            {
+                result.ErrorMessage = Resource.Validation.EmailTaken;
+                result.Error = ErrorType.BadRequest;
+                return result;
+            }
+
+            //var existingCompany = await _context.Companies.FirstOrDefaultAsync(x => x.Url == model.Url);
+            //if (existingCompany != null)
+            //{
+            //    result.ErrorMessage = Resource.Validation.UrlTaken;
+            //    result.Error = ErrorType.BadRequest;
+            //    return result;
+            //}
+
+            var user = new User();
+            user.Role = UserRole.Coach;
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.PhoneNumber = model.PhoneNumber;
+            user.UserName = model.Email;
+            user.Id = Guid.NewGuid().ToString();
+            user.Company = new Company()
+            {
+                //Url = model.Url,
+                Plan = PricingPlan.Trial,
+                PlanExpiredOn = _dateTimeService.Now().AddDays(30)
+            };
+
+            var coach = new Coach();
+            coach.Id = user.Id;
+            coach.Name = model.Name;
+            coach.Surname = model.Surname;
+
+            user.SetCredentials(model.Password);
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+
+                //var subscribeResult = await _emailMarketingService.Subscribe(user);
+                //if (subscribeResult.Success)
+                //    user.SubscriberId = subscribeResult.Data;
+                //else
+                //    _logger.LogCritical("Can't subscribe to email marketing", user.UserName);
+
+                var addToRoleResult = await _userManager.AddToRoleAsync(user, user.Role.GetName());
+                if (!addToRoleResult.Succeeded)
+                {
+                    transaction.Rollback();
+
+                    var unsubscribeResult = await _emailMarketingService.Unsubscribe(user.SubscriberId);
+                    if (!unsubscribeResult)
+                        _logger.LogCritical("Can't unsubscribe from email marketing", user.UserName);
+
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+
+                var createCoachResult = await _context.Coaches.AddAsync(coach);
+
+                if (createCoachResult.State != EntityState.Added)
+                {
+                    transaction.Rollback();
+
+                }
+                _context.SaveChanges();
+
+                transaction.Commit();
+            }
+
+            return result;
         }
 
         public async Task<Result<ICollection<CoachOutput>>> GetAllCoaches()

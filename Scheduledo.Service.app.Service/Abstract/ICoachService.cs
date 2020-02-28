@@ -13,7 +13,7 @@ namespace Scheduledo.Service.Abstract
         Task<Result<ICollection<CoachOutput>>> GetAllCoaches();
         Task<Result<ICollection<ClientOutput>>> GetAllClients(string Id);
         Task<Result<CoachOutput>> GetCoach(string id);
-        
+        Task<Result> CoachRegister(RegisterCoachInput model);
         Task<Result> UpdateCoach(string Id, UpdateCoachInput coach);
     }
 }

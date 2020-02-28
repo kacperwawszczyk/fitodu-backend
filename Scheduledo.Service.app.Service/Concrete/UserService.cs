@@ -130,90 +130,7 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result> CoachRegister(RegisterCoachInput model)
-        {
-            var result = new Result();
-
-            var existingUser = await _userManager.FindByNameAsync(model.Email);
-            if (existingUser != null)
-            {
-                result.ErrorMessage = Resource.Validation.EmailTaken;
-                result.Error = ErrorType.BadRequest;
-                return result;
-            }
-
-            //var existingCompany = await _context.Companies.FirstOrDefaultAsync(x => x.Url == model.Url);
-            //if (existingCompany != null)
-            //{
-            //    result.ErrorMessage = Resource.Validation.UrlTaken;
-            //    result.Error = ErrorType.BadRequest;
-            //    return result;
-            //}
-
-            var user = new User();
-            user.Role = UserRole.Coach;
-            user.FullName = model.FullName;
-            user.Email = model.Email;
-            user.PhoneNumber = model.PhoneNumber;
-            user.UserName = model.Email;
-            user.Id = Guid.NewGuid().ToString();
-            user.Company = new Company()
-            {
-                //Url = model.Url,
-                Plan = PricingPlan.Trial,
-                PlanExpiredOn = _dateTimeService.Now().AddDays(30)
-            };
-
-            var coach = new Coach();
-            coach.Id = user.Id;
-            coach.Name = model.Name;
-            coach.Surname = model.Surname;
-
-            user.SetCredentials(model.Password);
-
-            using (var transaction = _context.Database.BeginTransaction())
-            {
-                var createResult = await _userManager.CreateAsync(user);
-                if (!createResult.Succeeded)
-                {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    return result;
-                }
-
-                //var subscribeResult = await _emailMarketingService.Subscribe(user);
-                //if (subscribeResult.Success)
-                //    user.SubscriberId = subscribeResult.Data;
-                //else
-                //    _logger.LogCritical("Can't subscribe to email marketing", user.UserName);
-
-                var addToRoleResult = await _userManager.AddToRoleAsync(user, user.Role.GetName());
-                if (!addToRoleResult.Succeeded)
-                {
-                    transaction.Rollback();
-
-                    var unsubscribeResult = await _emailMarketingService.Unsubscribe(user.SubscriberId);
-                    if (!unsubscribeResult)
-                        _logger.LogCritical("Can't unsubscribe from email marketing", user.UserName);
-
-                    result.Error = ErrorType.InternalServerError;
-                    return result;
-                }
-
-                var createCoachResult = await _context.Coaches.AddAsync(coach);
-
-                if (createCoachResult.State != EntityState.Added)
-                {
-                    transaction.Rollback();
-
-                }
-                _context.SaveChanges();
-
-                transaction.Commit();
-            }
-
-            return result;
-        }
+        
 
         //public async Task<Result<string>> Create(CreateUserInput model)
         //{
@@ -497,6 +414,7 @@ namespace Scheduledo.Service.Concrete
         public async Task<Result<TokenOutput>> CreateToken(CreateTokenInput model, bool auth)
         {
             var result = new Result<TokenOutput>();
+            bool firstLogin = false;
 
             var user = await _userManager.FindByNameAsync(model.Email);
             if (user == null)
@@ -504,6 +422,15 @@ namespace Scheduledo.Service.Concrete
                 result.ErrorMessage = Resource.Validation.InvalidGrant;
                 result.Error = ErrorType.BadRequest;
                 return result;
+            }
+
+            if(user.Role == UserRole.Coach)
+            {
+                var coach = await _context.Coaches.Where(x => x.Id == user.Id).FirstOrDefaultAsync();
+                if(coach.TimeToResign == null || coach.TimeToResign == "")
+                {
+                    firstLogin = true;
+                }
             }
 
             if (auth)
@@ -528,7 +455,8 @@ namespace Scheduledo.Service.Concrete
                 Email = user.UserName,
                 Role = user.Role,
                 Plan = user.Company.Plan,
-                PlanExpiredOn = user.Company.PlanExpiredOn
+                PlanExpiredOn = user.Company.PlanExpiredOn,
+                FirstLogin = firstLogin
             };
 
             return result;

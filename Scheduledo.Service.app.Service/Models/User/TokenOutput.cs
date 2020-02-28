@@ -10,6 +10,7 @@ namespace Scheduledo.Service.Models
         public DateTime Expires { get; set; }
         public string Id { get; set; }
         public string Email { get; set; }
+        public bool FirstLogin { get; set; } = false;
         public UserRole Role { get; set; }
         public PricingPlan Plan { get; set; }
         public DateTime? PlanExpiredOn { get; set; }

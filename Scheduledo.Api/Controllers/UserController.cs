@@ -59,12 +59,7 @@ namespace Scheduledo.Api.Controllers
         //    return GetResult(result);
         //}
 
-        [HttpPost("register")]
-        public async Task<IActionResult> CoachRegister([FromBody]RegisterCoachInput model)
-        {
-            var result = await _userService.CoachRegister(model);
-            return GetResult(result);
-        }
+        
 
         //[HttpPost("users")]
         //[AuthorizePolicy(UserRole.CompanyAdmin)]

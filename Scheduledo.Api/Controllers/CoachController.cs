@@ -19,11 +19,19 @@ namespace Scheduledo.Api.Controllers
     {
         private readonly ICoachService _coachService;
         private readonly ITokenService _tokenService;
+        private readonly IUserService _userService;
 
         public CoachController(ICoachService coachService, ITokenService tokenService)
         {
             _coachService = coachService;
             _tokenService = tokenService;
+        }
+
+        [HttpPost("managed-coaches")]
+        public async Task<IActionResult> CoachRegister([FromBody]RegisterCoachInput model)
+        {
+            var result = await _coachService.CoachRegister(model);
+            return GetResult(result);
         }
 
         [HttpGet]
@@ -53,7 +61,7 @@ namespace Scheduledo.Api.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("me")]
         [Authorize]
         public async Task<IActionResult> UpdateCoach([FromHeader] string Authorization, [FromBody] UpdateCoachInput coach)
         {
@@ -74,22 +82,5 @@ namespace Scheduledo.Api.Controllers
             result = await _coachService.GetAllClients(Id);
             return result;
         }
-
-
-        //[HttpPost]
-        //public async Task<IActionResult> RegisterCoach([FromBody] Coach coach)
-        //{
-        //    if(!String.IsNullOrEmpty(coach.Name))
-        //    {
-        //        return BadRequest("Empty Name!");
-        //    }
-        //    if(String.IsNullOrEmpty(coach.Surname))
-        //    {
-        //        return BadRequest("Empty Surname!");
-        //    }
-        //    await _coachService.RegisterCoach(coach);
-
-        //    return Ok();
-        //}
     }
 }
