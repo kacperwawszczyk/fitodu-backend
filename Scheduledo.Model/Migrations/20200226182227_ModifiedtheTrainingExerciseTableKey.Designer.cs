@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Scheduledo.Model;
 
 namespace Scheduledo.Model.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20200226182227_ModifiedtheTrainingExerciseTableKey")]
+    partial class ModifiedtheTrainingExerciseTableKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,10 +170,10 @@ namespace Scheduledo.Model.Migrations
                     b.Property<DateTime>("CreatedOn");
 
                     b.Property<decimal?>("FatPercentage")
-                        .HasColumnType("decimal(4, 2)");
+                        .HasColumnType("decimal(2, 2)");
 
                     b.Property<decimal?>("Height")
-                        .HasColumnType("decimal(5, 2)");
+                        .HasColumnType("decimal(3, 2)");
 
                     b.Property<bool>("IsRegistered");
 
@@ -186,7 +188,7 @@ namespace Scheduledo.Model.Migrations
                     b.Property<DateTime>("UpdatedOn");
 
                     b.Property<decimal?>("Weight")
-                        .HasColumnType("decimal(5, 2)");
+                        .HasColumnType("decimal(3, 2)");
 
                     b.HasKey("Id");
 
