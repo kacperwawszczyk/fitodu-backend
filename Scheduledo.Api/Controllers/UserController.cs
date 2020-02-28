@@ -8,6 +8,8 @@ using System.Collections.Generic;
 
 namespace Scheduledo.Api.Controllers
 {
+    [Route("api/users")]
+    [ApiController]
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
@@ -57,7 +59,7 @@ namespace Scheduledo.Api.Controllers
         //    return GetResult(result);
         //}
 
-        [HttpPost("users/CoachRegister")]
+        [HttpPost("register")]
         public async Task<IActionResult> CoachRegister([FromBody]RegisterCoachInput model)
         {
             var result = await _userService.CoachRegister(model);
@@ -112,7 +114,7 @@ namespace Scheduledo.Api.Controllers
         //    return GetResult(result);
         //}
 
-        [HttpPost("users/token")]
+        [HttpPost("token")]
         [ProducesResponseType(typeof(TokenOutput), 200)]
         public async Task<IActionResult> CreateToken([FromBody]CreateTokenInput model)
         {
@@ -131,7 +133,7 @@ namespace Scheduledo.Api.Controllers
         //    return GetResult(result);
         //}
 
-        [HttpPost("users/token/refresh")]
+        [HttpPost("token/refresh")]
         [ProducesResponseType(typeof(TokenOutput), 200)]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenInput model)
         {
@@ -139,14 +141,14 @@ namespace Scheduledo.Api.Controllers
             return GetResult(result);
         }
 
-        [HttpPost("users/signout")]
+        [HttpPost("signout")]
         public async Task<IActionResult> SignOut([FromBody]SignOutInput model)
         {
             var result = await _userService.SignOut(model);
             return GetResult(result);
         }
 
-        [HttpPost("users/password/forgot")]
+        [HttpPost("password/forgot")]
         public async Task<IActionResult> ForgotPassword([FromBody]ForgotPasswordInput model)
         {
             var result = await _userService.ForgotPassword(model.Email);

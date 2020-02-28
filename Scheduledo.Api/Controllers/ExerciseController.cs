@@ -11,7 +11,7 @@ using Scheduledo.Service.Models.Exercise;
 namespace Scheduledo.Api.Controllers
 {
 
-    [Route("api/Exercises")]
+    [Route("api/exercises")]
     [ApiController]
     [Authorize]
     public class ExerciseController : BaseController
@@ -26,7 +26,7 @@ namespace Scheduledo.Api.Controllers
         }
 
 
-        [HttpGet("allExercises")]
+        [HttpGet]
         [Authorize]
         //[AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> GetAllExercises([FromHeader]string Authorization) //all exercises of a coach

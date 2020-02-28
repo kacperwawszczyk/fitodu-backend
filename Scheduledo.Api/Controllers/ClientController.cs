@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace Scheduledo.Api.Controllers
 {
+	[Route("api/clients")]
+	[ApiController]
 	public class ClientController : BaseController
 	{
 		private readonly ITokenService _tokenService;
@@ -29,7 +31,7 @@ namespace Scheduledo.Api.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Coach)]
-		[HttpPost("clients/dummyregister")]
+		[HttpPost("dummy-register")]
 		public async Task<IActionResult> DummyClientRegister([FromHeader] string Authorization, [FromBody]RegisterDummyClientInput model)
 		{
 			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
@@ -41,7 +43,7 @@ namespace Scheduledo.Api.Controllers
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		[HttpPost("clients/create")]
+		[HttpPost]
 		public async Task<IActionResult> CreateClientAccount([FromBody]RegisterClientInput model)
 		{
 			var result = await _clientService.CreateClientAccount(model);
@@ -55,7 +57,7 @@ namespace Scheduledo.Api.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Coach)]
-		[HttpPost("clients/sendlink")]
+		[HttpPost("send-link")]
 		public async Task<IActionResult> SendCreationLinkToClient([FromHeader] string Authorization, [FromBody]CreateClientVerificationTokenInput model)
 		{
 			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
@@ -68,7 +70,7 @@ namespace Scheduledo.Api.Controllers
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		[HttpPost("clients/selfcreateaccount")]
+		[HttpPost("self-create-account")]
 		public async Task<IActionResult> SelfCreateClientAccount([FromBody]SelfRegisterClientInput model)
 		{
 			var result = await _clientService.SelfCreateClientAccount(model);
@@ -82,7 +84,7 @@ namespace Scheduledo.Api.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Coach)]
-		[HttpPost("clients/selfsendlink")]
+		[HttpPost("self-send-link")]
 		public async Task<IActionResult> SendSelfCreationLinkToClient([FromHeader] string Authorization, [FromBody]CreateSelfClientVerificationTokenInput model)
 		{
 			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
@@ -95,7 +97,7 @@ namespace Scheduledo.Api.Controllers
 		/// <param name="Authorization"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Client)]
-		[HttpGet("clients/me")]
+		[HttpGet("me")]
 		public async Task<IActionResult> GetClient([FromHeader] string Authorization)
 		{
 			var clientId = await _tokenService.GetRequesterClientId(Authorization);
@@ -109,7 +111,7 @@ namespace Scheduledo.Api.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Client)]
-		[HttpPut("clients/update")]
+		[HttpPut]
 		public async Task<IActionResult> UpdateClient([FromHeader] string Authorization, [FromBody] UpdateClientInput model)
 		{
 			var clientId = await _tokenService.GetRequesterClientId(Authorization);
@@ -122,7 +124,7 @@ namespace Scheduledo.Api.Controllers
 		/// <param name="Authorization"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Client)]
-		[HttpGet("clients/myCoach")]
+		[HttpGet("my-coach")]
 		public async Task<IActionResult> GetClientCoach([FromHeader] string Authorization)
 		{
 			var clientId = await _tokenService.GetRequesterClientId(Authorization);

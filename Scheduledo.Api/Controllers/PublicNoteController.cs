@@ -11,7 +11,7 @@ using Scheduledo.Service.Infrastructure.Attributes;
 
 namespace Scheduledo.Api.Controllers
 {
-    [Route("api/publicNotes")]
+    [Route("api/public-notes")]
     [ApiController]
     [Authorize]
     public class PublicNoteController : BaseController
@@ -27,7 +27,7 @@ namespace Scheduledo.Api.Controllers
 
 
         //all public notes of a coach
-        [HttpGet("allNotes")]
+        [HttpGet]
         [Authorize]
         //[ProducesResponseType(typeof(ICollection<PublicNote>), 200)]
         public async Task<IActionResult> GetAllNotes([FromHeader]string Authorization)
@@ -48,7 +48,7 @@ namespace Scheduledo.Api.Controllers
         }
 
         //all public notes of a coach's client
-        [HttpGet("allNotes/{clientId}")]
+        [HttpGet("{clientId}")]
         [Authorize]
         //[ProducesResponseType(PublicNote), 200)]
         public async Task<IActionResult> GetUsersNote([FromHeader]string Authorization, string clientId)

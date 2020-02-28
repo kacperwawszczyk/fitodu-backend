@@ -13,7 +13,7 @@ using Scheduledo.Service.Models.Maximum;
 
 namespace Scheduledo.Api.Controllers
 {
-    [Route("api/maximum")]
+    [Route("api/maximums")]
     [ApiController]
     public class MaximumController : BaseController
     {
@@ -26,7 +26,7 @@ namespace Scheduledo.Api.Controllers
             _tokenService = tokenService;
         }
 
-        [HttpGet("allMaximums")]
+        [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetAllMaximums([FromHeader]string Authorization, string IdClient)
         {
@@ -43,7 +43,7 @@ namespace Scheduledo.Api.Controllers
             }
         }
 
-        [HttpGet("allMaximums/{IdExercise}")]
+        [HttpGet("{IdExercise}")]
         [Authorize]
         public async Task<IActionResult> GetClientMaximum([FromHeader]string Authorization, string IdClient, int IdExercise)
         {

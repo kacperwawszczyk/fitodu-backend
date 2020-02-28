@@ -13,7 +13,7 @@ using Scheduledo.Service.Concrete;
 
 namespace Scheduledo.Api.Controllers
 {
-    [Route("api/privateNotes")]
+    [Route("api/private-notes")]
     [ApiController]
     //[Authorize]
     public class PrivateNoteController : BaseController
@@ -29,7 +29,7 @@ namespace Scheduledo.Api.Controllers
 
 
         //all private notes of a coach
-        [HttpGet("allNotes")]
+        [HttpGet]
         [Authorize]
         //[AuthorizePolicy(UserRole.Coach)]
         //[ProducesResponseType(typeof(ICollection<PrivateNote>), 200)]
@@ -52,7 +52,7 @@ namespace Scheduledo.Api.Controllers
         }
 
         //all private notes of a coach's client
-        [HttpGet("allNotes/{clientId}")]
+        [HttpGet("{clientId}")]
         [Authorize]
         //[AuthorizePolicy(UserRole.Coach)]
         //[ProducesResponseType(PrivateNote), 200)]

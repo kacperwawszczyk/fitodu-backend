@@ -26,7 +26,7 @@ namespace Scheduledo.Api.Controllers
             _tokenService = tokenService;
         }
 
-        [HttpGet("allCoaches")]
+        [HttpGet]
         public async Task<Result<ICollection<UpdateCoachInput>>> GetAllCoaches()
         {
             var result = new Result<ICollection<UpdateCoachInput>>();
@@ -51,7 +51,7 @@ namespace Scheduledo.Api.Controllers
             }
         }
 
-        [HttpPut("update")]
+        [HttpPut]
         [Authorize]
         public async Task<IActionResult> UpdateCoach([FromHeader] string Authorization, [FromBody] UpdateCoachInput coach)
         {
@@ -62,7 +62,7 @@ namespace Scheduledo.Api.Controllers
 
         }
 
-        [HttpGet("myClients")]
+        [HttpGet("my-clients")]
         [Authorize]
         public async Task<Result<ICollection<ClientOutput>>> GetAllClients([FromHeader] string Authorization)
         {
