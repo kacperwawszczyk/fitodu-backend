@@ -603,7 +603,7 @@ namespace Scheduledo.Service.Concrete
                 return result;
             }
 
-            if(user.ResetTokenExpiresOn > _dateTimeService.Now())
+            if (user.ResetTokenExpiresOn > _dateTimeService.Now())
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "You have to wait a bit before you can change your password again";
@@ -657,26 +657,42 @@ namespace Scheduledo.Service.Concrete
             var user = await _userManager.FindByIdAsync(model.UserId);
             if (user == null)
             {
-                result.ErrorMessage = Resource.Validation.ResetPasswordExpired;
+                result.ErrorMessage = "Nie znaleziono uzytkownika";
                 result.Error = ErrorType.BadRequest;
                 return result;
             }
 
             if (_dateTimeService.Now() > user.ResetTokenExpiresOn)
             {
-                result.ErrorMessage = Resource.Validation.ResetPasswordExpired;
+                result.ErrorMessage = "Token wygasl";
                 result.Error = ErrorType.BadRequest;
                 return result;
             }
 
-            var decoded = WebUtility.UrlDecode(model.ResetToken);
-            user.ResetTokenExpiresOn = _dateTimeService.Now();
+            //var decoded = WebUtility.UrlDecode(model.ResetToken);
+            
 
-            var resetResult = await _userManager.ResetPasswordAsync(user, decoded, model.NewPassword);
+            var resetResult = await _userManager.ResetPasswordAsync(user, model.ResetToken, model.NewPassword);
             if (!resetResult.Succeeded)
             {
-                result.ErrorMessage = Resource.Validation.ResetPasswordExpired;
+                result.ErrorMessage = "Blad zmiany";
                 result.Error = ErrorType.BadRequest;
+            }
+
+            user.ResetTokenExpiresOn = _dateTimeService.Now();
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                _context.Update(user);
+
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+
+                transaction.Commit();
             }
 
             return result;
