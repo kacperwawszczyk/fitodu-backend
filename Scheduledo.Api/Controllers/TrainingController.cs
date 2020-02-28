@@ -28,7 +28,7 @@ namespace Scheduledo.Api.Controllers
         }
 
 
-        [HttpGet("coachs-trainings")]
+        [HttpGet("coach")]
         [Authorize]//coach only
         public async Task<IActionResult> GetCoachsTrainings([FromHeader]string Authorization)
         {
@@ -46,7 +46,7 @@ namespace Scheduledo.Api.Controllers
         }
 
 
-        [HttpGet("clients-trainings")]
+        [HttpGet("client")]
         [Authorize]//client only
         public async Task<IActionResult> GetClientsTrainings([FromHeader]string Authorization)
         {
