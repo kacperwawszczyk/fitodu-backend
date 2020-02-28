@@ -101,6 +101,7 @@ namespace Scheduledo.Service.Concrete
             {
                 existingExercise.Name = exercise.Name;
                 existingExercise.Description = exercise.Description;
+                existingExercise.Archived = exercise.Archived;
                 try
                 {
                     if (await _context.SaveChangesAsync() > 0)
@@ -154,6 +155,41 @@ namespace Scheduledo.Service.Concrete
                     return result;
                 }
             }
+        }
+
+        public async Task<Result<ICollection<Exercise>>> GetArchivedExercises(string coachId)
+        {
+            var result = new Result<ICollection<Exercise>>();
+
+            var exercises = await _context.Exercises.Where(x => x.IdCoach == coachId && x.Archived == true).ToListAsync();
+
+            if (exercises != null)
+            {
+                result.Data = exercises;
+            }
+            else
+            {
+                result.Error = ErrorType.NoContent; //może inny?
+            }
+
+            return result;
+        }
+        public async Task<Result<ICollection<Exercise>>> GetNotArchivedExercises(string coachId)
+        {
+            var result = new Result<ICollection<Exercise>>();
+
+            var exercises = await _context.Exercises.Where(x => x.IdCoach == coachId && x.Archived == false).ToListAsync();
+
+            if (exercises != null)
+            {
+                result.Data = exercises;
+            }
+            else
+            {
+                result.Error = ErrorType.NoContent; //może inny?
+            }
+
+            return result;
         }
     }
 }

@@ -46,6 +46,47 @@ namespace Scheduledo.Api.Controllers
             }
         }
 
+
+        [HttpGet("archived")]
+        [Authorize]
+        //[AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> GetArchivedExercises([FromHeader]string Authorization) //all exercises of a coach
+        {
+            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
+
+            if (coachIdResult.Data != null)
+            {
+                string coachId = coachIdResult.Data;
+                var result = await _exerciseService.GetArchivedExercises(coachId);
+                return GetResult(result);
+
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("not-archived")]
+        [Authorize]
+        //[AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> GetNotArchivedExercises([FromHeader]string Authorization) //all exercises of a coach
+        {
+            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
+
+            if (coachIdResult.Data != null)
+            {
+                string coachId = coachIdResult.Data;
+                var result = await _exerciseService.GetNotArchivedExercises(coachId);
+                return GetResult(result);
+
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpPost]
         [Authorize]
         //[AuthorizePolicy(UserRole.Coach)]

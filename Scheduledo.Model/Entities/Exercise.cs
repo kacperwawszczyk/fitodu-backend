@@ -13,5 +13,7 @@ namespace Scheduledo.Model.Entities
         [StringLength(30)]
         public string Name { get; set; }
         public string Description { get; set; }
+        [Required]
+        public bool Archived { get; set; } = false;
     }
 }
