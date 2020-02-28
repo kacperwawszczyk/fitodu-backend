@@ -24,6 +24,45 @@ namespace Scheduledo.Service.Concrete
             _mapper = mapper;
         }
 
+
+
+        public async Task<Result<ICollection<Training>>> GetCoachsTrainings(string idCoach)
+        {
+            var result = new Result<ICollection<Training>>();
+
+            var coachesTrainings = await _context.Trainings.Where(x => x.IdCoach == idCoach).ToListAsync();
+
+            if(coachesTrainings != null)
+            {
+                result.Data = coachesTrainings;
+            }
+            else
+            {
+                result.Error = ErrorType.NotFound; //może inny?
+            }
+            return result;
+
+        }
+
+        public async Task<Result<ICollection<Training>>> GetClientsTrainings(string idClient)
+        {
+            var result = new Result<ICollection<Training>>();
+
+            var clientsTrainings = await _context.Trainings.Where(x => x.IdClient == idClient).ToListAsync();
+
+            if(clientsTrainings != null)
+            {
+                result.Data = clientsTrainings;
+            }
+            else
+            {
+                result.Error = ErrorType.NotFound; //może inny?
+            }
+            return result;
+        }
+
+
+
         public async Task<Result<string>> GetTrainingsCoach(int idTraining)
         {
             var result = new Result<string>();
