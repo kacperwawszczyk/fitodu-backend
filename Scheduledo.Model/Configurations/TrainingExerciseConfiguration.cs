@@ -14,7 +14,8 @@ namespace Scheduledo.Model.Configurations
         {
             builder.HasKey(o => new
             {
-                o.IdTrainingExercise
+                o.IdTraining,
+                o.IdExercise
             });
         }
     }

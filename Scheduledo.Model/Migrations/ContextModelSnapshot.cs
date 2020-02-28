@@ -479,16 +479,12 @@ namespace Scheduledo.Model.Migrations
 
             modelBuilder.Entity("Scheduledo.Model.Entities.TrainingExercise", b =>
                 {
-                    b.Property<int>("IdTrainingExercise")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                    b.Property<int>("IdTraining");
 
                     b.Property<int>("IdExercise");
 
-                    b.Property<int>("IdTraining");
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
                     b.Property<int>("Repetitions");
 
@@ -497,7 +493,7 @@ namespace Scheduledo.Model.Migrations
                     b.Property<string>("TrainerNote")
                         .HasColumnType("text");
 
-                    b.HasKey("IdTrainingExercise");
+                    b.HasKey("IdTraining", "IdExercise");
 
                     b.ToTable("TrainingExercises");
                 });

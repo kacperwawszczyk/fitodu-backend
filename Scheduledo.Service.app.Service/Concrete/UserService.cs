@@ -603,13 +603,6 @@ namespace Scheduledo.Service.Concrete
                 return result;
             }
 
-            if(user.ResetTokenExpiresOn > _dateTimeService.Now())
-            {
-                result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "You have to wait a bit before you can change your password again";
-                return result;
-            }
-
             using (var transaction = _context.Database.BeginTransaction())
             {
                 var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -669,10 +662,7 @@ namespace Scheduledo.Service.Concrete
                 return result;
             }
 
-            var decoded = WebUtility.UrlDecode(model.ResetToken);
-            user.ResetTokenExpiresOn = _dateTimeService.Now();
-
-            var resetResult = await _userManager.ResetPasswordAsync(user, decoded, model.NewPassword);
+            var resetResult = await _userManager.ResetPasswordAsync(user, model.ResetToken, model.NewPassword);
             if (!resetResult.Succeeded)
             {
                 result.ErrorMessage = Resource.Validation.ResetPasswordExpired;

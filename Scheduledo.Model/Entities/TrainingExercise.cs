@@ -8,8 +8,6 @@ namespace Scheduledo.Model.Entities
 {
     public partial class TrainingExercise
     {
-        [Key]
-        public int IdTrainingExercise { get; set; }
         [Required]
         public int IdExercise { get; set; }
         [Required]
