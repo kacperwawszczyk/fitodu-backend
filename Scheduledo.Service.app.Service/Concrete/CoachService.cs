@@ -41,9 +41,9 @@ namespace Scheduledo.Service.Concrete
             _mapper = mapper;
         }
 
-        public async Task<Result<ICollection<UpdateCoachInput>>> GetAllCoaches()
+        public async Task<Result<ICollection<CoachOutput>>> GetAllCoaches()
         {
-            var result = new Result<ICollection<UpdateCoachInput>>();
+            var result = new Result<ICollection<CoachOutput>>();
             var coaches = await _context.Coaches.ToListAsync();
             if(coaches == null)
             {
@@ -51,10 +51,11 @@ namespace Scheduledo.Service.Concrete
                 result.ErrorMessage = "No coaches found";
                 return result;
             }
-            var coachesResult = new List<UpdateCoachInput>();
+            var coachesResult = new List<CoachOutput>();
             foreach (Coach c in coaches)
             {
-                UpdateCoachInput nc = new UpdateCoachInput();
+                CoachOutput nc = new CoachOutput();
+                nc.Id = c.Id;
                 nc.AddressCity = c.AddressCity;
                 nc.AddressCountry = c.AddressCountry;
                 nc.AddressLine1 = c.AddressLine1;
@@ -71,9 +72,9 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result<UpdateCoachInput>> GetCoach(string Id)
+        public async Task<Result<CoachOutput>> GetCoach(string Id)
         {
-            var result = new Result<UpdateCoachInput>();
+            var result = new Result<CoachOutput>();
             var coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
             if (coach == null)
             {
@@ -82,7 +83,8 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
-                UpdateCoachInput nc = new UpdateCoachInput();
+                CoachOutput nc = new CoachOutput();
+                nc.Id = coach.Id;
                 nc.AddressCity = coach.AddressCity;
                 nc.AddressCountry = coach.AddressCountry;
                 nc.AddressLine1 = coach.AddressLine1;

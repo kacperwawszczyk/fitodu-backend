@@ -27,27 +27,29 @@ namespace Scheduledo.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<Result<ICollection<UpdateCoachInput>>> GetAllCoaches()
+        public async Task<Result<ICollection<CoachOutput>>> GetAllCoaches()
         {
-            var result = new Result<ICollection<UpdateCoachInput>>();
+            var result = new Result<ICollection<CoachOutput>>();
             result = await _coachService.GetAllCoaches();
             return result;
         }
 
         [HttpGet("me")]
         [Authorize]
-        public async Task<IActionResult> GetCoach([FromHeader] string Authorization)
+        public async Task<Result<CoachOutput>> GetCoach([FromHeader] string Authorization)
         {
             var coachId = await _tokenService.GetRequesterCoachId(Authorization);
+            var result = new Result<CoachOutput>();
             if(coachId.Data == null)
             {
-                return BadRequest();
+                result.Error = Core.Enums.ErrorType.BadRequest;
+                return result;
             }
             else
             {
                 string Id = coachId.Data;
-                var result = await _coachService.GetCoach(Id);
-                return GetResult(result);
+                result = await _coachService.GetCoach(Id);
+                return result;
             }
         }
 

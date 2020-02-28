@@ -98,11 +98,20 @@ namespace Scheduledo.Api.Controllers
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Client)]
 		[HttpGet("me")]
-		public async Task<IActionResult> GetClient([FromHeader] string Authorization)
+		public async Task<Result<ClientOutput>> GetClient([FromHeader] string Authorization)
 		{
 			var clientId = await _tokenService.GetRequesterClientId(Authorization);
-			var result = await _clientService.GetClient(clientId.Data);
-			return GetResult(result);
+			var result = new Result<ClientOutput>();
+			if(clientId.Data == null)
+			{
+				result.Error = Core.Enums.ErrorType.BadRequest;
+				return result;
+			}
+			else
+			{
+				result = await _clientService.GetClient(clientId.Data);
+				return result;
+			}
 		}
 		/// <summary>
 		/// Used by Client to update information about onself.
@@ -125,11 +134,20 @@ namespace Scheduledo.Api.Controllers
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Client)]
 		[HttpGet("my-coach")]
-		public async Task<IActionResult> GetClientCoach([FromHeader] string Authorization)
+		public async Task<Result<CoachOutput>> GetClientCoach([FromHeader] string Authorization)
 		{
 			var clientId = await _tokenService.GetRequesterClientId(Authorization);
-			var result = await _clientService.GetClientCoach(clientId.Data);
-			return GetResult(result);
+			var result = new Result<CoachOutput>();
+			if (clientId.Data == null)
+			{
+				result.Error = Core.Enums.ErrorType.BadRequest;
+				return result;
+			}
+			else
+			{
+				result = await _clientService.GetClientCoach(clientId.Data);
+				return result;
+			}
 		}
 	}
 }
