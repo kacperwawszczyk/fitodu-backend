@@ -155,11 +155,11 @@ namespace Scheduledo.Api.Controllers
             return GetResult(result);
         }
 
-        //[HttpPost("users/password/reset")]
-        //public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordInput model)
-        //{
-        //    var result = await _userService.ResetPassword(model);
-        //    return GetResult(result);
-        //}
+        [HttpPost("users/password/reset")]
+        public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordInput model)
+        {
+            var result = await _userService.ResetPassword(model);
+            return GetResult(result);
+        }
     }
 }
