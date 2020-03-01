@@ -14,5 +14,6 @@ namespace Scheduledo.Service.Abstract
         Task<Result> AddTrainingExercise(TrainingExerciseInput trainingExerciseInput);
         Task<Result> EditTrainingExercise(TrainingExercise trainingExercise);
         Task<Result> DeleteTrainingExercise(TrainingExercise trainingExercise);
+        Task<Result> DeleteTrainingsExercises(int idTraining);
     }
 }

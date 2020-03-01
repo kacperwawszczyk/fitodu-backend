@@ -20,11 +20,13 @@ namespace Scheduledo.Api.Controllers
     {
         private readonly ITokenService _tokenService;
         private readonly ITrainingService _trainingService;
+        private readonly ITrainingExerciseService _trainingExerciseService;
 
-        public TrainingController(ITokenService tokenService, ITrainingService trainingService)
+        public TrainingController(ITokenService tokenService, ITrainingService trainingService, ITrainingExerciseService trainingExerciseService)
         {
             _tokenService = tokenService;
             _trainingService = trainingService;
+            _trainingExerciseService = trainingExerciseService;
         }
 
 
@@ -103,6 +105,12 @@ namespace Scheduledo.Api.Controllers
             }
 
             var result = await _trainingService.DeleteTraining(training);
+
+            if(result.Success)
+            {
+                var result2 = await _trainingExerciseService.DeleteTrainingsExercises(training.Id);
+            }
+
             return GetResult(result);
         }
     }
