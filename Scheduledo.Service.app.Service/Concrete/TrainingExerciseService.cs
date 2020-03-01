@@ -126,5 +126,31 @@ namespace Scheduledo.Service.Concrete
             }
             return result;
         }
+
+        public async Task<Result> DeleteTrainingsExercises(int idTraining)
+        {
+            var result = new Result();
+
+            var trainingsExercises = await _context.TrainingExercises.Where
+                (x => x.IdTraining == idTraining).ToListAsync();
+
+            if (trainingsExercises.Count == 0)
+            {
+                result = new Result(true);
+                return result;
+            }
+
+            _context.TrainingExercises.RemoveRange(trainingsExercises);
+
+            if (await _context.SaveChangesAsync() > 0)
+            {
+                result = new Result(true);
+            }
+            else
+            {
+                result.Error = ErrorType.BadRequest; //może być co innego, może dodać nowy?
+            }
+            return result;
+        }
     }
 }
