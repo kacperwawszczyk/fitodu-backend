@@ -6,12 +6,8 @@ using System.Text;
 
 namespace Scheduledo.Model.Entities
 {
-    public partial class TrainingResult
+    public partial class TrainingResultInput
     {
-        //[Key]
-        //public int Id { get; set; }
-        [Key]
-        public int IdTrainingResult { get; set; }
         [Required]
         public int IdTrainingExercise { get; set; }
         [Required]

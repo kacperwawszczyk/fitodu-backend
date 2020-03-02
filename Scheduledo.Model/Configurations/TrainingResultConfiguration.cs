@@ -13,8 +13,14 @@ namespace Scheduledo.Model.Configurations
         {
             builder.HasKey(o => new
             {
-                o.IdTrainingExercise
+                o.IdExercise,
+                o.IdTraining
             });
+
+            builder.HasIndex(o => new
+            {
+                o.IdTrainingExercise
+            }).IsUnique();
         }
     }
 }

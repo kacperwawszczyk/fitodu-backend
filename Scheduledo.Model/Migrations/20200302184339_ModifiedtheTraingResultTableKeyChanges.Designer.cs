@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Scheduledo.Model;
 
 namespace Scheduledo.Model.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20200302184339_ModifiedtheTraingResultTableKeyChanges")]
+    partial class ModifiedtheTraingResultTableKeyChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -506,16 +508,16 @@ namespace Scheduledo.Model.Migrations
 
             modelBuilder.Entity("Scheduledo.Model.Entities.TrainingResult", b =>
                 {
-                    b.Property<int>("IdExercise");
-
-                    b.Property<int>("IdTraining");
+                    b.Property<int>("IdTrainingResult")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int>("IdTrainingExercise");
+                    b.Property<int>("IdExercise");
 
-                    b.Property<int>("IdTrainingResult");
+                    b.Property<int>("IdTraining");
 
                     b.Property<string>("Note")
                         .HasColumnType("text");
@@ -524,12 +526,7 @@ namespace Scheduledo.Model.Migrations
 
                     b.Property<TimeSpan?>("Time");
 
-                    b.HasKey("IdExercise", "IdTraining");
-
-                    b.HasAlternateKey("IdTrainingResult");
-
-                    b.HasIndex("IdTrainingExercise")
-                        .IsUnique();
+                    b.HasKey("IdTrainingResult");
 
                     b.ToTable("TrainingResults");
                 });
