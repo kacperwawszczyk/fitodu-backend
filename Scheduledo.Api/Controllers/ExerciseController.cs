@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Scheduledo.Core.Enums;
 using Scheduledo.Model.Entities;
 using Scheduledo.Service.Abstract;
+using Scheduledo.Service.Infrastructure.Attributes;
 using Scheduledo.Service.Models.Exercise;
 
 namespace Scheduledo.Api.Controllers
@@ -26,108 +28,83 @@ namespace Scheduledo.Api.Controllers
         }
 
 
+        /// <summary>
+        /// Used to get a list of all (archived and not-archvied) exercises of a requesting coach 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        [Authorize]
-        //[AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> GetAllExercises([FromHeader]string Authorization) //all exercises of a coach
-        {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-
-            if (coachIdResult.Data != null)
-            {
-                string coachId = coachIdResult.Data;
-                var result = await _exerciseService.GetAllExercises(coachId);
-                return GetResult(result);
-
-            }
-            else
-            {
-                return BadRequest();
-            }
+        [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(ICollection<Exercise>), 500)]
+        public async Task<IActionResult> GetAllExercises() //all exercises of a coach
+        { 
+            var result = await _exerciseService.GetAllExercises(CurrentUser.Id);
+            return GetResult(result);
         }
 
-
+        /// <summary>
+        /// Used to get a list of archived exercises of a requesting coach 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("archived")]
-        [Authorize]
-        //[AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> GetArchivedExercises([FromHeader]string Authorization) //all exercises of a coach
+        [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(ICollection<Exercise>), 500)]
+        public async Task<IActionResult> GetArchivedExercises() //all archived exercises of a coach
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-
-            if (coachIdResult.Data != null)
-            {
-                string coachId = coachIdResult.Data;
-                var result = await _exerciseService.GetArchivedExercises(coachId);
-                return GetResult(result);
-
-            }
-            else
-            {
-                return BadRequest();
-            }
+            var result = await _exerciseService.GetArchivedExercises(CurrentUser.Id);
+            return GetResult(result);
         }
 
+        /// <summary>
+        /// Used to get a list of not-archived exercises of a requesting coach 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("not-archived")]
-        [Authorize]
-        //[AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> GetNotArchivedExercises([FromHeader]string Authorization) //all exercises of a coach
+        [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(ICollection<Exercise>), 500)]
+        public async Task<IActionResult> GetNotArchivedExercises() //all  not archived exercises of a coach
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-
-            if (coachIdResult.Data != null)
-            {
-                string coachId = coachIdResult.Data;
-                var result = await _exerciseService.GetNotArchivedExercises(coachId);
-                return GetResult(result);
-
-            }
-            else
-            {
-                return BadRequest();
-            }
+            var result = await _exerciseService.GetNotArchivedExercises(CurrentUser.Id);
+            return GetResult(result);
         }
 
+
+        /// <summary>
+        /// Used to create a new exercise for a requesting coach (if it doesn't already exist)
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
-        [Authorize]
-        //[AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> CreateExercise([FromHeader]string Authorization, [FromBody]ExerciseInput exercise)
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> CreateExercise([FromBody]ExerciseInput exercise)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-
-            if(exercise == null || exercise.IdCoach != coachIdResult.Data)
-            {
-                return BadRequest();
-            }
-
+            exercise.IdCoach = CurrentUser.Id;
             var result = await _exerciseService.CreateExercise(exercise);
             return GetResult(result);
         }
 
+
+        /// <summary>
+        /// Used to modify an existing exercise for a requesting coach
+        /// </summary>
+        /// <returns></returns>
         [HttpPut]
-        [Authorize]
-        public async Task<IActionResult> EditExercise([FromHeader]string Authorization, [FromBody]Exercise exercise)
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> EditExercise([FromBody]Exercise exercise)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-
-            if (exercise == null || exercise.IdCoach != coachIdResult.Data)
-            {
-                return BadRequest();
-            }
-
+            exercise.IdCoach = CurrentUser.Id;
             var result = await _exerciseService.EditExercise(exercise);
             return GetResult(result);
         }
 
-        [HttpDelete]
-        [Authorize]
-        public async Task<IActionResult> DeleteExercise([FromHeader]string Authorization, [FromBody]Exercise exercise)
-        {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
 
-            if (exercise == null || exercise.IdCoach != coachIdResult.Data)
-            {
-                return BadRequest();
-            }
+        /// <summary>
+        /// Used to delete an existing exercise for a requesting coach
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete]
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> DeleteExercise([FromBody]Exercise exercise)
+        {
+            exercise.IdCoach = CurrentUser.Id;
             var result = await _exerciseService.DeleteExercise(exercise);
             return GetResult(result);
         }

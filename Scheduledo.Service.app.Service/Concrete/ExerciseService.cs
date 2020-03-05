@@ -27,19 +27,19 @@ namespace Scheduledo.Service.Concrete
 
 
 
-        public async Task <Result<ICollection<Exercise>>> GetAllExercises(string coachId)
+        public async Task<Result<ICollection<Exercise>>> GetAllExercises(string coachId)
         {
             var result = new Result<ICollection<Exercise>>();
 
             var exercises = await _context.Exercises.Where(x => x.IdCoach == coachId).ToListAsync();
 
-            if(exercises != null)
+            if (exercises != null)
             {
                 result.Data = exercises;
             }
             else
             {
-                result.Error = ErrorType.NoContent; //może inny?
+                result.Error = ErrorType.NotFound;
             }
 
             return result;
@@ -54,7 +54,7 @@ namespace Scheduledo.Service.Concrete
                 .Where(x => x.IdCoach == exercise.IdCoach && x.Name == exercise.Name)
                 .FirstOrDefaultAsync();
 
-            if(existingExercise != null) //this coach already has an exercise with given name
+            if (existingExercise != null) //this coach already has an exercise with given name
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "this coach already has an exercise with given name";
@@ -65,14 +65,17 @@ namespace Scheduledo.Service.Concrete
             _ex.IdCoach = exercise.IdCoach;
             _ex.Name = exercise.Name;
             _ex.Description = exercise.Description;
-            _context.Exercises.Add(_ex);
-            if (await _context.SaveChangesAsync() > 0)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                result = new Result(true);
-            }
-            else
-            {
-                result.Error = ErrorType.BadRequest; //może być co innego, może dodać nowy?
+                _context.Exercises.Add(_ex);
+
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+                transaction.Commit();
             }
             return result;
         }
@@ -81,80 +84,64 @@ namespace Scheduledo.Service.Concrete
         {
             var result = new Result();
 
-            if(exercise == null)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                result.Error = ErrorType.BadRequest;
-                return result;
-            }
-
-            Exercise existingExercise = await _context.Exercises
+                Exercise existingExercise = await _context.Exercises
                 .Where(x => x.Id == exercise.Id && x.IdCoach == exercise.IdCoach)
                 .FirstOrDefaultAsync();
 
-            if (existingExercise == null) //this coach does not have an exercise with that Id
-            {
-                result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "this coach does not have an exercise with given Id";
-                return result;
-            }
-            else
-            {
+                if (existingExercise == null) //this coach does not have an exercise with that Id
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "this coach does not have an exercise with given Id";
+                    return result;
+                }
+
                 existingExercise.Name = exercise.Name;
                 existingExercise.Description = exercise.Description;
                 existingExercise.Archived = exercise.Archived;
-                try
+
+                if (await _context.SaveChangesAsync() == 0)
                 {
-                    if (await _context.SaveChangesAsync() > 0)
-                    {
-                        result = new Result(true);
-                    }
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
                     return result;
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    result.Error = ErrorType.InternalServerError; //może być co innego, może dodać nowy?
-                    return result;
-                }
+                transaction.Commit();
             }
+            return result;
         }
+
 
         public async Task<Result> DeleteExercise(Exercise exercise)
         {
             var result = new Result();
 
-            if (exercise == null)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                result.Error = ErrorType.BadRequest;
-                return result;
-            }
 
-            Exercise existingExercise = await _context.Exercises
+                Exercise existingExercise = await _context.Exercises
                 .Where(x => x.Id == exercise.Id && x.IdCoach == exercise.IdCoach)
                 .FirstOrDefaultAsync();
 
-            if (existingExercise == null) //this coach does not have an exercise with that Id
-            {
-                result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "this coach does not have an exercise with given Id";
-                return result;
-            }
-            else
-            {
+                if (existingExercise == null) //this coach does not have an exercise with that Id
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "this coach does not have an exercise with given Id";
+                    return result;
+                }
+
                 _context.Exercises.Remove(existingExercise);
-                try
+                if (await _context.SaveChangesAsync() == 0)
                 {
-                    if (await _context.SaveChangesAsync() > 0)
-                    {
-                        result = new Result(true);
-                    }
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
                     return result;
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    result.Error = ErrorType.InternalServerError; //może być co innego, może dodać nowy?
-                    return result;
-                }
+                transaction.Commit();
             }
+            return result;
+
         }
 
         public async Task<Result<ICollection<Exercise>>> GetArchivedExercises(string coachId)
@@ -169,7 +156,7 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
-                result.Error = ErrorType.NoContent; //może inny?
+                result.Error = ErrorType.NotFound;
             }
 
             return result;
@@ -186,7 +173,7 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
-                result.Error = ErrorType.NoContent; //może inny?
+                result.Error = ErrorType.NotFound;
             }
 
             return result;
