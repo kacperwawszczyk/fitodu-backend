@@ -140,7 +140,7 @@ namespace Scheduledo.Service.Concrete
         {
             var result = new Result<ICollection<CoachOutput>>();
             var coaches = await _context.Coaches.ToListAsync();
-            if(coaches == null)
+            if (coaches == null)
             {
                 result.Error = ErrorType.NoContent;
                 result.ErrorMessage = "No coaches found";
@@ -170,43 +170,38 @@ namespace Scheduledo.Service.Concrete
         public async Task<Result<CoachOutput>> GetCoach(string Id)
         {
             var result = new Result<CoachOutput>();
-            var coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
-            if (coach == null)
+            CoachOutput coach = await _context.Coaches
+                .Select(nc => new CoachOutput
+                {
+                    Id = nc.Id,
+                    Name = nc.Name,
+                    Surname = nc.Surname,
+                    Rules = nc.Rules,
+                    AddressLine1 = nc.AddressLine1,
+                    AddressLine2 = nc.AddressLine2,
+                    AddressPostalCode = nc.AddressPostalCode,
+                    AddressCity = nc.AddressCity,
+                    AddressState = nc.AddressState,
+                    AddressCountry = nc.AddressCountry,
+                    TimeToResign = nc.TimeToResign
+                })
+                .FirstOrDefaultAsync(x => x.Id == Id);
+
+            if(coach == null)
             {
                 result.Error = ErrorType.NotFound;
                 return result;
             }
             else
             {
-                CoachOutput nc = new CoachOutput();
-                nc.Id = coach.Id;
-                nc.AddressCity = coach.AddressCity;
-                nc.AddressCountry = coach.AddressCountry;
-                nc.AddressLine1 = coach.AddressLine1;
-                nc.AddressLine2 = coach.AddressLine2;
-                nc.AddressPostalCode = coach.AddressPostalCode;
-                nc.AddressState = coach.AddressState;
-                nc.Name = coach.Name;
-                nc.Rules = coach.Rules;
-                nc.Surname = coach.Surname;
-                nc.TimeToResign = coach.TimeToResign;
-                result.Data = nc;
+                result.Data = coach;
                 return result;
             }
         }
 
-        //public async Task<Result> RegisterCoach(Coach coach)
-        //{
-        //    var result = new Result();
-
-        //    await _context.AddAsync(coach);
-        //    await _context.SaveChangesAsync();
-        //    return result;
-        //}
-
-        public async Task<Result> UpdateCoach(string Id, UpdateCoachInput coachNew)
+        public async Task<Result<long>> UpdateCoach(string Id, UpdateCoachInput coachNew)
         {
-            var result = new Result();
+            var result = new Result<long>();
             var coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
 
             coach.Name = coachNew.Name;
@@ -220,19 +215,17 @@ namespace Scheduledo.Service.Concrete
             coach.AddressLine2 = coachNew.AddressLine2;
             coach.UpdatedOn = DateTime.UtcNow;
 
-            
             using (var transaction = _context.Database.BeginTransaction())
             {
-                _context.Update(coach);
-                if(await _context.SaveChangesAsync() > 0)
-                {
-                    result = new Result(true);
-                    transaction.Commit();
-                }
-                else
+                _context.Coaches.Update(coach);
+                if (await _context.SaveChangesAsync() == 0)
                 {
                     result.Error = ErrorType.Forbidden;
                     transaction.Rollback();
+                }
+                else
+                {
+                    transaction.Commit();
                 }
             }
             return result;
@@ -242,38 +235,44 @@ namespace Scheduledo.Service.Concrete
         {
             var result = new Result<ICollection<ClientOutput>>();
             Coach coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
-            if(coach == null)
+            if (coach == null)
             {
                 result.Error = ErrorType.NoContent;
                 result.ErrorMessage = "No coach found";
                 return result;
             }
-            List<CoachClient> coachClients = await _context.CoachClients.Where(x => x.IdCoach == Id).ToListAsync();
-            if(coachClients.Count == 0)
+            List<CoachClient> coachClients = await _context.CoachClients
+                .Where(x => x.IdCoach == Id)
+                .ToListAsync();
+            if (coachClients.Count == 0)
             {
                 result.Error = ErrorType.NoContent;
                 result.ErrorMessage = "No clients found";
                 return result;
             }
             List<ClientOutput> clients = new List<ClientOutput>();
-            foreach(var x in coachClients)
+            foreach (var y in coachClients)
             {
-                Client client = await _context.Clients.FirstOrDefaultAsync(z => z.Id == x.IdClient);
-                ClientOutput nClient = new ClientOutput();
-                nClient.AddressCity = client.AddressCity;
-                nClient.AddressCountry = client.AddressCountry;
-                nClient.AddressLine1 = client.AddressLine1;
-                nClient.AddressLine2 = client.AddressLine2;
-                nClient.AddressPostalCode = client.AddressPostalCode;
-                nClient.AddressState = client.AddressState;
-                nClient.FatPercentage = client.FatPercentage;
-                nClient.Height = client.Height;
-                nClient.Name = client.Name;
-                nClient.Surname = client.Surname;
-                nClient.Weight = client.Weight;
-                nClient.Id = client.Id;
-                nClient.IsRegistered = client.IsRegistered;
-                clients.Add(nClient);
+                ClientOutput client = await _context.Clients
+                .Where(x => x.Id == y.IdClient)
+                .Select(x => new ClientOutput
+                {
+                    Id = x.Id,
+                    AddressCity = x.AddressCity,
+                    AddressCountry = x.AddressCountry,
+                    AddressLine1 = x.AddressLine1,
+                    AddressLine2 = x.AddressLine2,
+                    AddressPostalCode = x.AddressPostalCode,
+                    AddressState = x.AddressState,
+                    FatPercentage = x.FatPercentage,
+                    Height = x.Height,
+                    Name = x.Name,
+                    Surname = x.Surname,
+                    Weight = x.Weight,
+                    IsRegistered = x.IsRegistered
+                })
+                .FirstOrDefaultAsync();
+                clients.Add(client);
             }
             result.Data = clients;
             return result;

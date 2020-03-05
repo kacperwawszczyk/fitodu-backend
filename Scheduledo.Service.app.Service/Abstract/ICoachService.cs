@@ -14,6 +14,6 @@ namespace Scheduledo.Service.Abstract
         Task<Result<ICollection<ClientOutput>>> GetAllClients(string Id);
         Task<Result<CoachOutput>> GetCoach(string id);
         Task<Result> CoachRegister(RegisterCoachInput model);
-        Task<Result> UpdateCoach(string Id, UpdateCoachInput coach);
+        Task<Result<long>> UpdateCoach(string Id, UpdateCoachInput coach);
     }
 }

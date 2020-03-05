@@ -5,82 +5,86 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Scheduledo.Core.Enums;
 using Scheduledo.Model.Entities;
 using Scheduledo.Service.Abstract;
+using Scheduledo.Service.Infrastructure.Attributes;
 using Scheduledo.Service.Models;
 
 namespace Scheduledo.Api.Controllers
 {
     //[Route("api/[controller]")]
-    [Route("api/coaches")]
     [ApiController]
     //[Authorize]
     public class CoachController : BaseController
     {
         private readonly ICoachService _coachService;
-        private readonly ITokenService _tokenService;
-        private readonly IUserService _userService;
 
-        public CoachController(ICoachService coachService, ITokenService tokenService)
+        public CoachController(ICoachService coachService)
         {
             _coachService = coachService;
-            _tokenService = tokenService;
         }
-
-        [HttpPost("managed-coaches")]
+        // TODO: Uzupełnić
+        [HttpPost("coaches")]
         public async Task<IActionResult> CoachRegister([FromBody]RegisterCoachInput model)
         {
             var result = await _coachService.CoachRegister(model);
             return GetResult(result);
         }
 
-        [HttpGet]
-        public async Task<Result<ICollection<CoachOutput>>> GetAllCoaches()
+        // TODO: Wykomentować jak będzie niepotrzebne
+        /// <summary>
+        /// Used by anyone to get list of all coaches
+        /// </summary>
+        /// <returns> Returns ICollection of CoachOutput containing collecion of information about Coaches </returns>
+        [HttpGet("coaches")]
+        [Authorize]
+        [ProducesResponseType(typeof(ICollection<CoachOutput>), 200)]
+        public async Task<IActionResult> GetAllCoaches()
         {
-            var result = new Result<ICollection<CoachOutput>>();
-            result = await _coachService.GetAllCoaches();
-            return result;
+            var result = await _coachService.GetAllCoaches();
+            return GetResult(result);
         }
 
-        [HttpGet("me")]
-        [Authorize]
-        public async Task<Result<CoachOutput>> GetCoach([FromHeader] string Authorization)
+        /// <summary>
+        /// Used by Coach to get information about oneself
+        /// </summary>
+        /// <returns> Returns CoachOutput containing information about Coach </returns>
+        [HttpGet("coaches/me")]
+        [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(CoachOutput), 200)]
+        public async Task<IActionResult> GetCoach()
         {
-            var coachId = await _tokenService.GetRequesterCoachId(Authorization);
-            var result = new Result<CoachOutput>();
-            if(coachId.Data == null)
-            {
-                result.Error = Core.Enums.ErrorType.BadRequest;
-                return result;
-            }
-            else
-            {
-                string Id = coachId.Data;
-                result = await _coachService.GetCoach(Id);
-                return result;
-            }
+            var result = await _coachService.GetCoach(CurrentUser.Id);
+            return GetResult(result);
         }
 
-        [HttpPut("me")]
-        [Authorize]
-        public async Task<IActionResult> UpdateCoach([FromHeader] string Authorization, [FromBody] UpdateCoachInput coach)
+        /// <summary>
+        /// Used by Coach to update information about oneself
+        /// </summary>
+        /// <param name="coach"></param>
+        /// <returns> Returns long </returns>
+        [HttpPut("coaches/me")]
+        [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(long), 200)]
+        public async Task<IActionResult> UpdateCoach([FromBody] UpdateCoachInput coach)
         {
-            var coachId = await _tokenService.GetRequesterCoachId(Authorization);
-            string Id = coachId.Data;
-            var result = await _coachService.UpdateCoach(Id, coach);
+            var result = await _coachService.UpdateCoach(CurrentUser.Id, coach);
             return GetResult(result);
 
         }
 
-        [HttpGet("my-clients")]
-        [Authorize]
-        public async Task<Result<ICollection<ClientOutput>>> GetAllClients([FromHeader] string Authorization)
+        /// <summary>
+        /// Used by Coach to get list of Clients
+        /// </summary>
+        /// <returns> Returns ICollection of ClientOutput containing information about Clients </returns>
+        [HttpGet("coaches/clients")]
+        [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(ICollection<ClientOutput>), 200)]
+        public async Task<IActionResult> GetAllClients()
         {
-            var coachId = await _tokenService.GetRequesterCoachId(Authorization);
-            var result = new Result<ICollection<ClientOutput>>();
-            string Id = coachId.Data;
-            result = await _coachService.GetAllClients(Id);
-            return result;
+            var result = await _coachService.GetAllClients(CurrentUser.Id);
+            return GetResult(result);
         }
     }
 }
