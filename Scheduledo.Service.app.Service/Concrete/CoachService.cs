@@ -217,7 +217,7 @@ namespace Scheduledo.Service.Concrete
 
             using (var transaction = _context.Database.BeginTransaction())
             {
-                _context.Update(coach);
+                _context.Coaches.Update(coach);
                 if (await _context.SaveChangesAsync() == 0)
                 {
                     result.Error = ErrorType.Forbidden;

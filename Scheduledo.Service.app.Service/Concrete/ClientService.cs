@@ -534,7 +534,7 @@ namespace Scheduledo.Service.Concrete
                 client.UpdatedOn = DateTime.UtcNow;
                 using (var transaction = _context.Database.BeginTransaction())
                 {
-                    _context.Update(client);
+                    _context.Clients.Update(client);
                     if (await _context.SaveChangesAsync() <= 0)
                     {
                         transaction.Rollback();
