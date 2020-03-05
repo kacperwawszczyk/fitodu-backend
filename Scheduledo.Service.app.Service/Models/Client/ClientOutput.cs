@@ -21,25 +21,25 @@ namespace Scheduledo.Service.Models
         public string AddressCity { get; set; }
         public string AddressState { get; set; }
         public string AddressCountry { get; set; }
-        
 
-        public static ClientOutput Convert(Client client)
-        {
-            ClientOutput clientOutput = new ClientOutput();
-            clientOutput.Id = client.Id;
-            clientOutput.Name = client.Name;
-            clientOutput.Surname = client.Surname;
-            clientOutput.Height = client.Height;
-            clientOutput.Weight = client.Weight;
-            clientOutput.FatPercentage = client.FatPercentage;
-            clientOutput.IsRegistered = client.IsRegistered;
-            clientOutput.AddressCity = client.AddressCity;
-            clientOutput.AddressCountry = client.AddressCountry;
-            clientOutput.AddressLine1 = client.AddressLine1;
-            clientOutput.AddressLine2 = client.AddressLine2;
-            clientOutput.AddressPostalCode = client.AddressPostalCode;
-            clientOutput.AddressState = client.AddressState;
-            return clientOutput;
-        }
+
+        //public static ClientOutput Convert(Client client)
+        //{
+        //    ClientOutput clientOutput = new ClientOutput();
+        //    clientOutput.Id = client.Id;
+        //    clientOutput.Name = client.Name;
+        //    clientOutput.Surname = client.Surname;
+        //    clientOutput.Height = client.Height;
+        //    clientOutput.Weight = client.Weight;
+        //    clientOutput.FatPercentage = client.FatPercentage;
+        //    clientOutput.IsRegistered = client.IsRegistered;
+        //    clientOutput.AddressCity = client.AddressCity;
+        //    clientOutput.AddressCountry = client.AddressCountry;
+        //    clientOutput.AddressLine1 = client.AddressLine1;
+        //    clientOutput.AddressLine2 = client.AddressLine2;
+        //    clientOutput.AddressPostalCode = client.AddressPostalCode;
+        //    clientOutput.AddressState = client.AddressState;
+        //    return clientOutput;
+        //}
     }
 }

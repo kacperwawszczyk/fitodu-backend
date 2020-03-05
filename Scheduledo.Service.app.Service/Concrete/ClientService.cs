@@ -21,8 +21,8 @@ using System.Threading.Tasks;
 
 namespace Scheduledo.Service.Concrete
 {
-	public class ClientService : IClientService
-	{
+    public class ClientService : IClientService
+    {
         private readonly Context _context;
         private readonly IDateTimeService _dateTimeService;
         private readonly IConfiguration _configuration;
@@ -38,12 +38,12 @@ namespace Scheduledo.Service.Concrete
             _userManager = userManager;
         }
         public async Task<Result> CreateClientAccount(RegisterClientInput model)
-		{
+        {
             var result = new Result();
 
             var exist = await _context.CreateClientTokens.Where(x => x.UserId == model.Id && x.Token == model.Token).FirstOrDefaultAsync();
 
-            if(exist == null)
+            if (exist == null)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Invalid verification code";
@@ -108,7 +108,7 @@ namespace Scheduledo.Service.Concrete
 
                 var updateRegisteredStatus = _context.Clients.Update(client);
 
-                if(updateRegisteredStatus.State != EntityState.Modified)
+                if (updateRegisteredStatus.State != EntityState.Modified)
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
@@ -116,7 +116,7 @@ namespace Scheduledo.Service.Concrete
                     return result;
                 }
 
-                if(await _context.SaveChangesAsync() <= 0)
+                if (await _context.SaveChangesAsync() <= 0)
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
@@ -128,7 +128,7 @@ namespace Scheduledo.Service.Concrete
             }
 
             return result;
-		}
+        }
 
         public async Task<Result> DummyClientRegister(string CoachId, RegisterDummyClientInput model)
         {
@@ -136,13 +136,13 @@ namespace Scheduledo.Service.Concrete
 
             var coach = await _context.Coaches.Where(x => x.Id == CoachId).FirstOrDefaultAsync();
 
-            if(coach == null)
+            if (coach == null)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Coach doesn't exist";
                 return result;
             }
-            
+
             var newClient = new Client
             {
                 Name = model.Name,
@@ -195,14 +195,14 @@ namespace Scheduledo.Service.Concrete
 
             var creationToken = await _context.CreateClientTokens.Where(x => x.Token == model.Token).FirstOrDefaultAsync();
 
-            if(creationToken == null)
+            if (creationToken == null)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Invalid token";
                 return result;
             }
 
-            if(creationToken.ExpiresOn < DateTime.Now)
+            if (creationToken.ExpiresOn < DateTime.Now)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Code expired";
@@ -211,7 +211,7 @@ namespace Scheduledo.Service.Concrete
 
             var coach = await _context.Coaches.Where(x => x.Id == model.IdCoach).FirstOrDefaultAsync();
 
-            if(coach == null)
+            if (coach == null)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Coach doesn't exist";
@@ -282,7 +282,7 @@ namespace Scheduledo.Service.Concrete
 
                 var addCoachClient = await _context.CoachClients.AddAsync(coachClient);
 
-                if(addCoachClient.State != EntityState.Added)
+                if (addCoachClient.State != EntityState.Added)
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
@@ -311,7 +311,7 @@ namespace Scheduledo.Service.Concrete
 
             var client = await _context.Clients.Where(x => x.Id == model.Id).FirstOrDefaultAsync();
 
-            if(client == null)
+            if (client == null)
             {
                 result.Error = ErrorType.BadRequest;
 
@@ -363,7 +363,7 @@ namespace Scheduledo.Service.Concrete
             {
                 var addTokenResult = await _context.CreateClientTokens.AddAsync(createClientToken);
 
-                if(addTokenResult.State != EntityState.Added)
+                if (addTokenResult.State != EntityState.Added)
                 {
                     transaction.Rollback();
 
@@ -391,7 +391,7 @@ namespace Scheduledo.Service.Concrete
 
             var response = await _emailService.Send(message);
 
-            if(response.Code != HttpStatusCode.Accepted && response.Code != HttpStatusCode.OK)
+            if (response.Code != HttpStatusCode.Accepted && response.Code != HttpStatusCode.OK)
             {
                 result.Error = ErrorType.InternalServerError;
                 result.ErrorMessage = "Cannot send email.";
@@ -475,26 +475,43 @@ namespace Scheduledo.Service.Concrete
 
         public async Task<Result<ClientOutput>> GetClient(string Id)
         {
-            Client client = await _context.Clients.Where(x => x.Id == Id).FirstOrDefaultAsync();
             var result = new Result<ClientOutput>();
-            if(client == null)
+            ClientOutput client = await _context.Clients
+                .Where(x => x.Id == Id)
+                .Select(x => new ClientOutput
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Surname = x.Surname,
+                    Height = x.Height,
+                    Weight = x.Weight,
+                    FatPercentage = x.FatPercentage,
+                    IsRegistered = x.IsRegistered,
+                    AddressCity = x.AddressCity,
+                    AddressCountry = x.AddressCountry,
+                    AddressLine1 = x.AddressLine1,
+                    AddressLine2 = x.AddressLine2,
+                    AddressPostalCode = x.AddressPostalCode,
+                    AddressState = x.AddressState
+                })
+                .FirstOrDefaultAsync();
+
+            if (client == null)
             {
                 result.Error = ErrorType.NotFound;
                 result.ErrorMessage = "Client not found";
-                return result;
             }
             else
             {
-                ClientOutput clientOutput = ClientOutput.Convert(client);
-                result.Data = clientOutput;
-                return result;
+                result.Data = client;
             }
+            return result;
         }
 
-        public async Task<Result> UpdateClient(string Id, UpdateClientInput model)
+        public async Task<Result<long>> UpdateClient(string Id, UpdateClientInput model)
         {
             Client client = await _context.Clients.Where(x => x.Id == Id).FirstOrDefaultAsync();
-            var result = new Result();
+            var result = new Result<long>();
             if (client == null)
             {
                 result.Error = ErrorType.NotFound;
@@ -518,17 +535,16 @@ namespace Scheduledo.Service.Concrete
                 using (var transaction = _context.Database.BeginTransaction())
                 {
                     _context.Update(client);
-                    if(await _context.SaveChangesAsync() <= 0)
+                    if (await _context.SaveChangesAsync() <= 0)
                     {
                         transaction.Rollback();
                         result.Error = ErrorType.InternalServerError;
-                        return result;
                     }
                     else
                     {
                         transaction.Commit();
-                        return result;
                     }
+                    return result;
                 }
 
             }
@@ -555,19 +571,34 @@ namespace Scheduledo.Service.Concrete
                 }
                 else
                 {
-                    Coach coach = await _context.Coaches.Where(x => x.Id == coachClient.IdCoach).FirstOrDefaultAsync();
+                    CoachOutput coach = await _context.Coaches
+                        .Where(x => x.Id == coachClient.IdCoach)
+                        .Select(nc => new CoachOutput
+                        {
+                            Id = nc.Id,
+                            Name = nc.Name,
+                            Surname = nc.Surname,
+                            Rules = nc.Rules,
+                            AddressLine1 = nc.AddressLine1,
+                            AddressLine2 = nc.AddressLine2,
+                            AddressPostalCode = nc.AddressPostalCode,
+                            AddressCity = nc.AddressCity,
+                            AddressState = nc.AddressState,
+                            AddressCountry = nc.AddressCountry,
+                            TimeToResign = nc.TimeToResign
+                        })
+                        .FirstOrDefaultAsync();
+
                     if (coach == null)
                     {
                         result.Error = ErrorType.NotFound;
                         result.ErrorMessage = "Coach does not exist";
-                        return result;
                     }
                     else
                     {
-                        CoachOutput coachOutput = CoachOutput.GetCoachOutput(coach);
-                        result.Data = coachOutput;
-                        return result;
+                        result.Data = coach;
                     }
+                    return result;
                 }
             }
         }

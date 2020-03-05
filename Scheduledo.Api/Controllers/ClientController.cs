@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Scheduledo.Api.Controllers
 {
-	[Route("api/clients")]
+	//[Route("api/clients")]
 	[ApiController]
 	public class ClientController : BaseController
 	{
@@ -31,7 +31,7 @@ namespace Scheduledo.Api.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Coach)]
-		[HttpPost("dummy-register")]
+		[HttpPost("clients/dummy-register")]
 		public async Task<IActionResult> DummyClientRegister([FromHeader] string Authorization, [FromBody]RegisterDummyClientInput model)
 		{
 			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
@@ -43,7 +43,7 @@ namespace Scheduledo.Api.Controllers
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		[HttpPost]
+		[HttpPost("clients")]
 		public async Task<IActionResult> CreateClientAccount([FromBody]RegisterClientInput model)
 		{
 			var result = await _clientService.CreateClientAccount(model);
@@ -57,7 +57,7 @@ namespace Scheduledo.Api.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Coach)]
-		[HttpPost("send-link")]
+		[HttpPost("clients/send-link")]
 		public async Task<IActionResult> SendCreationLinkToClient([FromHeader] string Authorization, [FromBody]CreateClientVerificationTokenInput model)
 		{
 			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
@@ -70,7 +70,7 @@ namespace Scheduledo.Api.Controllers
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		[HttpPost("self-create-account")]
+		[HttpPost("clients/self-create-account")]
 		public async Task<IActionResult> SelfCreateClientAccount([FromBody]SelfRegisterClientInput model)
 		{
 			var result = await _clientService.SelfCreateClientAccount(model);
@@ -84,70 +84,52 @@ namespace Scheduledo.Api.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Coach)]
-		[HttpPost("self-send-link")]
+		[HttpPost("clients/self-send-link")]
 		public async Task<IActionResult> SendSelfCreationLinkToClient([FromHeader] string Authorization, [FromBody]CreateSelfClientVerificationTokenInput model)
 		{
 			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
 			var result = await _clientService.SendSelfCreationLinkToClient(CoachId.Data, model);
 			return GetResult(result);
 		}
+
 		/// <summary>
 		/// Used by Client to get information about oneself.
 		/// </summary>
-		/// <param name="Authorization"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Client)]
-		[HttpGet("me")]
-		public async Task<Result<ClientOutput>> GetClient([FromHeader] string Authorization)
+		[HttpGet("clients/me")]
+		[ProducesResponseType(typeof(ClientOutput), 200)]
+		public async Task<IActionResult> GetClient()
 		{
-			var clientId = await _tokenService.GetRequesterClientId(Authorization);
-			var result = new Result<ClientOutput>();
-			if(clientId.Data == null)
-			{
-				result.Error = Core.Enums.ErrorType.BadRequest;
-				return result;
-			}
-			else
-			{
-				result = await _clientService.GetClient(clientId.Data);
-				return result;
-			}
+			var result = await _clientService.GetClient(CurrentUser.Id);
+			return GetResult(result);
 		}
+
 		/// <summary>
 		/// Used by Client to update information about onself.
 		/// </summary>
-		/// <param name="Authorization"></param>
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Client)]
-		[HttpPut]
-		public async Task<IActionResult> UpdateClient([FromHeader] string Authorization, [FromBody] UpdateClientInput model)
+		[HttpPut("clients")]
+		[ProducesResponseType(typeof(long),200)]
+		public async Task<IActionResult> UpdateClient([FromBody] UpdateClientInput model)
 		{
-			var clientId = await _tokenService.GetRequesterClientId(Authorization);
-			var result = await _clientService.UpdateClient(clientId.Data, model);
+			var result = await _clientService.UpdateClient(CurrentUser.Id, model);
 			return GetResult(result);
 		}
+
 		/// <summary>
 		/// Used by Client to get information about its Coach.
 		/// </summary>
-		/// <param name="Authorization"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Client)]
-		[HttpGet("my-coach")]
-		public async Task<Result<CoachOutput>> GetClientCoach([FromHeader] string Authorization)
+		[HttpGet("clients/coach")]
+		[ProducesResponseType(typeof(CoachOutput), 200)]
+		public async Task<IActionResult> GetClientCoach()
 		{
-			var clientId = await _tokenService.GetRequesterClientId(Authorization);
-			var result = new Result<CoachOutput>();
-			if (clientId.Data == null)
-			{
-				result.Error = Core.Enums.ErrorType.BadRequest;
-				return result;
-			}
-			else
-			{
-				result = await _clientService.GetClientCoach(clientId.Data);
-				return result;
-			}
+			var result = await _clientService.GetClientCoach(CurrentUser.Id);
+			return GetResult(result);
 		}
 	}
 }
