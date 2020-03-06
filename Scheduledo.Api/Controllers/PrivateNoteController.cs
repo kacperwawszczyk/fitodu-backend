@@ -32,7 +32,6 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// Used to get a list of all private notes of a requsting coach
         /// </summary>
-        /// <param name="Authorization"></param>
         /// <returns></returns>
         [HttpGet]
         [AuthorizePolicy(UserRole.Coach)]
@@ -60,7 +59,6 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// Used to create a new private note
         /// </summary>
-        /// <param name="Authorization"></param>
         /// <param name="note"></param>
         /// <returns></returns>
         [HttpPost]
@@ -75,7 +73,6 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// Used to modify an existing private note
         /// </summary>
-        /// <param name="Authorization"></param>
         /// <param name="note"></param>
         /// <returns></returns>
         [HttpPut]
@@ -91,7 +88,6 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// Used to delete an existing private note
         /// </summary>
-        /// <param name="Authorization"></param>
         /// <param name="note"></param>
         /// <returns></returns>
         [HttpDelete]

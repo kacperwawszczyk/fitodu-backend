@@ -37,20 +37,28 @@ namespace Scheduledo.Service.Concrete
             if(notes != null)
             {
                 result.Data = notes;
-
             }
             else
             {
-                result.Error = ErrorType.NoContent; //może inny?
+                result.Error = ErrorType.NotFound;
             }
             return result;
         }
 
-        public async Task<Result<PublicNote>> GetClientsNote(string clientId)
+        public async Task<Result<PublicNote>> GetClientsNote(string clientId, string requesterId)
         {
 
             var result = new Result<PublicNote>();
-            var note = await _context.PublicNotes.Where(x =>  x.IdClient == clientId).FirstOrDefaultAsync();
+            var note = new PublicNote();
+            if( clientId == requesterId)
+            {
+                note = await _context.PublicNotes.Where(x => x.IdClient == clientId).FirstOrDefaultAsync();
+
+            }
+            else
+            {
+                note = await _context.PublicNotes.Where(x => x.IdClient == clientId && x.IdCoach == requesterId).FirstOrDefaultAsync();
+            }
 
             if (note != null)
             {
@@ -58,23 +66,36 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
-                result.Error = ErrorType.NoContent; //może inny?
+                result.Error = ErrorType.NotFound;
             }
             return result;
+
         }
 
         public async Task<Result> CreateNote(PublicNote note)
         {
             var result = new Result();
-            _context.PublicNotes.Add(note);
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                PublicNote existingNote = await _context.PublicNotes
+                .Where(x => x.IdCoach == note.IdCoach && x.IdClient == note.IdClient)
+                .FirstOrDefaultAsync();
 
-            if (await _context.SaveChangesAsync() > 0)
-            {
-                result = new Result(true);
-            }
-            else
-            {
-                result.Error = ErrorType.BadRequest; //może być co innego, może dodać nowy?
+                if (existingNote != null)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "this coach already has a public note for that client";
+                    return result;
+                }
+
+                _context.PublicNotes.Add(note);
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+                transaction.Commit();
             }
             return result;
         }
@@ -82,78 +103,58 @@ namespace Scheduledo.Service.Concrete
         public async Task<Result> UpdateNote(PublicNote note)
         {
             var result = new Result();
-
-            var noteInDatabase = await _context.PublicNotes.FindAsync(note.IdCoach, note.IdClient);
-
-
-            if(noteInDatabase != null)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                noteInDatabase.Note = note.Note;
-                try
+                PublicNote existingNote = await _context.PublicNotes
+                .Where(x => x.IdCoach == note.IdCoach && x.IdClient == note.IdClient)
+                .FirstOrDefaultAsync();
+
+                if (existingNote == null)
                 {
-                    if (await _context.SaveChangesAsync() > 0)
-                    {
-                        result = new Result(true);
-                    }
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "this coach does not have a public note for that client";
                     return result;
                 }
-                catch (DbUpdateConcurrencyException)
+
+                existingNote.Note = note.Note;
+
+                if (await _context.SaveChangesAsync() == 0)
                 {
-                    if (noteInDatabase != null)
-                    {
-                        result.Error = ErrorType.NotFound; //może być co innego, może dodać nowy?
-                        return result;
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
                 }
+                transaction.Commit();
             }
-            else
-            {
-                result.Error = ErrorType.NotFound;
-                return result;
-            }
-
-
+            return result;
         }
 
         public async Task<Result> DeleteNote(string coachId, string clientId)
         {
             var result = new Result();
-
-            var noteInDatabase = await _context.PublicNotes.FindAsync(coachId, clientId);
-
-            if (noteInDatabase != null)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                _context.PublicNotes.Remove(noteInDatabase);
-                try
+                PublicNote existingNote = await _context.PublicNotes
+                .Where(x => x.IdCoach == coachId && x.IdClient == clientId)
+                .FirstOrDefaultAsync();
+
+                if (existingNote == null)
                 {
-                    if (await _context.SaveChangesAsync() > 0)
-                    {
-                        result = new Result(true);
-                    }
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "this coach does not have a public note for that client";
                     return result;
                 }
-                catch (DbUpdateConcurrencyException)
+
+                _context.PublicNotes.Remove(existingNote);
+                if (await _context.SaveChangesAsync() == 0)
                 {
-                    if (noteInDatabase != null)
-                    {
-                        result.Error = ErrorType.NotFound;//może być co innego, może dodać nowy?
-                        return result;
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
                 }
+                transaction.Commit();
             }
-            else
-            {
-                result.Error = ErrorType.NotFound;
-                return result;
-            }
+            return result;
         }
     }
 }

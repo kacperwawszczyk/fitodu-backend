@@ -26,103 +26,71 @@ namespace Scheduledo.Api.Controllers
         }
 
 
-        //all public notes of a coach
+        /// <summary>
+        /// Used to get a list of all public notes of a requsting coach
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        [Authorize]
-        //[ProducesResponseType(typeof(ICollection<PublicNote>), 200)]
-        public async Task<IActionResult> GetAllNotes([FromHeader]string Authorization)
+        [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(ICollection<PublicNote>), 500)]
+        public async Task<IActionResult> GetAllNotes()
         {
-
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-
-            if (coachIdResult.Data != null)
-            {
-                string coachId = coachIdResult.Data;
-                var result = await _publicNoteService.GetAllNotes(coachId);
-                return GetResult(result);
-            }
-            else
-            {
-                return BadRequest();
-            }
+            var result = await _publicNoteService.GetAllNotes(CurrentUser.Id);
+            return GetResult(result);
         }
 
-        //all public notes of a coach's client
+        /// <summary>
+        /// Used to get a single public note of a client with given Id
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         [HttpGet("{clientId}")]
         [Authorize]
-        //[ProducesResponseType(PublicNote), 200)]
-        public async Task<IActionResult> GetUsersNote([FromHeader]string Authorization, string clientId)
+        [ProducesResponseType(typeof(PublicNote), 200)]
+        public async Task<IActionResult> GetUsersNote(string clientId)
         {
-
-            bool authorized = false;
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-
-            if (coachIdResult.Data != null)
-            {
-                authorized = true;
-            }
-            else
-            {
-                var clientIdResult = await _tokenService.GetRequesterClientId(Authorization);
-                if (clientIdResult.Data != null)
-                {
-                    authorized = true;
-                }
-            }
-
-            if(authorized)
-            {
-                var result = await _publicNoteService.GetClientsNote(clientId);
-                return GetResult(result);
-            }
-            else
-            {
-                return BadRequest();
-            }
+            var result = await _publicNoteService.GetClientsNote(clientId, CurrentUser.Id);
+            return GetResult(result);
         }
 
+        /// <summary>
+        /// Used to create a new public note
+        /// </summary>
+        /// <param name="note"></param>
+        /// <returns></returns>
         [HttpPost]
         [AuthorizePolicy(UserRole.Coach)]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateNote([FromHeader]string Authorization, [FromBody]PublicNote note)
+        public async Task<IActionResult> CreateNote([FromBody]PublicNote note)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-            if (note == null || note.IdCoach != coachIdResult.Data)
-            {
-                return BadRequest();
-            }
+            note.IdCoach = CurrentUser.Id;
             var result = await _publicNoteService.CreateNote(note);
             return GetResult(result);
         }
 
-
+        /// <summary>
+        /// Used to modify an existing public note
+        /// </summary>
+        /// <param name="note"></param>
+        /// <returns></returns>
         [HttpPut]
-        //[AuthorizePolicy(UserRole.Coach)]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateNote([FromHeader]string Authorization, [FromBody]PublicNote note)
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> UpdateNote([FromBody]PublicNote note)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-            if (note == null || note.IdCoach != coachIdResult.Data)
-            {
-                return BadRequest();
-            }
+            note.IdCoach = CurrentUser.Id;
             var result = await _publicNoteService.UpdateNote(note);
             return GetResult(result);
         }
 
+        /// <summary>
+        /// Used to delete an existing public note
+        /// </summary>
+        /// <param name="note"></param>
+        /// <returns></returns>
         [HttpDelete]
-        //[AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteNote([FromHeader]string Authorization, [FromBody]PublicNote note)
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> DeleteNote([FromBody]PublicNote note)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-            if (note == null || note.IdCoach != coachIdResult.Data)
-            {
-                return BadRequest();
-            }
-            string coachId = coachIdResult.Data;
-            var result = await _publicNoteService.DeleteNote(coachId, note.IdClient);
+            var result = await _publicNoteService.DeleteNote(CurrentUser.Id, note.IdClient);
             return GetResult(result);
         }
 
