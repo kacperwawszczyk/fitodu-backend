@@ -13,7 +13,6 @@ using Scheduledo.Service.Models.Maximum;
 
 namespace Scheduledo.Api.Controllers
 {
-    [Route("api/maximums")]
     [ApiController]
     public class MaximumController : BaseController
     {
@@ -26,82 +25,71 @@ namespace Scheduledo.Api.Controllers
             _tokenService = tokenService;
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetAllMaximums([FromHeader]string Authorization, string IdClient)
+        /// <summary>
+        /// Used by Coach to get a list of all Maximums of all Exercises of selected Client
+        /// </summary>
+        /// <param name="IdClient"> string type </param>
+        /// <returns> Returns ICollection of Maximum </returns>
+        [HttpGet("maximums")]
+        [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(ICollection<Maximum>), 200)]
+        public async Task<IActionResult> GetAllMaximums(string IdClient)
         {
-            var coachId = await _tokenService.GetRequesterCoachId(Authorization);
-
-            if (coachId.Data != null)
-            {
-                var result = await _maximumService.GetAllMaximums(coachId.Data, IdClient);
-                return GetResult(result);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-        [HttpGet("{IdExercise}")]
-        [Authorize]
-        public async Task<IActionResult> GetClientMaximum([FromHeader]string Authorization, string IdClient, int IdExercise)
-        {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-            if (coachIdResult.Data != null)
-            {
-                var result = await _maximumService.GetClientMaximum(coachIdResult.Data, IdClient, IdExercise);
-                return GetResult(result);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-        [HttpPost]
-        [Authorize]
-        //[AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> CreateMaximum([FromHeader]string Authorization, [FromBody]CreateMaximumInput max)
-        {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-
-            if (max == null)
-            {
-                return BadRequest();
-            }
-
-            var result = await _maximumService.CreateMaximum(coachIdResult.Data, max);
+            var result = await _maximumService.GetAllMaximums(CurrentUser.Id, IdClient);
             return GetResult(result);
         }
 
-        [HttpPut]
-        [Authorize]
-        public async Task<IActionResult> UpdateMaximum([FromHeader]string Authorization, [FromBody]Maximum max)
+        /// <summary>
+        /// Used by Coach to get a Maximum with given IdClient and IdExercise
+        /// </summary>
+        /// <param name="IdClient"> string type </param>
+        /// <param name="IdExercise"> string type </param>
+        /// <returns> Returns Maximum </returns>
+        [HttpGet("maximums/{IdExercise}")]
+        [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(Maximum), 200)]
+        public async Task<IActionResult> GetClientMaximum(string IdClient, int IdExercise)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-
-            if (max == null)
-            {
-                return BadRequest();
-            }
-
-            var result = await _maximumService.UpdateMaximum(coachIdResult.Data, max);
+            var result = await _maximumService.GetClientMaximum(CurrentUser.Id, IdClient, IdExercise);
             return GetResult(result);
         }
 
-        [HttpDelete]
-        [Authorize]
-        public async Task<IActionResult> DeleteMaximum([FromHeader]string Authorization, [FromBody]Maximum max)
+        /// <summary>
+        /// Used by Coach to create a new Maximum
+        /// </summary>
+        /// <param name="max"> CreateMaximumInput type </param>
+        /// <returns></returns>
+        [HttpPost("maximums")]
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> CreateMaximum([FromBody]CreateMaximumInput max)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
+            var result = await _maximumService.CreateMaximum(CurrentUser.Id, max);
+            return GetResult(result);
+        }
 
-            if (max == null)
-            {
-                return BadRequest();
-            }
+        /// <summary>
+        /// Used by Coach to modify an existing Maximum
+        /// </summary>
+        /// <param name="max"> Maximum type </param>
+        /// <returns></returns>
+        [HttpPut("maximums")]
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> UpdateMaximum([FromBody]Maximum max)
+        {
+            var result = await _maximumService.UpdateMaximum(CurrentUser.Id, max);
+            return GetResult(result);
+        }
 
-            var result = await _maximumService.DeleteMaximum(coachIdResult.Data, max);
+        /// <summary>
+        /// Used by Coach to delete an existing Maximum
+        /// </summary>
+        /// <param name="max"> Maximum type </param>
+        /// <returns></returns>
+        [HttpDelete("maximums")]
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> DeleteMaximum([FromBody]Maximum max)
+        {
+            var result = await _maximumService.DeleteMaximum(CurrentUser.Id, max);
             return GetResult(result);
         }
 
