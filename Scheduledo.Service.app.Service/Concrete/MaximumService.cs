@@ -31,6 +31,12 @@ namespace Scheduledo.Service.Concrete
         {
             var result = new Result<ICollection<Maximum>>();
 
+            if (IdCoach == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                return result;
+            }
+
             var max = await _context.Maximums.Where(x => x.IdClient == IdClient).ToListAsync();
 
             CoachClient coachClient = await _context.CoachClients
@@ -50,7 +56,7 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
-                result.Error = ErrorType.NoContent;
+                result.Error = ErrorType.NotFound;
             }
             return result;
         }
@@ -58,6 +64,12 @@ namespace Scheduledo.Service.Concrete
         public async Task<Result<Maximum>> GetClientMaximum(string IdCoach, string IdClient, int IdExercise)
         {
             var result = new Result<Maximum>();
+
+            if (IdCoach == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                return result;
+            }
 
             var max = await _context.Maximums
                 .Where(x => x.IdClient == IdClient && x.IdExercise == IdExercise)
@@ -80,7 +92,7 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
-                result.Error = ErrorType.NoContent;
+                result.Error = ErrorType.NotFound;
             }
             return result;
         }
@@ -88,6 +100,12 @@ namespace Scheduledo.Service.Concrete
         public async Task<Result> CreateMaximum(string IdCoach, CreateMaximumInput max)
         {
             var result = new Result();
+
+            if (max == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                return result;
+            }
 
             CoachClient coachClient = await _context.CoachClients
                 .Where(x => x.IdCoach == IdCoach && x.IdClient == max.IdClient)
@@ -115,16 +133,21 @@ namespace Scheduledo.Service.Concrete
             _max.IdClient = max.IdClient;
             _max.IdExercise = max.IdExercise;
             _max.Max = max.Max;
-            _context.Maximums.Add(_max);
 
-            if (await _context.SaveChangesAsync() > 0)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                result = new Result(true);
+                _context.Maximums.Add(_max);
+
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+
+                transaction.Commit();
             }
-            else
-            {
-                result.Error = ErrorType.BadRequest;
-            }
+
             return result;
         }
 
@@ -164,19 +187,22 @@ namespace Scheduledo.Service.Concrete
                 existingMaximum.IdClient = max.IdClient;
                 existingMaximum.IdExercise = max.IdExercise;
                 existingMaximum.Max = max.Max;
-                try
+
+                using (var transaction = _context.Database.BeginTransaction())
                 {
-                    if (await _context.SaveChangesAsync() > 0)
+                    _context.Maximums.Update(existingMaximum);
+
+                    if (await _context.SaveChangesAsync() == 0)
                     {
-                        result = new Result(true);
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        return result;
                     }
-                    return result;
+
+                    transaction.Commit();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    result.Error = ErrorType.InternalServerError;
-                    return result;
-                }
+
+                return result;
             }
         }
 
@@ -213,20 +239,21 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
-                _context.Maximums.Remove(existingMaximum);
-                try
+                using (var transaction = _context.Database.BeginTransaction())
                 {
-                    if (await _context.SaveChangesAsync() > 0)
+                    _context.Maximums.Remove(existingMaximum);
+
+                    if (await _context.SaveChangesAsync() == 0)
                     {
-                        result = new Result(true);
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        return result;
                     }
-                    return result;
+
+                    transaction.Commit();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    result.Error = ErrorType.InternalServerError;
-                    return result;
-                }
+
+                return result;
             }
         }
 
