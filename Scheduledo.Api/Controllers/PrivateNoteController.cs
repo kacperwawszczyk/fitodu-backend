@@ -10,12 +10,13 @@ using System.IdentityModel.Tokens.Jwt;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Scheduledo.Service.Concrete;
+using Scheduledo.Service.Infrastructure.Attributes;
+using Scheduledo.Core.Enums;
 
 namespace Scheduledo.Api.Controllers
 {
     [Route("api/private-notes")]
     [ApiController]
-    //[Authorize]
     public class PrivateNoteController : BaseController
     {
         private readonly IPrivateNoteService _privateNoteService;
@@ -28,91 +29,76 @@ namespace Scheduledo.Api.Controllers
         }
 
 
-        //all private notes of a coach
+        /// <summary>
+        /// Used to get a list of all private notes of a requsting coach
+        /// </summary>
+        /// <param name="Authorization"></param>
+        /// <returns></returns>
         [HttpGet]
-        [Authorize]
-        //[AuthorizePolicy(UserRole.Coach)]
-        //[ProducesResponseType(typeof(ICollection<PrivateNote>), 200)]
-        public async Task<IActionResult> GetAllNotes([FromHeader]string Authorization)
+        [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(ICollection<PrivateNote>), 500)]
+        public async Task<IActionResult> GetAllNotes()
         {
-
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-
-            if (coachIdResult.Data != null)
-            {
-                string coachId = coachIdResult.Data;
-                var result = await _privateNoteService.GetAllNotes(coachId);
-                return GetResult(result);
-
-            }
-            else
-            {
-                return BadRequest();
-            }
+            var result = await _privateNoteService.GetAllNotes(CurrentUser.Id);
+            return GetResult(result);
         }
 
-        //all private notes of a coach's client
+        /// <summary>
+        /// Used to get a single private notes of a requsting coach
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         [HttpGet("{clientId}")]
-        [Authorize]
-        //[AuthorizePolicy(UserRole.Coach)]
-        //[ProducesResponseType(PrivateNote), 200)]
-        public async Task<IActionResult> GetUsersNote([FromHeader]string Authorization, string clientId)
+        [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(PrivateNote), 500)]
+        public async Task<IActionResult> GetUsersNote(string clientId)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-            if (coachIdResult.Data != null)
-            {
-                string coachId = coachIdResult.Data;
-                var result = await _privateNoteService.GetClientsNote(coachId, clientId);
-                return GetResult(result);
-            }
-            else
-            {
-                return BadRequest();
-            }
+            var result = await _privateNoteService.GetClientsNote(CurrentUser.Id, clientId);
+            return GetResult(result);
         }
 
+        /// <summary>
+        /// Used to create a new private note
+        /// </summary>
+        /// <param name="Authorization"></param>
+        /// <param name="note"></param>
+        /// <returns></returns>
         [HttpPost]
-        //[AuthorizePolicy(UserRole.Coach)]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateNote([FromHeader]string Authorization, [FromBody]PrivateNote note)
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> CreateNote([FromBody]PrivateNote note)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-            if (note == null || note.IdCoach!=coachIdResult.Data)
-            {
-                return BadRequest();
-            }
+            note.IdCoach = CurrentUser.Id;
             var result = await _privateNoteService.CreateNote(note);
             return GetResult(result);
         }
 
-
+        /// <summary>
+        /// Used to modify an existing private note
+        /// </summary>
+        /// <param name="Authorization"></param>
+        /// <param name="note"></param>
+        /// <returns></returns>
         [HttpPut]
-        //[AuthorizePolicy(UserRole.Coach)]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateNote([FromHeader]string Authorization, [FromBody]PrivateNote note)
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> UpdateNote([FromBody]PrivateNote note)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-            if (note == null || note.IdCoach != coachIdResult.Data)
-            {
-                return BadRequest();
-            }
+            note.IdCoach = CurrentUser.Id;
             var result = await _privateNoteService.UpdateNote(note);
             return GetResult(result);
         }
 
+
+        /// <summary>
+        /// Used to delete an existing private note
+        /// </summary>
+        /// <param name="Authorization"></param>
+        /// <param name="note"></param>
+        /// <returns></returns>
         [HttpDelete]
         //[AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteNote([FromHeader]string Authorization, [FromBody]PrivateNote note)
+        public async Task<IActionResult> DeleteNote([FromBody]PrivateNote note)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-            if (note == null || note.IdCoach != coachIdResult.Data)
-            {
-                return BadRequest();
-            }
-            string coachId = coachIdResult.Data;
-            var result = await _privateNoteService.DeleteNote(coachId, note.IdClient);
+            var result = await _privateNoteService.DeleteNote(CurrentUser.Id, note.IdClient);
             return GetResult(result);
         }
 

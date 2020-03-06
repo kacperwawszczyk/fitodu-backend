@@ -33,7 +33,6 @@ namespace Scheduledo.Service.Concrete
 
             var notes = await _context.PrivateNotes.Where(x => x.IdCoach == Id)
                                                   .ToListAsync();
-
             if(notes != null)
             {
                 result.Data = notes;
@@ -41,7 +40,7 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
-                result.Error = ErrorType.NoContent; //może inny?
+                result.Error = ErrorType.NotFound;
             }
             return result;
         }
@@ -58,7 +57,7 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
-                result.Error = ErrorType.NoContent; //może inny?
+                result.Error = ErrorType.NotFound;
             }
             return result;
         }
@@ -66,15 +65,28 @@ namespace Scheduledo.Service.Concrete
         public async Task<Result> CreateNote(PrivateNote note)
         {
             var result = new Result();
-            _context.PrivateNotes.Add(note);
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                PrivateNote existingNote = await _context.PrivateNotes
+                .Where(x => x.IdCoach == note.IdCoach && x.IdClient == note.IdClient)
+                .FirstOrDefaultAsync();
 
-            if (await _context.SaveChangesAsync() > 0)
-            {
-                result = new Result(true);
-            }
-            else
-            {
-                result.Error = ErrorType.BadRequest; //może być co innego, może dodać nowy?
+                if(existingNote != null)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "this coach already has a private note for that client";
+                    return result;
+                }
+
+            
+                _context.PrivateNotes.Add(note);
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+                transaction.Commit();
             }
             return result;
         }
@@ -83,80 +95,58 @@ namespace Scheduledo.Service.Concrete
         {
             var result = new Result();
 
-            var noteInDatabase = await _context.PrivateNotes.FindAsync(note.IdCoach, note.IdClient);
-            //var noteInDatabase = _context.PrivateNotes.
-            //    Where(x => x.IdCoach == note.IdCoach && x.IdClient == note.IdClient).FirstOrDefaultAsync<PrivateNote>();
-
-           // _context.Entry(note).State = EntityState.Modified;
-
-            if(noteInDatabase != null)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                noteInDatabase.Note = note.Note;
-                try
+                PrivateNote existingNote = await _context.PrivateNotes
+                 .Where(x => x.IdCoach == note.IdCoach && x.IdClient == note.IdClient)
+                 .FirstOrDefaultAsync();
+
+                if (existingNote == null)
                 {
-                    if (await _context.SaveChangesAsync() > 0)
-                    {
-                        result = new Result(true);
-                    }
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "this coach does not have a private note for that client";
                     return result;
                 }
-                catch (DbUpdateConcurrencyException)
+
+                existingNote.Note = note.Note;
+                if (await _context.SaveChangesAsync() == 0)
                 {
-                    if (noteInDatabase != null)
-                    {
-                        result.Error = ErrorType.NotFound; //może być co innego, może dodać nowy?
-                        return result;
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
                 }
+                transaction.Commit();
             }
-            else
-            {
-                result.Error = ErrorType.NotFound;
-                return result;
-            }
-
-
+            return result;
         }
 
         public async Task<Result> DeleteNote(string coachId, string clientId)
         {
             var result = new Result();
 
-            var noteInDatabase = await _context.PrivateNotes.FindAsync(coachId, clientId);
-
-            if (noteInDatabase != null)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                _context.PrivateNotes.Remove(noteInDatabase);
-                try
+                PrivateNote existingNote = await _context.PrivateNotes
+                 .Where(x => x.IdCoach == coachId && x.IdClient == clientId)
+                 .FirstOrDefaultAsync();
+
+                if (existingNote == null)
                 {
-                    if (await _context.SaveChangesAsync() > 0)
-                    {
-                        result = new Result(true);
-                    }
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "this coach does not have a private note for that client";
                     return result;
                 }
-                catch (DbUpdateConcurrencyException)
+
+                _context.PrivateNotes.Remove(existingNote);
+                if (await _context.SaveChangesAsync() == 0)
                 {
-                    if (noteInDatabase != null)
-                    {
-                        result.Error = ErrorType.NotFound;//może być co innego, może dodać nowy?
-                        return result;
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
                 }
+                transaction.Commit();
             }
-            else
-            {
-                result.Error = ErrorType.NotFound;
-                return result;
-            }
+            return result;
         }
     }
 }
