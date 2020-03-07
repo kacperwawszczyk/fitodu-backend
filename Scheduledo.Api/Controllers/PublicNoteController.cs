@@ -32,7 +32,7 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpGet]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(ICollection<PublicNote>), 500)]
+        [ProducesResponseType(typeof(ICollection<PublicNote>), 200)]
         public async Task<IActionResult> GetAllNotes()
         {
             var result = await _publicNoteService.GetAllNotes(CurrentUser.Id);

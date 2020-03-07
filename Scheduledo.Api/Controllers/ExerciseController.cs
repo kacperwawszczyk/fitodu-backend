@@ -34,7 +34,7 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpGet]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(ICollection<Exercise>), 500)]
+        [ProducesResponseType(typeof(ICollection<Exercise>), 200)]
         public async Task<IActionResult> GetAllExercises() //all exercises of a coach
         { 
             var result = await _exerciseService.GetAllExercises(CurrentUser.Id);
@@ -47,7 +47,7 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpGet("archived")]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(ICollection<Exercise>), 500)]
+        [ProducesResponseType(typeof(ICollection<Exercise>), 200)]
         public async Task<IActionResult> GetArchivedExercises() //all archived exercises of a coach
         {
             var result = await _exerciseService.GetArchivedExercises(CurrentUser.Id);
@@ -60,7 +60,7 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpGet("not-archived")]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(ICollection<Exercise>), 500)]
+        [ProducesResponseType(typeof(ICollection<Exercise>), 200)]
         public async Task<IActionResult> GetNotArchivedExercises() //all  not archived exercises of a coach
         {
             var result = await _exerciseService.GetNotArchivedExercises(CurrentUser.Id);

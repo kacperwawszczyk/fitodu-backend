@@ -25,42 +25,67 @@ namespace Scheduledo.Service.Concrete
             _mapper = mapper;
         }
 
-
-
-        public async Task<Result<ICollection<Training>>> GetCoachsTrainings(string idCoach)
+        public async Task<Result<ICollection<Training>>> GetTrainings(string id, UserRole role)
         {
             var result = new Result<ICollection<Training>>();
 
-            var coachsTrainings = await _context.Trainings.Where(x => x.IdCoach == idCoach).ToListAsync();
+            var trainings = new List<Training>();
 
-            if(coachsTrainings != null)
+            if(role == UserRole.Coach)
             {
-                result.Data = coachsTrainings;
+                trainings = await _context.Trainings.Where(x => x.IdCoach == id).ToListAsync();
+            }
+            else if(role == UserRole.Client)
+            {
+                trainings = await _context.Trainings.Where(x => x.IdClient == id).ToListAsync();
+            }
+
+            if(trainings != null)
+            {
+                result.Data = trainings;
             }
             else
             {
-                result.Error = ErrorType.NotFound; //może inny?
-            }
-            return result;
-
-        }
-
-        public async Task<Result<ICollection<Training>>> GetClientsTrainings(string idClient)
-        {
-            var result = new Result<ICollection<Training>>();
-
-            var clientsTrainings = await _context.Trainings.Where(x => x.IdClient == idClient).ToListAsync();
-
-            if(clientsTrainings != null)
-            {
-                result.Data = clientsTrainings;
-            }
-            else
-            {
-                result.Error = ErrorType.NotFound; //może inny?
+                result.Error = ErrorType.NotFound;
             }
             return result;
         }
+
+        //TODO: Usunąć jak na pewno nie będzie potrzebne
+        //public async Task<Result<ICollection<Training>>> GetCoachsTrainings(string idCoach)
+        //{
+        //    var result = new Result<ICollection<Training>>();
+
+        //    var coachsTrainings = await _context.Trainings.Where(x => x.IdCoach == idCoach).ToListAsync();
+
+        //    if(coachsTrainings != null)
+        //    {
+        //        result.Data = coachsTrainings;
+        //    }
+        //    else
+        //    {
+        //        result.Error = ErrorType.NotFound;
+        //    }
+        //    return result;
+
+        //}
+
+        //public async Task<Result<ICollection<Training>>> GetClientsTrainings(string idClient)
+        //{
+        //    var result = new Result<ICollection<Training>>();
+
+        //    var clientsTrainings = await _context.Trainings.Where(x => x.IdClient == idClient).ToListAsync();
+
+        //    if(clientsTrainings != null)
+        //    {
+        //        result.Data = clientsTrainings;
+        //    }
+        //    else
+        //    {
+        //        result.Error = ErrorType.NotFound;
+        //    }
+        //    return result;
+        //}
 
         public async Task<Result> AddTraining(TrainingInput trainingInput)
         {
@@ -74,13 +99,9 @@ namespace Scheduledo.Service.Concrete
             _training.Description = trainingInput.Description;
 
             _context.Trainings.Add(_training);
-            if (await _context.SaveChangesAsync() > 0)
+            if (await _context.SaveChangesAsync() == 0)
             {
-                result = new Result(true);
-            }
-            else
-            {
-                result.Error = ErrorType.BadRequest; //może być co innego, może dodać nowy?
+                result.Error = ErrorType.InternalServerError;
             }
             return result;
         }
@@ -97,7 +118,7 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
-                result.Error = ErrorType.NotFound; //może inny?
+                result.Error = ErrorType.NotFound;
             }
             return result;
         }
@@ -106,57 +127,78 @@ namespace Scheduledo.Service.Concrete
         {
             var result = new Result();
 
-            var exisitngTraining = await _context.Trainings.Where(
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                var exisitngTraining = await _context.Trainings.Where(
                 x => x.Id == training.Id).FirstOrDefaultAsync();
 
-            if(exisitngTraining == null)
-            {
-                result.Error = ErrorType.NotFound; //może inny?
-                result.ErrorMessage = "Training with this Id does not exist in the database";
-                return result;
-            }
+                if (exisitngTraining == null)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "Training with this Id does not exist in the database";
+                    return result;
+                }
 
-            exisitngTraining.IdClient = training.IdClient;
-            exisitngTraining.Note = training.Note;
-            exisitngTraining.Description = training.Description;
-            exisitngTraining.Date = training.Date;
+                exisitngTraining.IdClient = training.IdClient;
+                exisitngTraining.Note = training.Note;
+                exisitngTraining.Description = training.Description;
+                exisitngTraining.Date = training.Date;
 
-            if (await _context.SaveChangesAsync() > 0)
-            {
-                result = new Result(true);
-            }
-            else
-            {
-                result.Error = ErrorType.BadRequest; //może być co innego, może dodać nowy?
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+                transaction.Commit();
             }
             return result;
         }
+            
 
         public async Task<Result> DeleteTraining(Training training)
         {
             var result = new Result();
-            var exisitngTraining = await _context.Trainings.Where(
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                var existingTraining = await _context.Trainings.Where(
                 x => x.Id == training.Id).FirstOrDefaultAsync();
 
-            if (exisitngTraining == null)
-            {
-                result.Error = ErrorType.NotFound; //może inny?
-                result.ErrorMessage = "Training with this Id does not exist in the database";
-                return result;
-            }
+                if (existingTraining == null)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "Training with this Id does not exist in the database";
+                    return result;
+                }
 
-            _context.Trainings.Remove(exisitngTraining);
+                _context.Trainings.Remove(existingTraining);
 
-            if (await _context.SaveChangesAsync() > 0)
-            {
-                result = new Result(true);
-            }
-            else
-            {
-                result.Error = ErrorType.BadRequest; //może być co innego, może dodać nowy?
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+
+                var trainingsExercises = await _context.TrainingExercises.Where
+                (x => x.IdTraining == training.Id).ToListAsync();
+
+
+                if (trainingsExercises.Count != 0)
+                {
+                    _context.TrainingExercises.RemoveRange(trainingsExercises);
+                    if (await _context.SaveChangesAsync() == 0)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        return result;
+                    }
+                }
+                transaction.Commit();
             }
             return result;
-
         }
+
+        
     }
 }

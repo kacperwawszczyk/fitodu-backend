@@ -35,7 +35,7 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpGet]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(ICollection<PrivateNote>), 500)]
+        [ProducesResponseType(typeof(ICollection<PrivateNote>), 200)]
         public async Task<IActionResult> GetAllNotes()
         {
             var result = await _privateNoteService.GetAllNotes(CurrentUser.Id);
@@ -49,7 +49,7 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpGet("{clientId}")]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(PrivateNote), 500)]
+        [ProducesResponseType(typeof(PrivateNote), 200)]
         public async Task<IActionResult> GetUsersNote(string clientId)
         {
             var result = await _privateNoteService.GetClientsNote(CurrentUser.Id, clientId);
@@ -91,7 +91,7 @@ namespace Scheduledo.Api.Controllers
         /// <param name="note"></param>
         /// <returns></returns>
         [HttpDelete]
-        //[AuthorizePolicy(UserRole.Coach)]
+        [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> DeleteNote([FromBody]PrivateNote note)
         {
             var result = await _privateNoteService.DeleteNote(CurrentUser.Id, note.IdClient);
