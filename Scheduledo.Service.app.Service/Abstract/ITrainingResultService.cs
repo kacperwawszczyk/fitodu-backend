@@ -1,4 +1,5 @@
-﻿using Scheduledo.Model.Entities;
+﻿using Scheduledo.Core.Enums;
+using Scheduledo.Model.Entities;
 using Scheduledo.Service.Models;
 using System;
 using System.Collections.Generic;
@@ -9,9 +10,9 @@ namespace Scheduledo.Service.Abstract
 {
     public interface ITrainingResultService
     {
-        Task<Result<ICollection<TrainingResult>>> GetTrainingsResults(int idTraining);
-        Task<Result> AddTrainingResult(TrainingResultInput trainingResult);
-        Task<Result> EditTrainingResult(TrainingResult trainingResult);
-        Task<Result> DeleteTrainingResult(TrainingResult trainingResult);
+        Task<Result<ICollection<TrainingResult>>> GetTrainingsResults(int idTraining, string coachId, UserRole role);
+        Task<Result> AddTrainingResult(TrainingResultInput trainingResult, string coachId);
+        Task<Result> EditTrainingResult(TrainingResult trainingResult, string coachId);
+        Task<Result> DeleteTrainingResult(TrainingResult trainingResult, string coachId);
     }
 }

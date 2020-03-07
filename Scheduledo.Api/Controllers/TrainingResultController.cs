@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Scheduledo.Core.Enums;
 using Scheduledo.Model.Entities;
 using Scheduledo.Service.Abstract;
+using Scheduledo.Service.Infrastructure.Attributes;
 
 namespace Scheduledo.Api.Controllers
 {
@@ -16,81 +18,68 @@ namespace Scheduledo.Api.Controllers
     {
         private readonly ITrainingResultService _trainingResultService;
         private readonly ITokenService _tokenService;
-        private readonly ITrainingService _trainingService;
+        
 
-        public TrainingResultController(ITrainingResultService trainingResultService, ITokenService tokenService,
-            ITrainingService trainingService)
+        public TrainingResultController(ITrainingResultService trainingResultService, ITokenService tokenService)
         {
             _trainingResultService = trainingResultService;
             _tokenService = tokenService;
-            _trainingService = trainingService;
         }
 
+
+        /// <summary>
+        /// Used to get a list of exercises' results for a given training
+        /// </summary>
+        /// <param name="idTraining"></param>
+        /// <returns></returns>
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetTrainingsResults([FromHeader]string Authorization, int idTraining)
+        [ProducesResponseType(typeof(ICollection<TrainingResult>), 200)]
+        public async Task<IActionResult> GetTrainingsResults(int idTraining)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-            var trainingsCoachResult = await _trainingService.GetTrainingsCoach(idTraining);
-
-            //check if this training is related to requesting coach
-            if (coachIdResult == null || trainingsCoachResult == null || coachIdResult.Data != trainingsCoachResult.Data)
-            {
-                return BadRequest();
-            }
-
-            var result = await _trainingResultService.GetTrainingsResults(idTraining);
+            var result = await _trainingResultService.GetTrainingsResults(idTraining, CurrentUser.Id, CurrentUser.Role);
             return GetResult(result);
         }
 
+
+        /// <summary>
+        /// Used to create a new result
+        /// </summary>
+        /// <param name="trainingResultInput"></param>
+        /// <returns></returns>
         [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> AddTrainingResult([FromHeader]string Authorization, [FromBody]TrainingResultInput trainingResultInput)
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> AddTrainingResult([FromBody]TrainingResultInput trainingResultInput)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-            var trainingsCoachResult = await _trainingService.GetTrainingsCoach(trainingResultInput.IdTraining);
-
-            //check if this training is related to requesting coach
-            if (coachIdResult == null || trainingsCoachResult == null || coachIdResult.Data != trainingsCoachResult.Data)
-            {
-                return BadRequest();
-            }
-
-            var result = await _trainingResultService.AddTrainingResult(trainingResultInput);
+            var result = await _trainingResultService.AddTrainingResult(trainingResultInput, CurrentUser.Id);
             return GetResult(result);
         }
 
+
+        /// <summary>
+        /// Used to modify an existing result
+        /// </summary>
+        /// <param name="trainingResult"></param>
+        /// <returns></returns>
         [HttpPut]
-        [Authorize]
-        public async Task<IActionResult> EditTrainingResult([FromHeader]string Authorization, [FromBody]TrainingResult trainingResult)
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> EditTrainingResult([FromBody]TrainingResult trainingResult)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-            var trainingsCoachResult = await _trainingService.GetTrainingsCoach(trainingResult.IdTraining);
-
-            //check if this training is related to requesting coach
-            if (coachIdResult == null || trainingsCoachResult == null || coachIdResult.Data != trainingsCoachResult.Data)
-            {
-                return BadRequest();
-            }
-
-            var result = await _trainingResultService.EditTrainingResult(trainingResult);
+            var result = await _trainingResultService.EditTrainingResult(trainingResult, CurrentUser.Id);
             return GetResult(result);
         }
 
+
+        /// <summary>
+        /// Used to delete an existing result
+        /// </summary>
+        /// <param name="trainingResult"></param>
+        /// <returns></returns>
         [HttpDelete]
-        [Authorize]
-        public async Task<IActionResult> DeleteTrainingResult([FromHeader]string Authorization, [FromBody]TrainingResult trainingResult)
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> DeleteTrainingResult([FromBody]TrainingResult trainingResult)
         {
-            var coachIdResult = await _tokenService.GetRequesterCoachId(Authorization);
-            var trainingsCoachResult = await _trainingService.GetTrainingsCoach(trainingResult.IdTraining);
-
-            //check if this training is related to requesting coach
-            if (coachIdResult == null || trainingsCoachResult == null || coachIdResult.Data != trainingsCoachResult.Data)
-            {
-                return BadRequest();
-            }
-
-            var result = await _trainingResultService.DeleteTrainingResult(trainingResult);
+            var result = await _trainingResultService.DeleteTrainingResult(trainingResult, CurrentUser.Id);
             return GetResult(result);
         }
     }

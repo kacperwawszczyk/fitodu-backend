@@ -11,7 +11,7 @@ namespace Scheduledo.Service.Abstract
 {
     public interface ITrainingService
     {
-        Task<Result<string>> GetTrainingsCoach(int idTraining);
+        
         //TODO: Usunąć jak na pewno nie będzie potrzebne
         //Task<Result<ICollection<Training>>> GetCoachsTrainings(string idCoach);
         //Task<Result<ICollection<Training>>> GetClientsTrainings(string idClient);
@@ -19,5 +19,7 @@ namespace Scheduledo.Service.Abstract
         Task<Result> EditTraining(Training training);
         Task<Result> DeleteTraining(Training training);
         Task<Result<ICollection<Training>>> GetTrainings(string id, UserRole role);
+        Task<Result<string>> GetTrainingsClient(int idTraining);
+        Task<Result<string>> GetTrainingsCoach(int idTraining);
     }
 }

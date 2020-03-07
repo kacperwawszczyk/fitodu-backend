@@ -199,6 +199,21 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        
+        public async Task<Result<string>> GetTrainingsClient(int idTraining)
+        {
+            var result = new Result<string>();
+
+            Training training = await _context.Trainings.Where(x => x.Id == idTraining).FirstOrDefaultAsync();
+
+            if (training != null)
+            {
+                result.Data = training.IdClient;
+            }
+            else
+            {
+                result.Error = ErrorType.NotFound;
+            }
+            return result;
+        }
     }
 }

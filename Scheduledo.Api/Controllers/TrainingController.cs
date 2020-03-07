@@ -15,7 +15,7 @@ using Scheduledo.Service.Models.TrainingExercise;
 
 namespace Scheduledo.Api.Controllers
 {
-    [Route("api/training")]
+    [Route("api/trainings")]
     [ApiController]
     [Authorize]
     public class TrainingController : BaseController
