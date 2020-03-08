@@ -1,4 +1,5 @@
-﻿using Scheduledo.Model.Entities;
+﻿using Scheduledo.Core.Enums;
+using Scheduledo.Model.Entities;
 using Scheduledo.Service.Models;
 using Scheduledo.Service.Models.TrainingExercise;
 using System;
@@ -10,10 +11,10 @@ namespace Scheduledo.Service.Abstract
 {
     public interface ITrainingExerciseService
     {
-        Task<Result<ICollection<TrainingExercise>>> GetTrainingsExercises(int idTraining);
-        Task<Result> AddTrainingExercise(TrainingExerciseInput trainingExerciseInput);
-        Task<Result> EditTrainingExercise(TrainingExercise trainingExercise);
-        Task<Result> DeleteTrainingExercise(TrainingExercise trainingExercise);
+        Task<Result<ICollection<TrainingExercise>>> GetTrainingsExercises(int idTraining, string userId, UserRole role);
+        Task<Result> AddTrainingExercise(TrainingExerciseInput trainingExerciseInput, string coachId);
+        Task<Result> EditTrainingExercise(TrainingExercise trainingExercise, string coachId);
+        Task<Result> DeleteTrainingExercise(TrainingExercise trainingExercise, string coachId);
        // Task<Result> DeleteTrainingsExercises(int idTraining);
     }
 }

@@ -18,36 +18,69 @@ namespace Scheduledo.Service.Concrete
     {
         private readonly IMapper _mapper;
         private readonly Context _context;
+        private readonly ITrainingService _trainingService;
 
-        public TrainingExerciseService(Context context, IMapper mapper)
+        public TrainingExerciseService(Context context, IMapper mapper,
+            ITrainingService trainingService)
         {
             _context = context;
             _mapper = mapper;
+            _trainingService = trainingService;
         }
 
-        public async Task<Result<ICollection<TrainingExercise>>> GetTrainingsExercises(int idTraining)
+        public async Task<Result<ICollection<TrainingExercise>>> GetTrainingsExercises(int idTraining, string userId, UserRole role)
         {
             var result = new Result<ICollection<TrainingExercise>>();
-
-            var trainingExercises = await _context.TrainingExercises.Where(x => x.IdTraining == idTraining).ToListAsync();
-        
-            if(trainingExercises != null)
+            if (role == UserRole.Coach)
             {
-                result.Data = trainingExercises;
+                var trainingsCoachResult = await _trainingService.GetTrainingsCoach(idTraining);
+
+                //check if this training is related to the requesting coach
+                if (trainingsCoachResult.Data != userId)
+                {
+                    result.Error = ErrorType.Forbidden;
+                    return result;
+                }
+            }
+            else if (role == UserRole.Client)
+            {
+                var trainingsCoachResult = await _trainingService.GetTrainingsClient(idTraining);
+
+                //check if this training is related to the requesting client
+                if (trainingsCoachResult.Data != userId)
+                {
+                    result.Error = ErrorType.Forbidden;
+                    return result;
+                }
+            }
+
+            var trainingResults = await _context.TrainingExercises.Where(x => x.IdTraining == idTraining).ToListAsync();
+
+            if (trainingResults != null)
+            {
+                result.Data = trainingResults;
             }
             else
             {
-                result.Error = ErrorType.NotFound; //może inny?
+                result.Error = ErrorType.NotFound;
             }
             return result;
         }
 
-        public async Task<Result> AddTrainingExercise(TrainingExerciseInput trainingExerciseInput)
+        public async Task<Result> AddTrainingExercise(TrainingExerciseInput trainingExerciseInput, string coachId)
         {
             var result = new Result();
 
+            var trainingsCoachResult = await _trainingService.GetTrainingsCoach(trainingExerciseInput.IdTraining);
 
-            TrainingExercise _trainingExercise = new TrainingExercise();
+            //check if this training is related to the requesting coach
+            if (trainingsCoachResult.Data != coachId)
+            {
+                result.Error = ErrorType.Forbidden;
+                return result;
+            }
+
+             TrainingExercise _trainingExercise = new TrainingExercise();
             _trainingExercise.IdExercise = trainingExerciseInput.IdExercise;
             _trainingExercise.IdTraining = trainingExerciseInput.IdTraining;
             _trainingExercise.Repetitions = trainingExerciseInput.Repetitions;
@@ -57,76 +90,93 @@ namespace Scheduledo.Service.Concrete
 
             _context.TrainingExercises.Add(_trainingExercise);
 
-            if (await _context.SaveChangesAsync() > 0)
+            if (await _context.SaveChangesAsync() == 0)
             {
-                result = new Result(true);
-            }
-            else
-            {
-                result.Error = ErrorType.BadRequest; //może być co innego, może dodać nowy?
+                result.Error = ErrorType.InternalServerError;
             }
             return result;
         }
 
-        public async Task<Result> EditTrainingExercise(TrainingExercise trainingExercise)
+        public async Task<Result> EditTrainingExercise(TrainingExercise trainingExercise, string coachId)
         {
             var result = new Result();
 
-            var existingTrainingExercise = await _context.TrainingExercises.Where
-                (x=> x.IdTrainingExercise == trainingExercise.IdTrainingExercise).FirstOrDefaultAsync();
+            var trainingsCoachResult = await _trainingService.GetTrainingsCoach(trainingExercise.IdTraining);
 
-            if(existingTrainingExercise == null)
+            //check if this training is related to the requesting coach
+            if (trainingsCoachResult.Data != coachId)
             {
-                result.Error = ErrorType.NotFound; //może inny?
-                result.ErrorMessage = "This exercise does not exist in the database";
+                result.Error = ErrorType.Forbidden;
                 return result;
             }
 
-            existingTrainingExercise.IdExercise = trainingExercise.IdExercise;
-            existingTrainingExercise.Repetitions = trainingExercise.Repetitions;
-            existingTrainingExercise.Time = trainingExercise.Time;
-            existingTrainingExercise.TrainerNote = trainingExercise.TrainerNote;
-            existingTrainingExercise.Description = trainingExercise.Description;
-
-
-            if (await _context.SaveChangesAsync() > 0)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                result = new Result(true);
-            }
-            else
-            {
-                result.Error = ErrorType.BadRequest; //może być co innego, może dodać nowy?
-            }
-            return result;
-        }
-
-        public async Task<Result> DeleteTrainingExercise(TrainingExercise trainingExercise)
-        {
-            var result = new Result();
-
-            var existingTrainingExercise = await _context.TrainingExercises.Where
+                var existingTrainingExercise = await _context.TrainingExercises.Where
                 (x => x.IdTrainingExercise == trainingExercise.IdTrainingExercise).FirstOrDefaultAsync();
 
-            if (existingTrainingExercise == null)
-            {
-                result.Error = ErrorType.NotFound; //może inny?
-                result.ErrorMessage = "This exercise does not exist in the database";
-                return result;
-            }
+                if (existingTrainingExercise == null)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "This exercise does not exist in the database";
+                    return result;
+                }
 
-            _context.TrainingExercises.Remove(existingTrainingExercise);
-
-            if (await _context.SaveChangesAsync() > 0)
-            {
-                result = new Result(true);
-            }
-            else
-            {
-                result.Error = ErrorType.BadRequest; //może być co innego, może dodać nowy?
+                existingTrainingExercise.IdExercise = trainingExercise.IdExercise;
+                existingTrainingExercise.Repetitions = trainingExercise.Repetitions;
+                existingTrainingExercise.Time = trainingExercise.Time;
+                existingTrainingExercise.TrainerNote = trainingExercise.TrainerNote;
+                existingTrainingExercise.Description = trainingExercise.Description;
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+                transaction.Commit();
             }
             return result;
         }
 
+
+        public async Task<Result> DeleteTrainingExercise(TrainingExercise trainingExercise, string coachId)
+        {
+            var result = new Result();
+
+            var trainingsCoachResult = await _trainingService.GetTrainingsCoach(trainingExercise.IdTraining);
+
+            //check if this training is related to the requesting coach
+            if (trainingsCoachResult.Data != coachId)
+            {
+                result.Error = ErrorType.Forbidden;
+                return result;
+            }
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                var existingTrainingExercise = await _context.TrainingExercises.Where
+                (x => x.IdTrainingExercise == trainingExercise.IdTrainingExercise).FirstOrDefaultAsync();
+
+                if (existingTrainingExercise == null)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "This exercise does not exist in the database";
+                    return result;
+                }
+
+                _context.TrainingExercises.Remove(existingTrainingExercise);
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+                transaction.Commit();
+            }
+            return result;
+        }
+
+        //TODO: Usunąć jak na pewno nie będzie potrzebne
         //public async Task<Result> DeleteTrainingsExercises(int idTraining)
         //{
         //    var result = new Result();

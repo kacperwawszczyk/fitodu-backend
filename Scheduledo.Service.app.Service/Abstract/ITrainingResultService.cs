@@ -10,7 +10,7 @@ namespace Scheduledo.Service.Abstract
 {
     public interface ITrainingResultService
     {
-        Task<Result<ICollection<TrainingResult>>> GetTrainingsResults(int idTraining, string coachId, UserRole role);
+        Task<Result<ICollection<TrainingResult>>> GetTrainingsResults(int idTraining, string userId, UserRole role);
         Task<Result> AddTrainingResult(TrainingResultInput trainingResult, string coachId);
         Task<Result> EditTrainingResult(TrainingResult trainingResult, string coachId);
         Task<Result> DeleteTrainingResult(TrainingResult trainingResult, string coachId);

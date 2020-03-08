@@ -27,7 +27,7 @@ namespace Scheduledo.Service.Concrete
         }
 
 
-        public async Task<Result<ICollection<TrainingResult>>> GetTrainingsResults(int idTraining, string coachId, UserRole role)
+        public async Task<Result<ICollection<TrainingResult>>> GetTrainingsResults(int idTraining, string userId, UserRole role)
         {
             var result = new Result<ICollection<TrainingResult>>();
             if(role == UserRole.Coach)
@@ -35,7 +35,7 @@ namespace Scheduledo.Service.Concrete
                 var trainingsCoachResult = await _trainingService.GetTrainingsCoach(idTraining);
 
                 //check if this training is related to the requesting coach
-                if (trainingsCoachResult.Data != coachId)
+                if (trainingsCoachResult.Data != userId)
                 {
                     result.Error = ErrorType.Forbidden;
                     return result;
@@ -45,8 +45,8 @@ namespace Scheduledo.Service.Concrete
             {
                 var trainingsCoachResult = await _trainingService.GetTrainingsClient(idTraining);
 
-                //check if this training is related to the requesting coach
-                if (trainingsCoachResult.Data != coachId)
+                //check if this training is related to the requesting client
+                if (trainingsCoachResult.Data != userId)
                 {
                     result.Error = ErrorType.Forbidden;
                     return result;
