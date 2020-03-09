@@ -11,7 +11,7 @@ using Scheduledo.Service.Infrastructure.Attributes;
 
 namespace Scheduledo.Api.Controllers
 {
-    [Route("api/public-notes")]
+    [Route("api")]
     [ApiController]
     [Authorize]
     public class PublicNoteController : BaseController
@@ -30,7 +30,7 @@ namespace Scheduledo.Api.Controllers
         /// Used to get a list of all public notes of a requsting coach
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("public-notes")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(ICollection<PublicNote>), 200)]
         public async Task<IActionResult> GetAllNotes()
@@ -44,7 +44,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="clientId"></param>
         /// <returns></returns>
-        [HttpGet("{clientId}")]
+        [HttpGet("public-notes/{clientId}")]
         [Authorize]
         [ProducesResponseType(typeof(PublicNote), 200)]
         public async Task<IActionResult> GetUsersNote(string clientId)
@@ -58,7 +58,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("public-notes")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> CreateNote([FromBody]PublicNote note)
         {
@@ -72,7 +72,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
-        [HttpPut]
+        [HttpPut("public-notes")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> UpdateNote([FromBody]PublicNote note)
         {
@@ -86,7 +86,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
-        [HttpDelete]
+        [HttpDelete("public-notes")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> DeleteNote([FromBody]PublicNote note)
         {

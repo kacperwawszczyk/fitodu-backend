@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Scheduledo.Api.Controllers
 {
-	//[Route("api/clients")]
+	[Route("api")]
 	[ApiController]
 	public class ClientController : BaseController
 	{

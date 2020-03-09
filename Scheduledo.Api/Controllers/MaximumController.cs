@@ -13,6 +13,7 @@ using Scheduledo.Service.Models.Maximum;
 
 namespace Scheduledo.Api.Controllers
 {
+    [Route("api")]
     [ApiController]
     public class MaximumController : BaseController
     {

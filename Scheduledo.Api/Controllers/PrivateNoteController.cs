@@ -15,7 +15,7 @@ using Scheduledo.Core.Enums;
 
 namespace Scheduledo.Api.Controllers
 {
-    [Route("api/private-notes")]
+    [Route("api")]
     [ApiController]
     public class PrivateNoteController : BaseController
     {
@@ -33,7 +33,7 @@ namespace Scheduledo.Api.Controllers
         /// Used to get a list of all private notes of a requsting coach
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("private-notes")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(ICollection<PrivateNote>), 200)]
         public async Task<IActionResult> GetAllNotes()
@@ -47,7 +47,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="clientId"></param>
         /// <returns></returns>
-        [HttpGet("{clientId}")]
+        [HttpGet("private-notes/{clientId}")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(PrivateNote), 200)]
         public async Task<IActionResult> GetUsersNote(string clientId)
@@ -61,7 +61,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("private-notes")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> CreateNote([FromBody]PrivateNote note)
         {
@@ -75,7 +75,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
-        [HttpPut]
+        [HttpPut("private-notes")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> UpdateNote([FromBody]PrivateNote note)
         {
@@ -90,7 +90,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
-        [HttpDelete]
+        [HttpDelete("private-notes")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> DeleteNote([FromBody]PrivateNote note)
         {

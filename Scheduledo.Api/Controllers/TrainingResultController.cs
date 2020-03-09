@@ -11,7 +11,7 @@ using Scheduledo.Service.Infrastructure.Attributes;
 
 namespace Scheduledo.Api.Controllers
 {
-    [Route("api/training-results")]
+    [Route("api")]
     [ApiController]
     [Authorize]
     public class TrainingResultController : BaseController
@@ -32,7 +32,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="idTraining"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("training-results")]
         [Authorize]
         [ProducesResponseType(typeof(ICollection<TrainingResult>), 200)]
         public async Task<IActionResult> GetTrainingsResults(int idTraining)
@@ -47,7 +47,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="trainingResultInput"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("training-results")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> AddTrainingResult([FromBody]TrainingResultInput trainingResultInput)
         {
@@ -61,7 +61,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="trainingResult"></param>
         /// <returns></returns>
-        [HttpPut]
+        [HttpPut("training-results")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> EditTrainingResult([FromBody]TrainingResult trainingResult)
         {
@@ -75,7 +75,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="trainingResult"></param>
         /// <returns></returns>
-        [HttpDelete]
+        [HttpDelete("training-results")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> DeleteTrainingResult([FromBody]TrainingResult trainingResult)
         {

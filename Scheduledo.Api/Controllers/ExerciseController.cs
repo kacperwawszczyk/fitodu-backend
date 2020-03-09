@@ -13,7 +13,7 @@ using Scheduledo.Service.Models.Exercise;
 namespace Scheduledo.Api.Controllers
 {
 
-    [Route("api/exercises")]
+    [Route("api")]
     [ApiController]
     [Authorize]
     public class ExerciseController : BaseController
@@ -32,7 +32,7 @@ namespace Scheduledo.Api.Controllers
         /// Used to get a list of all (archived and not-archvied) exercises of a requesting coach 
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("exercises")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(ICollection<Exercise>), 200)]
         public async Task<IActionResult> GetAllExercises() //all exercises of a coach
@@ -45,7 +45,7 @@ namespace Scheduledo.Api.Controllers
         /// Used to get a list of archived exercises of a requesting coach 
         /// </summary>
         /// <returns></returns>
-        [HttpGet("archived")]
+        [HttpGet("exercises/archived")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(ICollection<Exercise>), 200)]
         public async Task<IActionResult> GetArchivedExercises() //all archived exercises of a coach
@@ -58,7 +58,7 @@ namespace Scheduledo.Api.Controllers
         /// Used to get a list of not-archived exercises of a requesting coach 
         /// </summary>
         /// <returns></returns>
-        [HttpGet("not-archived")]
+        [HttpGet("exercises/not-archived")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(ICollection<Exercise>), 200)]
         public async Task<IActionResult> GetNotArchivedExercises() //all  not archived exercises of a coach
@@ -72,7 +72,7 @@ namespace Scheduledo.Api.Controllers
         /// Used to create a new exercise for a requesting coach (if it doesn't already exist)
         /// </summary>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("exercises")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> CreateExercise([FromBody]ExerciseInput exercise)
         {
@@ -86,7 +86,7 @@ namespace Scheduledo.Api.Controllers
         /// Used to modify an existing exercise for a requesting coach
         /// </summary>
         /// <returns></returns>
-        [HttpPut]
+        [HttpPut("exercises")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> EditExercise([FromBody]Exercise exercise)
         {
@@ -100,7 +100,7 @@ namespace Scheduledo.Api.Controllers
         /// Used to delete an existing exercise for a requesting coach
         /// </summary>
         /// <returns></returns>
-        [HttpDelete]
+        [HttpDelete("exercises")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> DeleteExercise([FromBody]Exercise exercise)
         {

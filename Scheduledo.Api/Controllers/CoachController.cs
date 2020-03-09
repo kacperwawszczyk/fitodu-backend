@@ -13,7 +13,7 @@ using Scheduledo.Service.Models;
 
 namespace Scheduledo.Api.Controllers
 {
-    //[Route("api/[controller]")]
+    [Route("api")]
     [ApiController]
     //[Authorize]
     public class CoachController : BaseController
