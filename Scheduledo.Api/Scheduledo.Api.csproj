@@ -5,7 +5,14 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\Patryk\Source\Repos\KaZiUpl\Scheduledo-backend\Scheduledo.Api\Scheduledo.Api.xml</DocumentationFile>
+    <DocumentationFile>Scheduledo.Api.xml</DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
+    <OutputPath></OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.2\Scheduledo.Api.xml</DocumentationFile>
+    <OutputPath>bin\Release\netcoreapp2.2\</OutputPath>
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
