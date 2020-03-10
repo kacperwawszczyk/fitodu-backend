@@ -214,6 +214,7 @@ namespace Scheduledo.Service.Concrete
             coach.AddressCity = coachNew.AddressCity;
             coach.AddressCountry = coachNew.AddressCountry;
             coach.AddressPostalCode = coachNew.AddressPostalCode;
+            coach.AddressState = coachNew.AddressState;
             coach.Rules = coachNew.Rules;
             coach.AddressLine1 = coachNew.AddressLine1;
             coach.AddressLine2 = coachNew.AddressLine2;
