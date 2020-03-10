@@ -187,6 +187,9 @@ namespace Scheduledo.Service.Concrete
                 })
                 .FirstOrDefaultAsync(x => x.Id == Id);
 
+            User coachAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+            coach.PhoneNumber = coachAcc.PhoneNumber;
+
             if(coach == null)
             {
                 result.Error = ErrorType.NotFound;
@@ -203,6 +206,7 @@ namespace Scheduledo.Service.Concrete
         {
             var result = new Result<long>();
             var coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
+            User coachAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
 
             coach.Name = coachNew.Name;
             coach.Surname = coachNew.Surname;
@@ -215,9 +219,12 @@ namespace Scheduledo.Service.Concrete
             coach.AddressLine2 = coachNew.AddressLine2;
             coach.UpdatedOn = DateTime.UtcNow;
 
+            coachAcc.PhoneNumber = coachNew.PhoneNumber;
+
             using (var transaction = _context.Database.BeginTransaction())
             {
                 _context.Coaches.Update(coach);
+                _context.Users.Update(coachAcc);
                 if (await _context.SaveChangesAsync() == 0)
                 {
                     result.Error = ErrorType.Forbidden;
@@ -272,6 +279,12 @@ namespace Scheduledo.Service.Concrete
                     IsRegistered = x.IsRegistered
                 })
                 .FirstOrDefaultAsync();
+                User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == client.Id);
+                if(clientAcc != null)
+                {
+                    client.PhoneNumber = clientAcc.PhoneNumber;
+                }
+
                 clients.Add(client);
             }
             result.Data = clients;

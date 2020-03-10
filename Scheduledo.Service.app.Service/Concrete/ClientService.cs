@@ -496,6 +496,12 @@ namespace Scheduledo.Service.Concrete
                 })
                 .FirstOrDefaultAsync();
 
+            User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+            if(clientAcc != null)
+            {
+                client.PhoneNumber = clientAcc.PhoneNumber;
+            }
+
             if (client == null)
             {
                 result.Error = ErrorType.NotFound;
@@ -510,7 +516,7 @@ namespace Scheduledo.Service.Concrete
 
         public async Task<Result<long>> UpdateClient(string Id, UpdateClientInput model)
         {
-            Client client = await _context.Clients.Where(x => x.Id == Id).FirstOrDefaultAsync();
+            Client client = await _context.Clients.FirstOrDefaultAsync(x => x.Id == Id);
             var result = new Result<long>();
             if (client == null)
             {
@@ -532,8 +538,16 @@ namespace Scheduledo.Service.Concrete
                 client.AddressPostalCode = model.AddressPostalCode;
                 client.AddressState = model.AddressState;
                 client.UpdatedOn = DateTime.UtcNow;
+
+                User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+                if(clientAcc != null)
+                {
+                    clientAcc.PhoneNumber = model.PhoneNumber;
+                }
+
                 using (var transaction = _context.Database.BeginTransaction())
                 {
+                    _context.Users.Update(clientAcc);
                     _context.Clients.Update(client);
                     if (await _context.SaveChangesAsync() <= 0)
                     {
@@ -552,7 +566,7 @@ namespace Scheduledo.Service.Concrete
 
         public async Task<Result<CoachOutput>> GetClientCoach(string Id)
         {
-            Client client = await _context.Clients.Where(x => x.Id == Id).FirstOrDefaultAsync();
+            Client client = await _context.Clients.FirstOrDefaultAsync(x => x.Id == Id);
             var result = new Result<CoachOutput>();
             if (client == null)
             {
@@ -588,6 +602,12 @@ namespace Scheduledo.Service.Concrete
                             TimeToResign = nc.TimeToResign
                         })
                         .FirstOrDefaultAsync();
+
+                    User coachAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == coach.Id);
+                    if(coachAcc != null)
+                    {
+                        coach.PhoneNumber = coachAcc.PhoneNumber;
+                    }
 
                     if (coach == null)
                     {
