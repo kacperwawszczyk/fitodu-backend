@@ -36,7 +36,7 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// Used by anyone to get list of all coaches
         /// </summary>
-        /// <returns> Returns ICollection of CoachOutput containing collecion of information about Coaches </returns>
+        /// <returns> Returns ICollection of CoachOutput containing collection of information about Coaches </returns>
         [HttpGet("coaches")]
         [Authorize]
         [ProducesResponseType(typeof(ICollection<CoachOutput>), 200)]

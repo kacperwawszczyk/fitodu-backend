@@ -18,7 +18,6 @@ namespace Scheduledo.Service.Models
         public decimal? FatPercentage { get; set; }
         public string AddressLine1 { get; set; }
         public string AddressLine2 { get; set; }
-        [Required(AllowEmptyStrings = false, ErrorMessage = "RequiredError")]
         public string AddressPostalCode { get; set; }
         [Required(AllowEmptyStrings = false, ErrorMessage = "RequiredError")]
         public string AddressCity { get; set; }
