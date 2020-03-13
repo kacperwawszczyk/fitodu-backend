@@ -17,5 +17,6 @@ namespace Scheduledo.Service.Abstract
 		Task<Result<ClientOutput>> GetClient(string Id);
 		Task<Result<long>> UpdateClient(string Id, UpdateClientInput model);
 		Task<Result<CoachOutput>> GetClientCoach(string Id);
+		Task<Result<ClientOutput>> GetClientById(string coachId, string clientId);
 	}
 }

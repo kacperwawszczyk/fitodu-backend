@@ -21,7 +21,7 @@
         </member>
         <member name="M:Scheduledo.Api.Controllers.ClientController.SendCreationLinkToClient(System.String,Scheduledo.Service.Models.CreateClientVerificationTokenInput)">
             <summary>
-            Used by Coach to send invitation to Client and by Client to create User account from dummy Client account.
+            Used by Coach to send invitation to Client (to create user account).
             </summary>
             <param name="Authorization"></param>
             <param name="model"></param>

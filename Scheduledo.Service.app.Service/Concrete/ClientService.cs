@@ -496,11 +496,7 @@ namespace Scheduledo.Service.Concrete
                 })
                 .FirstOrDefaultAsync();
 
-            User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
-            if(clientAcc != null)
-            {
-                client.PhoneNumber = clientAcc.PhoneNumber;
-            }
+
 
             if (client == null)
             {
@@ -509,6 +505,11 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
+                User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+                if (clientAcc != null)
+                {
+                    client.PhoneNumber = clientAcc.PhoneNumber;
+                }
                 result.Data = client;
             }
             return result;
@@ -622,5 +623,64 @@ namespace Scheduledo.Service.Concrete
                 }
             }
         }
+
+        public async Task<Result<ClientOutput>> GetClientById(string coachId, string clientId)
+        {
+            Coach coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == coachId);
+            var result = new Result<ClientOutput>();
+            if(coach == null)
+            {
+                result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Coach does not exist";
+                //return result;
+            }
+            else
+            {
+                CoachClient coachClient = await _context.CoachClients.FirstOrDefaultAsync(x => (x.IdClient == clientId) && (x.IdCoach == coachId));
+                if(coachClient == null)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "User is not a client of selected coach";
+                }
+                else
+                {
+                    ClientOutput client = await _context.Clients
+                                                        .Where(x => x.Id == clientId)
+                                                        .Select(x => new ClientOutput
+                                                        {
+                                                            Id = x.Id,
+                                                            Name = x.Name,
+                                                            Surname = x.Surname,
+                                                            Height = x.Height,
+                                                            Weight = x.Weight,
+                                                            FatPercentage = x.FatPercentage,
+                                                            IsRegistered = x.IsRegistered,
+                                                            AddressCity = x.AddressCity,
+                                                            AddressCountry = x.AddressCountry,
+                                                            AddressLine1 = x.AddressLine1,
+                                                            AddressLine2 = x.AddressLine2,
+                                                            AddressPostalCode = x.AddressPostalCode,
+                                                            AddressState = x.AddressState
+                                                        })
+                                                        .FirstOrDefaultAsync();
+                    if (client == null)
+                    {
+                        result.Error = ErrorType.NotFound;
+                        result.ErrorMessage = "Client does not exist";
+                    }
+                    else
+                    {
+                        User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == clientId);
+                        if (clientAcc != null)
+                        {
+                            client.PhoneNumber = client.PhoneNumber;
+                        }
+                        result.Data = client;
+                    }
+                }
+            }
+            return result;
+        }
+
     }
 }
