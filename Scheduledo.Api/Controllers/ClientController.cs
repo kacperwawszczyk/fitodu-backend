@@ -51,7 +51,7 @@ namespace Scheduledo.Api.Controllers
 		}
 
 		/// <summary>
-		/// Used by Coach to send invitation to Client and by Client to create User account from dummy Client account.
+		/// Used by Coach to send invitation to Client (to create user account).
 		/// </summary>
 		/// <param name="Authorization"></param>
 		/// <param name="model"></param>
@@ -129,6 +129,15 @@ namespace Scheduledo.Api.Controllers
 		public async Task<IActionResult> GetClientCoach()
 		{
 			var result = await _clientService.GetClientCoach(CurrentUser.Id);
+			return GetResult(result);
+		}
+
+		[AuthorizePolicy(UserRole.Coach)]
+		[HttpGet("clients/{id}")]
+		[ProducesResponseType(typeof(ClientOutput), 200)]
+		public async Task<IActionResult> GetClientById(string id)
+		{
+			var result = await _clientService.GetClientById(CurrentUser.Id, id);
 			return GetResult(result);
 		}
 	}

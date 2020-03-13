@@ -21,7 +21,7 @@
         </member>
         <member name="M:Scheduledo.Api.Controllers.ClientController.SendCreationLinkToClient(System.String,Scheduledo.Service.Models.CreateClientVerificationTokenInput)">
             <summary>
-            Used by Coach to send invitation to Client and by Client to create User account from dummy Client account.
+            Used by Coach to send invitation to Client (to create user account).
             </summary>
             <param name="Authorization"></param>
             <param name="model"></param>
@@ -65,7 +65,7 @@
             <summary>
             Used by anyone to get list of all coaches
             </summary>
-            <returns> Returns ICollection of CoachOutput containing collecion of information about Coaches </returns>
+            <returns> Returns ICollection of CoachOutput containing collection of information about Coaches </returns>
         </member>
         <member name="M:Scheduledo.Api.Controllers.CoachController.GetCoach">
             <summary>
