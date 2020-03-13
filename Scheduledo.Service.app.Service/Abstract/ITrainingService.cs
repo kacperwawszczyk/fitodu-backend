@@ -21,5 +21,7 @@ namespace Scheduledo.Service.Abstract
         Task<Result<ICollection<Training>>> GetTrainings(string id, UserRole role);
         Task<Result<string>> GetTrainingsClient(int idTraining);
         Task<Result<string>> GetTrainingsCoach(int idTraining);
+        Task<Result<ICollection<Training>>> GetTrainingsFrom(string id, UserRole role, string date);
+        Task<Result<Training>> GetTraining(string userId, UserRole role, int trainingId);
     }
 }

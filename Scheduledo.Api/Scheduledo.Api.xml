@@ -232,6 +232,19 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Scheduledo.Api.Controllers.TrainingController.GetTraining(System.String)">
+            <summary>
+            Used to get a single training (with given id)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Scheduledo.Api.Controllers.TrainingController.GetFutureTrainings(System.String)">
+            <summary>
+            Used to get training with a StartDate greater than given
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Scheduledo.Api.Controllers.TrainingController.AddTraining(Scheduledo.Service.Models.Training.TrainingInput)">
             <summary>
             Used to create a new training for a requesting coach

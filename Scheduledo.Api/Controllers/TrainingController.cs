@@ -65,6 +65,33 @@ namespace Scheduledo.Api.Controllers
         }
 
         /// <summary>
+        /// Used to get a single training (with given id)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("trainings/{id}")]
+        [Authorize]
+        [ProducesResponseType(typeof(Training), 200)]
+        public async Task<IActionResult> GetTraining(string id)
+        {
+            var result = await _trainingService.GetTraining(CurrentUser.Id, CurrentUser.Role, int.Parse(id));
+            return GetResult(result);
+        }
+
+        /// <summary>
+        /// Used to get training with a StartDate greater than given
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("trainings/future/{from}")]
+        [Authorize]
+        [ProducesResponseType(typeof(ICollection<Training>), 200)]
+        public async Task<IActionResult> GetFutureTrainings(string from)
+        {
+            var result = await _trainingService.GetTrainingsFrom(CurrentUser.Id, CurrentUser.Role, from);
+            return GetResult(result);
+        }
+
+        /// <summary>
         /// Used to create a new training for a requesting coach
         /// </summary>
         /// <param name="trainingInput"></param>

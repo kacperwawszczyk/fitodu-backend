@@ -96,8 +96,9 @@ namespace Scheduledo.Service.Concrete
             _training.IdCoach = trainingInput.IdCoach;
             if(_training.Note != null) _training.Note = trainingInput.Note;
             _training.StartDate = trainingInput.StartDate;
-            _training.Description = trainingInput.Description;
             _training.EndDate = trainingInput.EndDate;
+            _training.Description = trainingInput.Description;
+            
 
             _context.Trainings.Add(_training);
             if (await _context.SaveChangesAsync() == 0)
@@ -210,6 +211,62 @@ namespace Scheduledo.Service.Concrete
             if (training != null)
             {
                 result.Data = training.IdClient;
+            }
+            else
+            {
+                result.Error = ErrorType.NotFound;
+            }
+            return result;
+        }
+
+        public async Task<Result<ICollection<Training>>> GetTrainingsFrom(string id, UserRole role, string date)
+        {
+            var result = new Result<ICollection<Training>>();
+
+            var trainings = new List<Training>();
+
+            //var workoutDate = new DateTime(int.Parse(date.Substring(0, 4)), int.Parse(date.Substring(5, 2)), int.Parse(date.Substring(8, 2)),0,0,0);
+
+            var workoutDate = DateTime.Parse(date);
+
+            if (role == UserRole.Coach)
+            {
+                trainings = await _context.Trainings.Where(x => x.IdCoach == id && x.StartDate > workoutDate).ToListAsync();
+            }
+            else if (role == UserRole.Client)
+            {
+                trainings = await _context.Trainings.Where(x => x.IdClient == id && x.StartDate > workoutDate).ToListAsync();
+            }
+
+            if (trainings != null)
+            {
+                result.Data = trainings;
+            }
+            else
+            {
+                result.Error = ErrorType.NotFound;
+            }
+            return result;
+        }
+
+        public async Task<Result<Training>> GetTraining(string userId, UserRole role, int trainingId)
+        {
+            var result = new Result<Training>();
+
+            var training = new Training();
+
+            if (role == UserRole.Coach)
+            {
+                training = await _context.Trainings.Where(x => x.IdCoach == userId && x.Id == trainingId).FirstOrDefaultAsync();
+            }
+            else if (role == UserRole.Client)
+            {
+                training = await _context.Trainings.Where(x => x.IdClient == userId && x.Id == trainingId).FirstOrDefaultAsync();
+            }
+
+            if (training != null)
+            {
+                result.Data = training;
             }
             else
             {
