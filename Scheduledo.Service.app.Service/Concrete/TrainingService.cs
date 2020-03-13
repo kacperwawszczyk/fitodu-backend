@@ -95,8 +95,9 @@ namespace Scheduledo.Service.Concrete
             _training.IdClient = trainingInput.IdClient;
             _training.IdCoach = trainingInput.IdCoach;
             if(_training.Note != null) _training.Note = trainingInput.Note;
-            _training.Date = trainingInput.Date;
+            _training.StartDate = trainingInput.StartDate;
             _training.Description = trainingInput.Description;
+            _training.EndDate = trainingInput.EndDate;
 
             _context.Trainings.Add(_training);
             if (await _context.SaveChangesAsync() == 0)
@@ -142,7 +143,8 @@ namespace Scheduledo.Service.Concrete
                 exisitngTraining.IdClient = training.IdClient;
                 exisitngTraining.Note = training.Note;
                 exisitngTraining.Description = training.Description;
-                exisitngTraining.Date = training.Date;
+                exisitngTraining.StartDate = training.StartDate;
+                exisitngTraining.EndDate = training.EndDate;
 
                 if (await _context.SaveChangesAsync() == 0)
                 {

@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Scheduledo.Model.Entities
 {
+    //TODO: usunąć jak na pewno nie będzie potrzebne
     public partial class WorkTime
     {
         [Key]

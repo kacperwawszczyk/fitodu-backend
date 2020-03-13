@@ -10,7 +10,9 @@ namespace Scheduledo.Service.Models.Training
         public string IdClient { get; set; }
         public string IdCoach { get; set; }
         [Column(TypeName = "datetime")]
-        public DateTime? Date { get; set; }
+        public DateTime? StartDate { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? EndDate { get; set; }
         [Column(TypeName = "text")]
         public string Description { get; set; }
         [Column(TypeName = "text")]

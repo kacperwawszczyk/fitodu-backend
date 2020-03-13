@@ -6,19 +6,14 @@ using System.Text;
 
 namespace Scheduledo.Model.Entities
 {
-    public partial class Training
+    public partial class WeekPlan
     {
         [Key]
         public int Id { get; set; }
-        public string IdClient { get; set; }
+        [Required]
         public string IdCoach { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? StartDate { get; set; }
-        [Column(TypeName = "datetime")]
-        public DateTime? EndDate { get; set; }
-        [Column(TypeName = "text")]
-        public string Description { get; set; }
-        [Column(TypeName = "text")]
-        public string Note { get; set; }
+        public virtual ICollection<DayPlan> DayPlans { get; set; }
     }
 }

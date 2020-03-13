@@ -28,6 +28,9 @@ namespace Scheduledo.Model
         public DbSet<TrainingResult> TrainingResults { get; set; }
         public DbSet<WorkTime> WorkTimes { get; set; }
         public DbSet<CreateClientToken> CreateClientTokens { get; set; }
+        public DbSet<WeekPlan> WeekPlans { get; set; }
+        public DbSet<DayPlan> DayPlans { get; set; }
+        public DbSet<WorkoutTime> WorkoutTimes { get; set; }
 
 
 
