@@ -322,5 +322,11 @@
             <param name="trainingResult"></param>
             <returns></returns>
         </member>
+        <member name="M:Scheduledo.Api.Controllers.WeekPlanController.GetWeekPlans(System.String)">
+            <summary>
+            Used to get all week plans of a coach with given id
+            </summary>
+            <returns></returns>
+        </member>
     </members>
 </doc>

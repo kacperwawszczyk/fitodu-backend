@@ -62,6 +62,7 @@ namespace Scheduledo.Service
             services.AddScoped<ITrainingExerciseService, TrainingExerciseService>();
             services.AddScoped<ITrainingService, TrainingService>();
             services.AddScoped<ITrainingResultService, TrainingResultService>();
+            services.AddScoped<IWeekPlanService, WeekPlanService>();
         }
     }
 }
