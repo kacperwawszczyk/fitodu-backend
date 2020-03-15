@@ -25,33 +25,33 @@ namespace Scheduledo.Service.Concrete
             _mapper = mapper;
         }
 
-        public async Task<Result<ICollection<Training>>> GetTrainings(string id, UserRole role)
-        {
-            var result = new Result<ICollection<Training>>();
-
-            var trainings = new List<Training>();
-
-            if(role == UserRole.Coach)
-            {
-                trainings = await _context.Trainings.Where(x => x.IdCoach == id).ToListAsync();
-            }
-            else if(role == UserRole.Client)
-            {
-                trainings = await _context.Trainings.Where(x => x.IdClient == id).ToListAsync();
-            }
-
-            if(trainings != null)
-            {
-                result.Data = trainings;
-            }
-            else
-            {
-                result.Error = ErrorType.NotFound;
-            }
-            return result;
-        }
-
         //TODO: Usunąć jak na pewno nie będzie potrzebne
+        //public async Task<Result<ICollection<Training>>> GetTrainings(string id, UserRole role)
+        //{
+        //    var result = new Result<ICollection<Training>>();
+
+        //    var trainings = new List<Training>();
+
+        //    if(role == UserRole.Coach)
+        //    {
+        //        trainings = await _context.Trainings.Where(x => x.IdCoach == id).ToListAsync();
+        //    }
+        //    else if(role == UserRole.Client)
+        //    {
+        //        trainings = await _context.Trainings.Where(x => x.IdClient == id).ToListAsync();
+        //    }
+
+        //    if(trainings != null)
+        //    {
+        //        result.Data = trainings;
+        //    }
+        //    else
+        //    {
+        //        result.Error = ErrorType.NotFound;
+        //    }
+        //    return result;
+        //}
+
         //public async Task<Result<ICollection<Training>>> GetCoachsTrainings(string idCoach)
         //{
         //    var result = new Result<ICollection<Training>>();
@@ -219,23 +219,35 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result<ICollection<Training>>> GetTrainingsFrom(string id, UserRole role, string date)
+        public async Task<Result<ICollection<Training>>> GetTrainings(string id, UserRole role, string date)
         {
             var result = new Result<ICollection<Training>>();
 
             var trainings = new List<Training>();
 
             //var workoutDate = new DateTime(int.Parse(date.Substring(0, 4)), int.Parse(date.Substring(5, 2)), int.Parse(date.Substring(8, 2)),0,0,0);
-
-            var workoutDate = DateTime.Parse(date);
-
-            if (role == UserRole.Coach)
+            if(!String.IsNullOrEmpty(date))
             {
-                trainings = await _context.Trainings.Where(x => x.IdCoach == id && x.StartDate > workoutDate).ToListAsync();
+                var workoutDate = DateTime.Parse(date);
+                if (role == UserRole.Coach)
+                {
+                    trainings = await _context.Trainings.Where(x => x.IdCoach == id && x.StartDate > workoutDate).ToListAsync();
+                }
+                else if (role == UserRole.Client)
+                {
+                    trainings = await _context.Trainings.Where(x => x.IdClient == id && x.StartDate > workoutDate).ToListAsync();
+                }
             }
-            else if (role == UserRole.Client)
+            else
             {
-                trainings = await _context.Trainings.Where(x => x.IdClient == id && x.StartDate > workoutDate).ToListAsync();
+                if (role == UserRole.Coach)
+                {
+                    trainings = await _context.Trainings.Where(x => x.IdCoach == id).ToListAsync();
+                }
+                else if (role == UserRole.Client)
+                {
+                    trainings = await _context.Trainings.Where(x => x.IdClient == id).ToListAsync();
+                }
             }
 
             if (trainings != null)

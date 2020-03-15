@@ -226,12 +226,6 @@
             <param name="note"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.TrainingController.GetTrainings">
-            <summary>
-            Used to get a list of trainings for a requesting coach/client
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:Scheduledo.Api.Controllers.TrainingController.GetTraining(System.String)">
             <summary>
             Used to get a single training (with given id)
