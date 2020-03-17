@@ -74,7 +74,7 @@ namespace Scheduledo.Service.Concrete
         //        return result;
         //    }
 
-        //    IQueryable users = null;
+        //    /*IQueryable users = null;*/
 
         //    if (user.Role != UserRole.SuperAdmin)
         //    {
@@ -85,8 +85,8 @@ namespace Scheduledo.Service.Concrete
         //        users = _context.Users.Where(x => x.Id != user.Id);
         //    }
 
-        //    result.Data = await users
-        //        .ProjectTo<UserListItemOutput>(_mapper.ConfigurationProvider)
+        //result.Data = await users
+        //    .ProjectTo<UserListItemOutput>(_mapper.ConfigurationProvider)
         //        .ToListAsync();
 
         //    return result;

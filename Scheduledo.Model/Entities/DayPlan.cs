@@ -16,5 +16,7 @@ namespace Scheduledo.Model.Entities
         public Day Day { get; set; }
 
         public virtual ICollection<WorkoutTime> WorkoutTimes { get; set; }
-    }
+
+        public virtual WeekPlan WeekPlan  { get; set; }
+}
 }
