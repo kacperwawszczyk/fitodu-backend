@@ -11,10 +11,12 @@ namespace Scheduledo.Model.Configurations
     {
         public void Configure(EntityTypeBuilder<WorkoutTime> builder)
         {
-            builder.HasKey(o => new
-            {
-                o.Id
-            });
+            //builder.HasKey(o => new
+            //{
+            //    o.Id
+            //});
+
+            builder.HasOne(x => x.DayPlan).WithMany(y => y.WorkoutTimes).IsRequired().OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

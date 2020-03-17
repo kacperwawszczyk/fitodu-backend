@@ -10,6 +10,13 @@ namespace Scheduledo.Service.Abstract
 {
     public interface IWeekPlanService
     {
-        Task<Result<ICollection<WeekPlan>>> GetWeekPlans(string coachId, string requesterId, UserRole requesterRole);
+        Task<Result<ICollection<WeekPlanOutput>>> GetWeekPlans(string requesterId, UserRole requesterRole);
+        Task<Result> EditWeekPlan(WeekPlan weekPlan);
+        Task<Result> CreateWeekPlan(WeekPlanInput weekPlanInput);
+        Task<Result> DeleteWeekPlan(WeekPlan weekPlan);
+
+        bool IsValid(WeekPlan weekPlan);
+
+        bool IsValidInput(WeekPlanInput weekPlanInput);
     }
 }
