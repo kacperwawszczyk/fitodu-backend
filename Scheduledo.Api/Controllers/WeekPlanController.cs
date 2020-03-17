@@ -44,7 +44,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="weekPlanInput"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("week-plans")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> CreateWeekPlan([FromBody] WeekPlanInput weekPlanInput)
         {
@@ -76,7 +76,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="weekPlan"></param>
         /// <returns></returns>
-        [HttpDelete]
+        [HttpDelete("week-plans")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> DeleteWeekPlan([FromBody] WeekPlan weekPlan)
         {
