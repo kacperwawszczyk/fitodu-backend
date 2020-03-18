@@ -75,7 +75,7 @@ namespace Scheduledo.Service.Concrete
             user.Role = UserRole.Coach;
             user.FullName = model.FullName;
             user.Email = model.Email;
-            user.PhoneNumber = model.PhoneNumber;
+            //user.PhoneNumber = model.PhoneNumber;
             user.UserName = model.Email;
             user.Id = Guid.NewGuid().ToString();
             user.Company = new Company()

@@ -75,7 +75,7 @@ namespace Scheduledo.Service.Concrete
                 Id = model.Id,
                 Email = model.Email,
                 UserName = model.Email,
-                PhoneNumber = model.PhoneNumber,
+                //PhoneNumber = model.PhoneNumber,
                 Company = new Company()
                 {
                     Plan = PricingPlan.Trial,
@@ -233,7 +233,7 @@ namespace Scheduledo.Service.Concrete
                 FullName = $"{model.Name} {model.Surname}",
                 Email = model.Email,
                 UserName = model.Email,
-                PhoneNumber = model.PhoneNumber,
+                //PhoneNumber = model.PhoneNumber,
                 Company = new Company()
                 {
                     Plan = PricingPlan.Trial,

@@ -16,7 +16,7 @@ namespace Scheduledo.Service.Models
 		public string Email { get; set; }
 		[Required(AllowEmptyStrings = false, ErrorMessage = "RequiredError")]
 		public string Password { get; set; }
-		public string PhoneNumber { get; set; }
+		//public string PhoneNumber { get; set; }
 		[Required(AllowEmptyStrings = false, ErrorMessage = "RequiredError")]
 		public string Token { get; set; }
 		[Required(AllowEmptyStrings = false, ErrorMessage = "RequiredError")]
