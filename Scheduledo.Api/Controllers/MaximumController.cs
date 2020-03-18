@@ -27,7 +27,7 @@ namespace Scheduledo.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Coach to get a list of all Maximums of all Exercises of selected Client
+        /// Used by coach to get a list of all maximums of all exercises of selected client
         /// </summary>
         /// <param name="IdClient"> string type </param>
         /// <returns> Returns ICollection of Maximum </returns>
@@ -41,10 +41,10 @@ namespace Scheduledo.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Coach to get a Maximum with given IdClient and IdExercise
+        /// Used by coach to get a maximum of selected client and exercise
         /// </summary>
         /// <param name="IdClient"> string type </param>
-        /// <param name="IdExercise"> string type </param>
+        /// <param name="IdExercise"> int type </param>
         /// <returns> Returns Maximum </returns>
         [HttpGet("maximums/{IdExercise}")]
         [AuthorizePolicy(UserRole.Coach)]
@@ -56,7 +56,7 @@ namespace Scheduledo.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Coach to create a new Maximum
+        /// Used by coach to create a new maximum
         /// </summary>
         /// <param name="max"> CreateMaximumInput type </param>
         /// <returns></returns>
@@ -69,7 +69,7 @@ namespace Scheduledo.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Coach to modify an existing Maximum
+        /// Used by coach to modify an existing maximum
         /// </summary>
         /// <param name="max"> Maximum type </param>
         /// <returns></returns>
@@ -82,7 +82,7 @@ namespace Scheduledo.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Coach to delete an existing Maximum
+        /// Used by coach to delete an existing maximum
         /// </summary>
         /// <param name="max"> Maximum type </param>
         /// <returns></returns>
