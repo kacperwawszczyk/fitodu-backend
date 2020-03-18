@@ -226,12 +226,6 @@
             <param name="note"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.TrainingController.GetTrainings">
-            <summary>
-            Used to get a list of trainings for a requesting coach/client
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:Scheduledo.Api.Controllers.TrainingController.GetTraining(System.String)">
             <summary>
             Used to get a single training (with given id)
@@ -322,10 +316,35 @@
             <param name="trainingResult"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.WeekPlanController.GetWeekPlans(System.String)">
+        <member name="M:Scheduledo.Api.Controllers.WeekPlanController.GetWeekPlans">
             <summary>
-            Used to get all week plans of a coach with given id
+            Used to get all week plans of a coach. If requester is a coach, endpoint returns all week plans of this coach, if requester is a client
+            endpoint will return all week plans of his coach instead.
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Scheduledo.Api.Controllers.WeekPlanController.CreateWeekPlan(Scheduledo.Service.Models.WeekPlanInput)">
+            <summary>
+            Used to create a new WeekPlan with related DayPlans and WorkoutTimes.
+            </summary>
+            <param name="weekPlanInput"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Scheduledo.Api.Controllers.WeekPlanController.EditWeekPlan(Scheduledo.Model.Entities.WeekPlan)">
+            <summary>
+            Used to modify and existing weekPlan for a requesting coach (sending a WeekPlan with an empty DayPlan collection removes 
+            related DayPlans; sending a WeekPlan with a DayPlan colletion containing objects that do not exist in the database
+            will create those objects; sending a WeekPlan with a DayPlan colletion not containing objects that exist in the database
+            will remove those objects
+            </summary>
+            <param name="weekPlan"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Scheduledo.Api.Controllers.WeekPlanController.DeleteWeekPlan(Scheduledo.Model.Entities.WeekPlan)">
+            <summary>
+            Used to delete an existing WeekPlan with related DayPlans and WorkoutTimes
+            </summary>
+            <param name="weekPlan"></param>
             <returns></returns>
         </member>
     </members>
