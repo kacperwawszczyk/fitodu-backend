@@ -18,5 +18,6 @@ namespace Scheduledo.Service.Abstract
         bool IsValid(WeekPlan weekPlan);
 
         bool IsValidInput(WeekPlanInput weekPlanInput);
+        Task<Result<ICollection<WeekPlanListOutput>>> GetWeekPlansShort(string requesterId, UserRole requesterRole, WeekPlanListInput model);
     }
 }

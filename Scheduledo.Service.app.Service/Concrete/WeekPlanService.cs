@@ -5,6 +5,7 @@ using Scheduledo.Core.Enums;
 using Scheduledo.Model;
 using Scheduledo.Model.Entities;
 using Scheduledo.Service.Abstract;
+using Scheduledo.Service.Extensions;
 using Scheduledo.Service.Models;
 using Scheduledo.Service.Models.WorkoutTime;
 using System;
@@ -61,6 +62,52 @@ namespace Scheduledo.Service.Concrete
             {
                 result.Data = await weekPlans.ProjectTo<WeekPlanOutput>(_mapper.ConfigurationProvider)
                 .ToListAsync();
+            }
+            else
+            {
+                result.Error = ErrorType.NotFound;
+            }
+            return result;
+
+        }
+
+        public async Task<Result<ICollection<WeekPlanListOutput>>> GetWeekPlansShort(string requesterId, UserRole requesterRole, WeekPlanListInput model)
+        {
+            var result = new Result<ICollection<WeekPlanListOutput>>();
+
+            string coachId = "";
+
+            if (requesterRole == UserRole.Coach)
+            {
+                coachId = requesterId;
+            }
+            else if (requesterRole == UserRole.Client)
+            {
+                //TODO: zmienić jeśli client może mieć wielu trenerów
+                var clientsCoach = await _clientService.GetClientCoach(requesterId);
+
+                if (clientsCoach == null)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "Coach not found";
+                    return result;
+                }
+                else
+                {
+                    coachId = clientsCoach.Data.Id;
+                }
+            }
+            IQueryable weekPlans = null;
+            weekPlans = _context.WeekPlans.Where(x => x.IdCoach == coachId);
+
+            if (weekPlans != null)
+            {
+                result.Data = await weekPlans
+                    //.OrderBy(model.Sort.Column, model.Sort.Direction)
+                    .ProjectTo<WeekPlanListOutput>(_mapper.ConfigurationProvider)
+                    .OrderBy(model.Sort.Column, model.Sort.Direction)
+                    .Paging(model.Page, model.PageSize)
+                    .ToListAsync();
             }
             else
             {

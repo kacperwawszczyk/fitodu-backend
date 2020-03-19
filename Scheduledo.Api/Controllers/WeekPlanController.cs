@@ -39,6 +39,21 @@ namespace Scheduledo.Api.Controllers
             return GetResult(result);
         }
 
+        // TODO: Testowa metoda (do wykorzystania lub usunięcia)
+        /// <summary>
+        /// Week plans paging test
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpGet("week-plans-short")]
+        [Authorize]
+        [ProducesResponseType(typeof(ICollection<WeekPlanListOutput>), 200)]
+        public async Task<IActionResult> GetWeekPlansShort([FromQuery] WeekPlanListInput model)
+        {
+            var result = await _weekPlanService.GetWeekPlansShort(CurrentUser.Id, CurrentUser.Role, model);
+            return GetResult(result);
+        }
+
         /// <summary>
         /// Used to create a new week plan with related day plans and workout times.
         /// </summary>
