@@ -5,6 +5,7 @@ using Scheduledo.Model;
 using Scheduledo.Model.Entities;
 using Scheduledo.Service.Abstract;
 using Scheduledo.Service.Models;
+using Scheduledo.Service.Models.PrivateNote;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,13 +63,21 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result> CreateNote(PrivateNote note)
+        public async Task<Result> CreateNote(string coachId, PrivateNoteInput noteInput)
         {
             var result = new Result();
+
+            var clientsCoach = await _context.CoachClients.FirstOrDefaultAsync(x => x.IdCoach == coachId && x.IdClient == noteInput.IdClient);
+            if (clientsCoach == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                return result;
+            }
+
             using (var transaction = _context.Database.BeginTransaction())
             {
                 PrivateNote existingNote = await _context.PrivateNotes
-                .Where(x => x.IdCoach == note.IdCoach && x.IdClient == note.IdClient)
+                .Where(x => x.IdCoach == coachId && x.IdClient == noteInput.IdClient)
                 .FirstOrDefaultAsync();
 
                 if(existingNote != null)
@@ -78,6 +87,11 @@ namespace Scheduledo.Service.Concrete
                     return result;
                 }
 
+                PrivateNote note = new PrivateNote();
+
+                note.IdCoach = coachId;
+                note.IdClient = noteInput.IdClient;
+                note.Note = noteInput.Note;
             
                 _context.PrivateNotes.Add(note);
                 if (await _context.SaveChangesAsync() == 0)

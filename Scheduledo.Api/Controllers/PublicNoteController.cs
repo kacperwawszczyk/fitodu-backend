@@ -8,6 +8,7 @@ using Scheduledo.Core.Enums;
 using Scheduledo.Model.Entities;
 using Scheduledo.Service.Abstract;
 using Scheduledo.Service.Infrastructure.Attributes;
+using Scheduledo.Service.Models.PublicNote;
 
 namespace Scheduledo.Api.Controllers
 {
@@ -60,10 +61,9 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpPost("public-notes")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> CreateNote([FromBody]PublicNote note)
+        public async Task<IActionResult> CreateNote([FromBody]PublicNoteInput note)
         {
-            note.IdCoach = CurrentUser.Id;
-            var result = await _publicNoteService.CreateNote(note);
+            var result = await _publicNoteService.CreateNote(CurrentUser.Id, note);
             return GetResult(result);
         }
 

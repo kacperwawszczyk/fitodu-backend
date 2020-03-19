@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using Scheduledo.Service.Concrete;
 using Scheduledo.Service.Infrastructure.Attributes;
 using Scheduledo.Core.Enums;
+using Scheduledo.Service.Models.PrivateNote;
 
 namespace Scheduledo.Api.Controllers
 {
@@ -63,10 +64,9 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpPost("private-notes")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> CreateNote([FromBody]PrivateNote note)
+        public async Task<IActionResult> CreateNote([FromBody]PrivateNoteInput note)
         {
-            note.IdCoach = CurrentUser.Id;
-            var result = await _privateNoteService.CreateNote(note);
+            var result = await _privateNoteService.CreateNote(CurrentUser.Id, note);
             return GetResult(result);
         }
 

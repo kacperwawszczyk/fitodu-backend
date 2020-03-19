@@ -1,5 +1,6 @@
 ﻿using Scheduledo.Model.Entities;
 using Scheduledo.Service.Models;
+using Scheduledo.Service.Models.PublicNote;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +12,7 @@ namespace Scheduledo.Service.Abstract
     {
         Task<Result<ICollection<PublicNote>>> GetAllNotes(string coachId);
         Task<Result<PublicNote>> GetClientsNote(string clientId, string requesterId);
-        Task<Result> CreateNote(PublicNote note);
+        Task<Result> CreateNote(string coachId, PublicNoteInput note);
         Task<Result> UpdateNote(PublicNote note);
         Task<Result> DeleteNote(string coachId, string clientId);
     }

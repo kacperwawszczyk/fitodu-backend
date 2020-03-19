@@ -49,10 +49,10 @@ namespace Scheduledo.Api.Controllers
         //    var result = await _trainingService.GetClientsTrainings(CurrentUser.Id);
         //    return GetResult(result);
         //}
-        /// <summary>
-        /// Used to get a list of trainings for a requesting coach/client
-        /// </summary>
-        /// <returns></returns>
+        // <summary>
+        // Used to get a list of trainings for a requesting coach/client
+        // </summary>
+        // <returns></returns>
         //[HttpGet("trainings")]
         //[Authorize]
         //[ProducesResponseType(typeof(ICollection<Training>), 200)]
@@ -80,7 +80,7 @@ namespace Scheduledo.Api.Controllers
         /// Used to get training with a StartDate greater than given
         /// </summary>
         /// <returns></returns>
-        [HttpGet("training")]
+        [HttpGet("trainings")]
         [Authorize]
         [ProducesResponseType(typeof(ICollection<Training>), 200)]
         public async Task<IActionResult> GetFutureTrainings([FromQuery]string from)

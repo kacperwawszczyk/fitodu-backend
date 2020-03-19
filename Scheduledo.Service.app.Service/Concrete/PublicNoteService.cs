@@ -5,6 +5,7 @@ using Scheduledo.Model;
 using Scheduledo.Model.Entities;
 using Scheduledo.Service.Abstract;
 using Scheduledo.Service.Models;
+using Scheduledo.Service.Models.PublicNote;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,13 +73,20 @@ namespace Scheduledo.Service.Concrete
 
         }
 
-        public async Task<Result> CreateNote(PublicNote note)
+        public async Task<Result> CreateNote(string coachId, PublicNoteInput noteInput)
         {
             var result = new Result();
+            var clientsCoach = await _context.CoachClients.FirstOrDefaultAsync(x => x.IdCoach == coachId && x.IdClient == noteInput.IdClient);
+            if (clientsCoach == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                return result;
+            }
+
             using (var transaction = _context.Database.BeginTransaction())
             {
                 PublicNote existingNote = await _context.PublicNotes
-                .Where(x => x.IdCoach == note.IdCoach && x.IdClient == note.IdClient)
+                .Where(x => x.IdCoach == coachId && x.IdClient == noteInput.IdClient)
                 .FirstOrDefaultAsync();
 
                 if (existingNote != null)
@@ -87,6 +95,11 @@ namespace Scheduledo.Service.Concrete
                     result.ErrorMessage = "this coach already has a public note for that client";
                     return result;
                 }
+
+                PublicNote note = new PublicNote();
+                note.IdCoach = coachId;
+                note.IdClient = noteInput.IdClient;
+                note.Note = noteInput.Note;
 
                 _context.PublicNotes.Add(note);
                 if (await _context.SaveChangesAsync() == 0)
