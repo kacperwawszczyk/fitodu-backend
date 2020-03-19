@@ -505,7 +505,7 @@ namespace Scheduledo.Service.Concrete
             }
             else
             {
-                User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+                User clientAcc = await _context.Users.Where(x => x.Id == Id).FirstOrDefaultAsync();
                 if (clientAcc != null)
                 {
                     client.PhoneNumber = clientAcc.PhoneNumber;
@@ -540,7 +540,7 @@ namespace Scheduledo.Service.Concrete
                 client.AddressState = model.AddressState;
                 client.UpdatedOn = DateTime.UtcNow;
 
-                User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+                User clientAcc = await _context.Users.Where(x => x.Id == Id).FirstOrDefaultAsync();
                 if(clientAcc != null)
                 {
                     clientAcc.PhoneNumber = model.PhoneNumber;
@@ -604,7 +604,7 @@ namespace Scheduledo.Service.Concrete
                         })
                         .FirstOrDefaultAsync();
 
-                    User coachAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == coach.Id);
+                    User coachAcc = await _context.Users.Where(x => x.Id == coach.Id).FirstOrDefaultAsync();
                     if(coachAcc != null)
                     {
                         coach.PhoneNumber = coachAcc.PhoneNumber;
@@ -670,10 +670,10 @@ namespace Scheduledo.Service.Concrete
                     }
                     else
                     {
-                        User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == clientId);
+                        User clientAcc = await _context.Users.Where(x => x.Id == clientId).FirstOrDefaultAsync();
                         if (clientAcc != null)
                         {
-                            client.PhoneNumber = client.PhoneNumber;
+                            client.PhoneNumber = clientAcc.PhoneNumber;
                         }
                         result.Data = client;
                     }
