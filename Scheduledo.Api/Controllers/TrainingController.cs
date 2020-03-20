@@ -83,7 +83,6 @@ namespace Scheduledo.Api.Controllers
         [HttpGet("trainings")]
         [Authorize]
         [ProducesResponseType(typeof(ICollection<Training>), 200)]
-        public async Task<IActionResult> GetFutureTrainings([FromQuery]string from)
         {
             var result = await _trainingService.GetTrainings(CurrentUser.Id, CurrentUser.Role, from);
             return GetResult(result);

@@ -284,6 +284,7 @@ namespace Scheduledo.Service.Concrete
                 if(clientAcc != null)
                 {
                     client.PhoneNumber = clientAcc.PhoneNumber;
+                    client.Email = clientAcc.Email;
                 }
 
                 clients.Add(client);

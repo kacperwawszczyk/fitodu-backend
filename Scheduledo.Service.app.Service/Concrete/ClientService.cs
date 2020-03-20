@@ -509,6 +509,7 @@ namespace Scheduledo.Service.Concrete
                 if (clientAcc != null)
                 {
                     client.PhoneNumber = clientAcc.PhoneNumber;
+                    client.Email = clientAcc.Email;
                 }
                 result.Data = client;
             }
@@ -674,6 +675,7 @@ namespace Scheduledo.Service.Concrete
                         if (clientAcc != null)
                         {
                             client.PhoneNumber = clientAcc.PhoneNumber;
+                            client.Email = clientAcc.Email;
                         }
                         result.Data = client;
                     }

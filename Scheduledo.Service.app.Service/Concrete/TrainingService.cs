@@ -87,18 +87,19 @@ namespace Scheduledo.Service.Concrete
         //    return result;
         //}
 
-        public async Task<Result> AddTraining(TrainingInput trainingInput)
+        public async Task<Result> AddTraining(TrainingInput trainingInput, string idCoach)
         {
             var result = new Result();
 
             Training _training = new Training();
             _training.IdClient = trainingInput.IdClient;
-            _training.IdCoach = trainingInput.IdCoach;
-            if(_training.Note != null) _training.Note = trainingInput.Note;
+            //_training.IdCoach = trainingInput.IdCoach;
+            _training.IdCoach = idCoach;
+            if (trainingInput.Note != null) _training.Note = trainingInput.Note;
             _training.StartDate = trainingInput.StartDate;
             _training.EndDate = trainingInput.EndDate;
             _training.Description = trainingInput.Description;
-            
+
 
             _context.Trainings.Add(_training);
             if (await _context.SaveChangesAsync() == 0)
@@ -114,7 +115,7 @@ namespace Scheduledo.Service.Concrete
 
             Training training = await _context.Trainings.Where(x => x.Id == idTraining).FirstOrDefaultAsync();
 
-            if(training != null)
+            if (training != null)
             {
                 result.Data = training.IdCoach;
             }
@@ -157,7 +158,7 @@ namespace Scheduledo.Service.Concrete
             }
             return result;
         }
-            
+
 
         public async Task<Result> DeleteTraining(Training training)
         {
@@ -219,34 +220,82 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result<ICollection<Training>>> GetTrainings(string id, UserRole role, string date)
+        public async Task<Result<ICollection<Training>>> GetTrainings(string id, UserRole role, string date, string idClient)
         {
             var result = new Result<ICollection<Training>>();
 
             var trainings = new List<Training>();
 
             //var workoutDate = new DateTime(int.Parse(date.Substring(0, 4)), int.Parse(date.Substring(5, 2)), int.Parse(date.Substring(8, 2)),0,0,0);
-            if(!String.IsNullOrEmpty(date))
+            if (!String.IsNullOrEmpty(date))
             {
                 var workoutDate = DateTime.Parse(date);
-                if (role == UserRole.Coach)
+                if (!String.IsNullOrEmpty(idClient))
                 {
-                    trainings = await _context.Trainings.Where(x => x.IdCoach == id && x.StartDate > workoutDate).ToListAsync();
+                    if (role == UserRole.Coach)
+                    {
+                        var client = _context.Clients.Where(x => x.Id == idClient).FirstOrDefaultAsync();
+                        if (client != null)
+                        {
+                            trainings = await _context.Trainings.Where(x => x.IdCoach == id && x.StartDate > workoutDate && x.IdClient == idClient).ToListAsync();
+                        }
+                        else
+                        {
+                            result.Error = ErrorType.BadRequest;
+                            result.ErrorMessage = "Client does not exist";
+                            return result;
+                        }
+                    }
+                    else if (role == UserRole.Client)
+                    {
+                        trainings = await _context.Trainings.Where(x => x.IdClient == id && x.StartDate > workoutDate).ToListAsync();
+                    }
                 }
-                else if (role == UserRole.Client)
+                else
                 {
-                    trainings = await _context.Trainings.Where(x => x.IdClient == id && x.StartDate > workoutDate).ToListAsync();
+                    if (role == UserRole.Coach)
+                    {
+                        trainings = await _context.Trainings.Where(x => x.IdCoach == id && x.StartDate > workoutDate).ToListAsync();
+                    }
+                    else if (role == UserRole.Client)
+                    {
+                        trainings = await _context.Trainings.Where(x => x.IdClient == id && x.StartDate > workoutDate).ToListAsync();
+                    }
                 }
             }
             else
             {
-                if (role == UserRole.Coach)
+                if (!String.IsNullOrEmpty(idClient))
                 {
-                    trainings = await _context.Trainings.Where(x => x.IdCoach == id).ToListAsync();
+                    if (role == UserRole.Coach)
+                    {
+                        var client = _context.Clients.Where(x => x.Id == idClient).FirstOrDefaultAsync();
+                        if (client != null)
+                        {
+                            trainings = await _context.Trainings.Where(x => x.IdCoach == id && x.IdClient == idClient).ToListAsync();
+                        }
+                        else
+                        {
+                            result.Error = ErrorType.BadRequest;
+                            result.ErrorMessage = "Client does not exist";
+                            return result;
+                        }
+                    }
+                    else if (role == UserRole.Client)
+                    {
+                        trainings = await _context.Trainings.Where(x => x.IdClient == id).ToListAsync();
+                    }
                 }
-                else if (role == UserRole.Client)
+                else
                 {
-                    trainings = await _context.Trainings.Where(x => x.IdClient == id).ToListAsync();
+                    if (role == UserRole.Coach)
+                    {
+                        trainings = await _context.Trainings.Where(x => x.IdCoach == id).ToListAsync();
+                    }
+                    else if (role == UserRole.Client)
+                    {
+                        trainings = await _context.Trainings.Where(x => x.IdClient == id).ToListAsync();
+                    }
                 }
             }
 

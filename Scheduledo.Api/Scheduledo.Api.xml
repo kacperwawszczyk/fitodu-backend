@@ -233,7 +233,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.TrainingController.GetFutureTrainings(System.String)">
+        <member name="M:Scheduledo.Api.Controllers.TrainingController.GetFutureTrainings(System.String,System.String)">
             <summary>
             Used to get training with a StartDate greater than given
             </summary>
@@ -321,6 +321,13 @@
             Used to get all week plans of a coach. If requester is a coach, endpoint  will return all week plans of this coach, if requester is a client
             endpoint will return all week plans of his coach instead.
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Scheduledo.Api.Controllers.WeekPlanController.GetWeekPlansShort(Scheduledo.Service.Models.WeekPlanListInput)">
+            <summary>
+            Week plans paging test
+            </summary>
+            <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:Scheduledo.Api.Controllers.WeekPlanController.CreateWeekPlan(Scheduledo.Service.Models.WeekPlanInput)">
