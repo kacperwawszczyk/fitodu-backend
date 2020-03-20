@@ -83,8 +83,9 @@ namespace Scheduledo.Api.Controllers
         [HttpGet("trainings")]
         [Authorize]
         [ProducesResponseType(typeof(ICollection<Training>), 200)]
+        public async Task<IActionResult> GetFutureTrainings([FromQuery]string from, [FromQuery] string idClient)
         {
-            var result = await _trainingService.GetTrainings(CurrentUser.Id, CurrentUser.Role, from);
+            var result = await _trainingService.GetTrainings(CurrentUser.Id, CurrentUser.Role, from, idClient);
             return GetResult(result);
         }
 
@@ -97,8 +98,7 @@ namespace Scheduledo.Api.Controllers
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> AddTraining([FromBody]TrainingInput trainingInput)
         {
-            trainingInput.IdCoach = CurrentUser.Id;
-            var result = await _trainingService.AddTraining(trainingInput);
+            var result = await _trainingService.AddTraining(trainingInput, CurrentUser.Id);
             return GetResult(result);
         }
 
