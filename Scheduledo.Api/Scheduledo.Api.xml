@@ -110,13 +110,13 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.ExerciseController.EditExercise(Scheduledo.Model.Entities.Exercise)">
+        <member name="M:Scheduledo.Api.Controllers.ExerciseController.EditExercise(Scheduledo.Service.Models.Exercise.UpdateExerciseInput)">
             <summary>
             Used to modify an existing exercise for a requesting coach
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.ExerciseController.DeleteExercise(Scheduledo.Model.Entities.Exercise)">
+        <member name="M:Scheduledo.Api.Controllers.ExerciseController.DeleteExercise(System.Int32)">
             <summary>
             Used to delete an existing exercise for a requesting coach
             </summary>

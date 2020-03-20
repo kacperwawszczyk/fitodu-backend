@@ -46,12 +46,12 @@ namespace Scheduledo.Service.Concrete
         }
 
 
-        public async Task<Result> CreateExercise(ExerciseInput exercise)
+        public async Task<Result> CreateExercise(string coachId, ExerciseInput exercise)
         {
             var result = new Result();
 
             Exercise existingExercise = await _context.Exercises
-                .Where(x => x.IdCoach == exercise.IdCoach && x.Name == exercise.Name)
+                .Where(x => x.IdCoach == coachId && x.Name == exercise.Name)
                 .FirstOrDefaultAsync();
 
             if (existingExercise != null) //this coach already has an exercise with given name
@@ -62,7 +62,7 @@ namespace Scheduledo.Service.Concrete
             }
 
             Exercise _ex = new Exercise();
-            _ex.IdCoach = exercise.IdCoach;
+            _ex.IdCoach = coachId;
             _ex.Name = exercise.Name;
             _ex.Description = exercise.Description;
             using (var transaction = _context.Database.BeginTransaction())
@@ -80,14 +80,14 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result> EditExercise(Exercise exercise)
+        public async Task<Result> EditExercise(string coachId, UpdateExerciseInput exercise)
         {
             var result = new Result();
 
             using (var transaction = _context.Database.BeginTransaction())
             {
                 Exercise existingExercise = await _context.Exercises
-                .Where(x => x.Id == exercise.Id && x.IdCoach == exercise.IdCoach)
+                .Where(x => x.Id == exercise.Id && x.IdCoach == coachId)
                 .FirstOrDefaultAsync();
 
                 if (existingExercise == null) //this coach does not have an exercise with that Id
@@ -113,7 +113,7 @@ namespace Scheduledo.Service.Concrete
         }
 
 
-        public async Task<Result> DeleteExercise(Exercise exercise)
+        public async Task<Result> DeleteExercise(string coachId, int exerciseId)
         {
             var result = new Result();
 
@@ -121,7 +121,7 @@ namespace Scheduledo.Service.Concrete
             {
 
                 Exercise existingExercise = await _context.Exercises
-                .Where(x => x.Id == exercise.Id && x.IdCoach == exercise.IdCoach)
+                .Where(x => x.Id == exerciseId && x.IdCoach == coachId)
                 .FirstOrDefaultAsync();
 
                 if (existingExercise == null) //this coach does not have an exercise with that Id

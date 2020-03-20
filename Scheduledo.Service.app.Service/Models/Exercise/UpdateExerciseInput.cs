@@ -5,12 +5,12 @@ using System.Text;
 
 namespace Scheduledo.Service.Models.Exercise
 {
-    public class ExerciseInput
+    public class UpdateExerciseInput
     {
-        [Required(AllowEmptyStrings = false, ErrorMessage = "RequiredError")]
+        [Required]
+        public int Id { get; set; }
         [StringLength(30)]
         public string Name { get; set; }
-
         public string Description { get; set; }
         [Required]
         public bool Archived { get; set; } = false;

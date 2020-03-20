@@ -76,8 +76,7 @@ namespace Scheduledo.Api.Controllers
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> CreateExercise([FromBody]ExerciseInput exercise)
         {
-            exercise.IdCoach = CurrentUser.Id;
-            var result = await _exerciseService.CreateExercise(exercise);
+            var result = await _exerciseService.CreateExercise(CurrentUser.Id, exercise);
             return GetResult(result);
         }
 
@@ -88,10 +87,9 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpPut("exercises")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> EditExercise([FromBody]Exercise exercise)
+        public async Task<IActionResult> EditExercise([FromBody]UpdateExerciseInput exercise)
         {
-            exercise.IdCoach = CurrentUser.Id;
-            var result = await _exerciseService.EditExercise(exercise);
+            var result = await _exerciseService.EditExercise(CurrentUser.Id, exercise);
             return GetResult(result);
         }
 
@@ -100,12 +98,11 @@ namespace Scheduledo.Api.Controllers
         /// Used to delete an existing exercise for a requesting coach
         /// </summary>
         /// <returns></returns>
-        [HttpDelete("exercises")]
+        [HttpDelete("exercises/{exerciseId}")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteExercise([FromBody]Exercise exercise)
+        public async Task<IActionResult> DeleteExercise(int exerciseId)
         {
-            exercise.IdCoach = CurrentUser.Id;
-            var result = await _exerciseService.DeleteExercise(exercise);
+            var result = await _exerciseService.DeleteExercise(CurrentUser.Id, exerciseId);
             return GetResult(result);
         }
     }
