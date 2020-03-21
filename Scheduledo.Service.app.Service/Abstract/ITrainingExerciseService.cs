@@ -14,7 +14,7 @@ namespace Scheduledo.Service.Abstract
         Task<Result<ICollection<TrainingExercise>>> GetTrainingsExercises(int idTraining, string userId, UserRole role);
         Task<Result> AddTrainingExercise(TrainingExerciseInput trainingExerciseInput, string coachId);
         Task<Result> EditTrainingExercise(TrainingExercise trainingExercise, string coachId);
-        Task<Result> DeleteTrainingExercise(TrainingExercise trainingExercise, string coachId);
+        Task<Result> DeleteTrainingExercise(int trainingExerciseId, string coachId);
        // Task<Result> DeleteTrainingsExercises(int idTraining);
     }
 }

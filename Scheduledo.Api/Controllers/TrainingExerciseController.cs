@@ -76,13 +76,13 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// Used to delete an exercise from the training
         /// </summary>
-        /// <param name="trainingExercise"></param>
+        /// <param name="trainingExerciseId"></param>
         /// <returns></returns>
         [HttpDelete("training-exercises")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteTrainingExercise([FromBody]TrainingExercise trainingExercise)
+        public async Task<IActionResult> DeleteTrainingExercise(int trainingExerciseId)
         {
-            var result = await _trainingExerciseService.DeleteTrainingExercise(trainingExercise, CurrentUser.Id);
+            var result = await _trainingExerciseService.DeleteTrainingExercise(trainingExerciseId, CurrentUser.Id);
             return GetResult(result);
         }
 

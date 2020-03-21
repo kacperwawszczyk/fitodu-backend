@@ -285,11 +285,11 @@
             <param name="trainingExercise"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.TrainingExerciseController.DeleteTrainingExercise(Scheduledo.Model.Entities.TrainingExercise)">
+        <member name="M:Scheduledo.Api.Controllers.TrainingExerciseController.DeleteTrainingExercise(System.Int32)">
             <summary>
             Used to delete an exercise from the training
             </summary>
-            <param name="trainingExercise"></param>
+            <param name="trainingExerciseId"></param>
             <returns></returns>
         </member>
         <member name="M:Scheduledo.Api.Controllers.TrainingResultController.GetTrainingsResults(System.Int32)">
