@@ -13,7 +13,7 @@ namespace Scheduledo.Service.Abstract
         Task<Result<ICollection<PrivateNote>>> GetAllNotes(string Id);
         Task<Result<PrivateNote>> GetClientsNote(string coachId, string clientId);
         Task<Result> CreateNote(string coachId, PrivateNoteInput noteInput);
-        Task<Result> UpdateNote(PrivateNote note);
+        Task<Result> UpdateNote(string coachId, PrivateNoteInput note);
         Task<Result> DeleteNote(string coachId, string clientId);
     }
 }

@@ -77,10 +77,9 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpPut("private-notes")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> UpdateNote([FromBody]PrivateNote note)
+        public async Task<IActionResult> UpdateNote([FromBody]PrivateNoteInput note)
         {
-            note.IdCoach = CurrentUser.Id;
-            var result = await _privateNoteService.UpdateNote(note);
+            var result = await _privateNoteService.UpdateNote(CurrentUser.Id, note);
             return GetResult(result);
         }
 
@@ -88,13 +87,13 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// Used to delete an existing private note
         /// </summary>
-        /// <param name="note"></param>
+        /// <param name="clientId"></param>
         /// <returns></returns>
-        [HttpDelete("private-notes")]
+        [HttpDelete("private-notes/{clientId}")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteNote([FromBody]PrivateNote note)
+        public async Task<IActionResult> DeleteNote(string clientId)
         {
-            var result = await _privateNoteService.DeleteNote(CurrentUser.Id, note.IdClient);
+            var result = await _privateNoteService.DeleteNote(CurrentUser.Id, clientId);
             return GetResult(result);
         }
 

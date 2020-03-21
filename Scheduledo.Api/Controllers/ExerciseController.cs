@@ -71,6 +71,7 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// Used to create a new exercise for a requesting coach (if it doesn't already exist)
         /// </summary>
+        /// <param name="exercise"></param>
         /// <returns></returns>
         [HttpPost("exercises")]
         [AuthorizePolicy(UserRole.Coach)]
@@ -84,6 +85,7 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// Used to modify an existing exercise for a requesting coach
         /// </summary>
+        /// <param name="exercise"></param>
         /// <returns></returns>
         [HttpPut("exercises")]
         [AuthorizePolicy(UserRole.Coach)]
@@ -93,10 +95,10 @@ namespace Scheduledo.Api.Controllers
             return GetResult(result);
         }
 
-
         /// <summary>
         /// Used to delete an existing exercise for a requesting coach
         /// </summary>
+        /// <param name="exerciseId"></param>
         /// <returns></returns>
         [HttpDelete("exercises/{exerciseId}")]
         [AuthorizePolicy(UserRole.Coach)]

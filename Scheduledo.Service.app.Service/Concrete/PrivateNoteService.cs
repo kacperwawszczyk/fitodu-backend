@@ -105,14 +105,14 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result> UpdateNote(PrivateNote note)
+        public async Task<Result> UpdateNote(string coachId, PrivateNoteInput noteInput)
         {
             var result = new Result();
 
             using (var transaction = _context.Database.BeginTransaction())
             {
                 PrivateNote existingNote = await _context.PrivateNotes
-                 .Where(x => x.IdCoach == note.IdCoach && x.IdClient == note.IdClient)
+                 .Where(x => x.IdCoach == coachId && x.IdClient == noteInput.IdClient)
                  .FirstOrDefaultAsync();
 
                 if (existingNote == null)
@@ -122,7 +122,7 @@ namespace Scheduledo.Service.Concrete
                     return result;
                 }
 
-                existingNote.Note = note.Note;
+                existingNote.Note = noteInput.Note;
                 if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();

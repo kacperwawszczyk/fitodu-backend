@@ -108,18 +108,21 @@
             <summary>
             Used to create a new exercise for a requesting coach (if it doesn't already exist)
             </summary>
+            <param name="exercise"></param>
             <returns></returns>
         </member>
         <member name="M:Scheduledo.Api.Controllers.ExerciseController.EditExercise(Scheduledo.Service.Models.Exercise.UpdateExerciseInput)">
             <summary>
             Used to modify an existing exercise for a requesting coach
             </summary>
+            <param name="exercise"></param>
             <returns></returns>
         </member>
         <member name="M:Scheduledo.Api.Controllers.ExerciseController.DeleteExercise(System.Int32)">
             <summary>
             Used to delete an existing exercise for a requesting coach
             </summary>
+            <param name="exerciseId"></param>
             <returns></returns>
         </member>
         <member name="M:Scheduledo.Api.Controllers.MaximumController.GetAllMaximums(System.String)">
@@ -151,11 +154,12 @@
             <param name="max"> Maximum type </param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.MaximumController.DeleteMaximum(Scheduledo.Model.Entities.Maximum)">
+        <member name="M:Scheduledo.Api.Controllers.MaximumController.DeleteMaximum(System.String,System.Int32)">
             <summary>
             Used by coach to delete an existing maximum
             </summary>
-            <param name="max"> Maximum type </param>
+            <param name="IdClient"> string type </param>
+            <param name="IdExercise"> int type </param>
             <returns></returns>
         </member>
         <member name="M:Scheduledo.Api.Controllers.PrivateNoteController.GetAllNotes">
@@ -178,18 +182,18 @@
             <param name="note"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.PrivateNoteController.UpdateNote(Scheduledo.Model.Entities.PrivateNote)">
+        <member name="M:Scheduledo.Api.Controllers.PrivateNoteController.UpdateNote(Scheduledo.Service.Models.PrivateNote.PrivateNoteInput)">
             <summary>
             Used to modify an existing private note
             </summary>
             <param name="note"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.PrivateNoteController.DeleteNote(Scheduledo.Model.Entities.PrivateNote)">
+        <member name="M:Scheduledo.Api.Controllers.PrivateNoteController.DeleteNote(System.String)">
             <summary>
             Used to delete an existing private note
             </summary>
-            <param name="note"></param>
+            <param name="clientId"></param>
             <returns></returns>
         </member>
         <member name="M:Scheduledo.Api.Controllers.PublicNoteController.GetAllNotes">
