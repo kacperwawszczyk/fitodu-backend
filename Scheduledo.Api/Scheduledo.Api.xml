@@ -216,18 +216,18 @@
             <param name="note"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.PublicNoteController.UpdateNote(Scheduledo.Model.Entities.PublicNote)">
+        <member name="M:Scheduledo.Api.Controllers.PublicNoteController.UpdateNote(Scheduledo.Service.Models.PublicNote.PublicNoteInput)">
             <summary>
             Used to modify an existing public note
             </summary>
             <param name="note"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.PublicNoteController.DeleteNote(Scheduledo.Model.Entities.PublicNote)">
+        <member name="M:Scheduledo.Api.Controllers.PublicNoteController.DeleteNote(System.String)">
             <summary>
             Used to delete an existing public note
             </summary>
-            <param name="note"></param>
+            <param name="clientId"></param>
             <returns></returns>
         </member>
         <member name="M:Scheduledo.Api.Controllers.TrainingController.GetTraining(System.String)">

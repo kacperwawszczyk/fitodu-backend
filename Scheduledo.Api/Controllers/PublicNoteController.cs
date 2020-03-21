@@ -74,23 +74,22 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpPut("public-notes")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> UpdateNote([FromBody]PublicNote note)
+        public async Task<IActionResult> UpdateNote([FromBody]PublicNoteInput note)
         {
-            note.IdCoach = CurrentUser.Id;
-            var result = await _publicNoteService.UpdateNote(note);
+            var result = await _publicNoteService.UpdateNote(CurrentUser.Id, note);
             return GetResult(result);
         }
 
         /// <summary>
         /// Used to delete an existing public note
         /// </summary>
-        /// <param name="note"></param>
+        /// <param name="clientId"></param>
         /// <returns></returns>
-        [HttpDelete("public-notes")]
+        [HttpDelete("public-notes/{clientId}")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteNote([FromBody]PublicNote note)
+        public async Task<IActionResult> DeleteNote(string clientId)
         {
-            var result = await _publicNoteService.DeleteNote(CurrentUser.Id, note.IdClient);
+            var result = await _publicNoteService.DeleteNote(CurrentUser.Id, clientId);
             return GetResult(result);
         }
 

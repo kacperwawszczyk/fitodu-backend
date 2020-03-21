@@ -113,13 +113,13 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result> UpdateNote(PublicNote note)
+        public async Task<Result> UpdateNote(string coachId, PublicNoteInput note)
         {
             var result = new Result();
             using (var transaction = _context.Database.BeginTransaction())
             {
                 PublicNote existingNote = await _context.PublicNotes
-                .Where(x => x.IdCoach == note.IdCoach && x.IdClient == note.IdClient)
+                .Where(x => x.IdCoach == coachId && x.IdClient == note.IdClient)
                 .FirstOrDefaultAsync();
 
                 if (existingNote == null)
