@@ -313,11 +313,11 @@
             <param name="trainingResult"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.TrainingResultController.DeleteTrainingResult(Scheduledo.Model.Entities.TrainingResult)">
+        <member name="M:Scheduledo.Api.Controllers.TrainingResultController.DeleteTrainingResult(System.Int32)">
             <summary>
             Used to delete an existing result
             </summary>
-            <param name="trainingResult"></param>
+            <param name="trainingResultId"></param>
             <returns></returns>
         </member>
         <member name="M:Scheduledo.Api.Controllers.WeekPlanController.GetWeekPlans">

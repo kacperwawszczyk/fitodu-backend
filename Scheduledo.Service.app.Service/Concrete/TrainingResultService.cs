@@ -152,26 +152,27 @@ namespace Scheduledo.Service.Concrete
            
         
 
-        public async Task<Result> DeleteTrainingResult(TrainingResult trainingResult, string coachId)
+        public async Task<Result> DeleteTrainingResult(int trainingResultId, string coachId)
         {
             var result = new Result();
-            var trainingsCoachResult = await _trainingService.GetTrainingsCoach(trainingResult.IdTraining);
-
-            //check if this training is related to the requesting coach
-            if (trainingsCoachResult.Data != coachId)
-            {
-                result.Error = ErrorType.Forbidden;
-                return result;
-            }
 
             using (var transaction = _context.Database.BeginTransaction())
             {
-                var existingResult = await _context.TrainingResults.Where(x => x.IdTrainingExercise == trainingResult.IdTrainingExercise).FirstOrDefaultAsync();
+                var existingResult = await _context.TrainingResults.Where(x => x.IdTrainingResult == trainingResultId).FirstOrDefaultAsync();
 
                 if (existingResult == null)
                 {
                     result.Error = ErrorType.BadRequest;
-                    result.ErrorMessage = "This exercise does not have a result in this training";
+                    result.ErrorMessage = " Result with this id does not exist";
+                    return result;
+                }
+
+                var trainingsCoachResult = await _trainingService.GetTrainingsCoach(existingResult.IdTraining);
+
+                //check if this training is related to the requesting coach
+                if (trainingsCoachResult.Data != coachId)
+                {
+                    result.Error = ErrorType.Forbidden;
                     return result;
                 }
 
