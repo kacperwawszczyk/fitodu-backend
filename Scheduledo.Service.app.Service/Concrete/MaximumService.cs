@@ -206,9 +206,13 @@ namespace Scheduledo.Service.Concrete
             }
         }
 
-        public async Task<Result> DeleteMaximum(string IdCoach, Maximum max)
+        public async Task<Result> DeleteMaximum(string IdCoach, string IdClient, int IdExercise)
         {
             var result = new Result();
+
+            Maximum max = await _context.Maximums
+                .Where(x => x.IdClient == IdClient && x.IdExercise == IdExercise)
+                .FirstOrDefaultAsync();
 
             if (max == null)
             {

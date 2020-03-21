@@ -31,7 +31,7 @@ namespace Scheduledo.Api.Controllers
         /// </summary>
         /// <param name="IdClient"> string type </param>
         /// <returns> Returns ICollection of Maximum </returns>
-        [HttpGet("maximums")]
+        [HttpGet("maximums/client")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(ICollection<Maximum>), 200)]
         public async Task<IActionResult> GetAllMaximums(string IdClient)
@@ -46,7 +46,7 @@ namespace Scheduledo.Api.Controllers
         /// <param name="IdClient"> string type </param>
         /// <param name="IdExercise"> int type </param>
         /// <returns> Returns Maximum </returns>
-        [HttpGet("maximums/{IdExercise}")]
+        [HttpGet("maximums/client-exercise")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(Maximum), 200)]
         public async Task<IActionResult> GetClientMaximum(string IdClient, int IdExercise)
@@ -84,13 +84,14 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// Used by coach to delete an existing maximum
         /// </summary>
-        /// <param name="max"> Maximum type </param>
+        /// <param name="IdClient"> string type </param>
+        /// <param name="IdExercise"> int type </param>
         /// <returns></returns>
         [HttpDelete("maximums")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteMaximum([FromBody]Maximum max)
+        public async Task<IActionResult> DeleteMaximum(string IdClient, int IdExercise)
         {
-            var result = await _maximumService.DeleteMaximum(CurrentUser.Id, max);
+            var result = await _maximumService.DeleteMaximum(CurrentUser.Id, IdClient, IdExercise);
             return GetResult(result);
         }
 

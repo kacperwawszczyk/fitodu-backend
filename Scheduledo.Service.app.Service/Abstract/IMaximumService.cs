@@ -14,6 +14,6 @@ namespace Scheduledo.Service.Abstract
         Task<Result<Maximum>> GetClientMaximum(string IdCoach, string IdClient, int IdExercise);
         Task<Result> CreateMaximum(string IdCoach, CreateMaximumInput max);
         Task<Result> UpdateMaximum(string IdCoach, Maximum max);
-        Task<Result> DeleteMaximum(string IdCoach, Maximum max);
+        Task<Result> DeleteMaximum(string IdCoach, string IdClient, int IdExercise);
     }
 }
