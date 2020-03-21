@@ -110,7 +110,7 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpPut("trainings")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> EditTraining([FromBody]EditTrainingInput editTrainingInput)
+        public async Task<IActionResult> EditTraining([FromBody]UpdateTrainingInput editTrainingInput)
         {
             var result = await _trainingService.EditTraining(CurrentUser.Id, editTrainingInput);
             return GetResult(result);

@@ -66,7 +66,7 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result> AddTrainingResult(TrainingResultInput trainingResultInput, string coachId)
+        public async Task<Result> AddTrainingResult(string coachId, TrainingResultInput trainingResultInput)
         {
             var result = new Result();
 
@@ -112,7 +112,7 @@ namespace Scheduledo.Service.Concrete
         }
 
 
-        public async Task<Result> EditTrainingResult(TrainingResult trainingResult, string coachId)
+        public async Task<Result> EditTrainingResult(string coachId, TrainingResult trainingResult)
         {
             var result = new Result();
             var trainingsCoachResult = await _trainingService.GetTrainingsCoach(trainingResult.IdTraining);
@@ -152,7 +152,7 @@ namespace Scheduledo.Service.Concrete
            
         
 
-        public async Task<Result> DeleteTrainingResult(int trainingResultId, string coachId)
+        public async Task<Result> DeleteTrainingResult(string coachId, int trainingResultId)
         {
             var result = new Result();
 

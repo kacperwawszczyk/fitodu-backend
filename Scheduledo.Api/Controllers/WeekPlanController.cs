@@ -9,6 +9,7 @@ using Scheduledo.Model.Entities;
 using Scheduledo.Service.Abstract;
 using Scheduledo.Service.Infrastructure.Attributes;
 using Scheduledo.Service.Models;
+using Scheduledo.Service.Models.WeekPlan;
 
 namespace Scheduledo.Api.Controllers
 {
@@ -63,8 +64,7 @@ namespace Scheduledo.Api.Controllers
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> CreateWeekPlan([FromBody] WeekPlanInput weekPlanInput)
         {
-            weekPlanInput.IdCoach = CurrentUser.Id;
-            var result = await _weekPlanService.CreateWeekPlan(weekPlanInput);
+            var result = await _weekPlanService.CreateWeekPlan(CurrentUser.Id, weekPlanInput);
             return GetResult(result);
         }
 
@@ -78,10 +78,9 @@ namespace Scheduledo.Api.Controllers
         /// <returns></returns>
         [HttpPut("week-plans")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> EditWeekPlan([FromBody] WeekPlan weekPlan)
+        public async Task<IActionResult> EditWeekPlan([FromBody]UpdateWeekPlanInput weekPlan)
         {
-            weekPlan.IdCoach = CurrentUser.Id;
-            var result = await _weekPlanService.EditWeekPlan(weekPlan);
+            var result = await _weekPlanService.EditWeekPlan(CurrentUser.Id, weekPlan);
             return GetResult(result);
         }
 
@@ -89,14 +88,13 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// Used to delete an existing week plan with related day plans and workout times
         /// </summary>
-        /// <param name="weekPlan"></param>
+        /// <param name="weekPlanId"></param>
         /// <returns></returns>
-        [HttpDelete("week-plans")]
+        [HttpDelete("week-plans/{weekPlanId}")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteWeekPlan([FromBody] WeekPlan weekPlan)
+        public async Task<IActionResult> DeleteWeekPlan(int weekPlanId)
         {
-            weekPlan.IdCoach = CurrentUser.Id;
-            var result = await _weekPlanService.DeleteWeekPlan(weekPlan);
+            var result = await _weekPlanService.DeleteWeekPlan(CurrentUser.Id, weekPlanId);
             return GetResult(result);
         }
 

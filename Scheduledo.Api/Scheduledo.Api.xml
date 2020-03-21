@@ -250,7 +250,7 @@
             <param name="trainingInput"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.TrainingController.EditTraining(Scheduledo.Service.Models.Training.EditTrainingInput)">
+        <member name="M:Scheduledo.Api.Controllers.TrainingController.EditTraining(Scheduledo.Service.Models.Training.UpdateTrainingInput)">
             <summary>
             USed to modify an existing training for a requesting coach
             </summary>
@@ -341,7 +341,7 @@
             <param name="weekPlanInput"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.WeekPlanController.EditWeekPlan(Scheduledo.Model.Entities.WeekPlan)">
+        <member name="M:Scheduledo.Api.Controllers.WeekPlanController.EditWeekPlan(Scheduledo.Service.Models.WeekPlan.UpdateWeekPlanInput)">
             <summary>
             Used to modify and existing week plan for a requesting coach (sending a week plan with an empty day plan collection removes 
             related day plans; sending a week plan with a day plan colletion containing objects that do not exist in the database
@@ -351,11 +351,11 @@
             <param name="weekPlan"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.WeekPlanController.DeleteWeekPlan(Scheduledo.Model.Entities.WeekPlan)">
+        <member name="M:Scheduledo.Api.Controllers.WeekPlanController.DeleteWeekPlan(System.Int32)">
             <summary>
             Used to delete an existing week plan with related day plans and workout times
             </summary>
-            <param name="weekPlan"></param>
+            <param name="weekPlanId"></param>
             <returns></returns>
         </member>
     </members>

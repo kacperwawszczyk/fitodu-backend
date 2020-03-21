@@ -135,7 +135,7 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result> EditTraining(string coachId, EditTrainingInput trainingInput)
+        public async Task<Result> EditTraining(string coachId, UpdateTrainingInput trainingInput)
         {
             var result = new Result();
             var clientsCoach = await _clientService.GetClientCoach(trainingInput.IdClient);

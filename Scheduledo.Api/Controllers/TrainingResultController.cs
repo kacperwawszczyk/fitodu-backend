@@ -51,7 +51,7 @@ namespace Scheduledo.Api.Controllers
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> AddTrainingResult([FromBody]TrainingResultInput trainingResultInput)
         {
-            var result = await _trainingResultService.AddTrainingResult(trainingResultInput, CurrentUser.Id);
+            var result = await _trainingResultService.AddTrainingResult(CurrentUser.Id, trainingResultInput);
             return GetResult(result);
         }
 
@@ -65,7 +65,7 @@ namespace Scheduledo.Api.Controllers
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> EditTrainingResult([FromBody]TrainingResult trainingResult)
         {
-            var result = await _trainingResultService.EditTrainingResult(trainingResult, CurrentUser.Id);
+            var result = await _trainingResultService.EditTrainingResult(CurrentUser.Id, trainingResult);
             return GetResult(result);
         }
 
@@ -79,7 +79,7 @@ namespace Scheduledo.Api.Controllers
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> DeleteTrainingResult(int trainingResultId)
         {
-            var result = await _trainingResultService.DeleteTrainingResult(trainingResultId, CurrentUser.Id);
+            var result = await _trainingResultService.DeleteTrainingResult(CurrentUser.Id, trainingResultId);
             return GetResult(result);
         }
     }

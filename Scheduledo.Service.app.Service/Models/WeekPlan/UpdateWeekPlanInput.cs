@@ -5,13 +5,14 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Scheduledo.Service.Models
+namespace Scheduledo.Service.Models.WeekPlan
 {
-    public class WeekPlanInput
+    public partial class UpdateWeekPlanInput
     {
+        [Required]
+        public int Id { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? StartDate { get; set; }
         public virtual ICollection<DayPlanInput> DayPlans { get; set; }
-
     }
 }

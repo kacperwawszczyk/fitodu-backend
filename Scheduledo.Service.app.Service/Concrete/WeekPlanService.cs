@@ -7,6 +7,7 @@ using Scheduledo.Model.Entities;
 using Scheduledo.Service.Abstract;
 using Scheduledo.Service.Extensions;
 using Scheduledo.Service.Models;
+using Scheduledo.Service.Models.WeekPlan;
 using Scheduledo.Service.Models.WorkoutTime;
 using System;
 using System.Collections.Generic;
@@ -117,11 +118,11 @@ namespace Scheduledo.Service.Concrete
 
         }
 
-        public async Task<Result> EditWeekPlan(WeekPlan weekPlan)
+        public async Task<Result> EditWeekPlan(string coachId, UpdateWeekPlanInput weekPlan)
         {
             var result = new Result();
 
-            if(!IsValid(weekPlan))
+            if(!IsValidEditInput(weekPlan))
             {
                 result.Error = ErrorType.BadRequest;
                 return result;
@@ -130,7 +131,7 @@ namespace Scheduledo.Service.Concrete
             using (var transaction = _context.Database.BeginTransaction())
             {
                 var exisitngWeekPlan = await _context.WeekPlans
-                    .Where(x => x.Id == weekPlan.Id && x.IdCoach == weekPlan.IdCoach).FirstOrDefaultAsync();
+                    .Where(x => x.Id == weekPlan.Id && x.IdCoach == coachId).FirstOrDefaultAsync();
 
                 if(exisitngWeekPlan == null)
                 {
@@ -143,7 +144,35 @@ namespace Scheduledo.Service.Concrete
 
                 _context.DayPlans.RemoveRange(exisitngWeekPlan.DayPlans);
 
-                exisitngWeekPlan.DayPlans = weekPlan.DayPlans;
+                //exisitngWeekPlan.DayPlans = weekPlan.DayPlans;
+
+
+                exisitngWeekPlan.IdCoach = coachId;
+                exisitngWeekPlan.StartDate = weekPlan.StartDate;
+
+                List<DayPlan> dayPlans = new List<DayPlan>();
+                foreach (DayPlanInput dayPlanInput in weekPlan.DayPlans)
+                {
+                    DayPlan _dayPlan = new DayPlan();
+                    _dayPlan.Day = dayPlanInput.Day;
+                    _dayPlan.WeekPlan = exisitngWeekPlan;
+
+                    List<WorkoutTime> workoutTimes = new List<WorkoutTime>();
+                    foreach (WorkoutTimeInput workoutTimeInput in dayPlanInput.WorkoutTimes)
+                    {
+                        WorkoutTime _workoutTime = new WorkoutTime();
+                        _workoutTime.DayPlan = _dayPlan;
+                        _workoutTime.StartTime = workoutTimeInput.StartTime;
+                        _workoutTime.EndTime = workoutTimeInput.EndTime;
+                        workoutTimes.Add(_workoutTime);
+
+                    }
+                    _dayPlan.WorkoutTimes = workoutTimes;
+                    dayPlans.Add(_dayPlan);
+                }
+
+                exisitngWeekPlan.DayPlans = dayPlans;
+
                 if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();
@@ -156,7 +185,7 @@ namespace Scheduledo.Service.Concrete
         }
 
 
-        public async Task<Result> CreateWeekPlan(WeekPlanInput weekPlanInput)
+        public async Task<Result> CreateWeekPlan(string coachId, WeekPlanInput weekPlanInput)
         {
             var result = new Result();
 
@@ -167,7 +196,7 @@ namespace Scheduledo.Service.Concrete
             }
 
             WeekPlan _weekPlan = new WeekPlan();
-            _weekPlan.IdCoach = weekPlanInput.IdCoach;
+            _weekPlan.IdCoach = coachId;
             _weekPlan.StartDate = weekPlanInput.StartDate;
 
             List<DayPlan> dayPlans = new List<DayPlan>();
@@ -202,13 +231,13 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result> DeleteWeekPlan(WeekPlan weekPlan)
+        public async Task<Result> DeleteWeekPlan(string coachId, int weekPlanId)
         {
             var result = new Result();
             using (var transaction = _context.Database.BeginTransaction())
             {
                 var exisitngWeekPlan = await _context.WeekPlans
-                    .Where(x => x.Id == weekPlan.Id && x.IdCoach == weekPlan.IdCoach).FirstOrDefaultAsync();
+                    .Where(x => x.Id == weekPlanId && x.IdCoach == coachId).FirstOrDefaultAsync();
 
                 if (exisitngWeekPlan == null)
                 {
@@ -293,6 +322,60 @@ namespace Scheduledo.Service.Concrete
             int[] counters = { 0, 0, 0, 0, 0, 0, 0 };
 
             List<DayPlanInput> _dayPlans = weekPlanInput.DayPlans.ToList();
+
+            for (int i = 0; i < _dayPlans.Count; i++)
+            {
+                if (_dayPlans[i].Day == Day.Monday)
+                {
+                    counters[0]++;
+                }
+                else if (_dayPlans[i].Day == Day.Tuesday)
+                {
+                    counters[1]++;
+                }
+                else if (_dayPlans[i].Day == Day.Wednesday)
+                {
+                    counters[2]++;
+                }
+                else if (_dayPlans[i].Day == Day.Thursday)
+                {
+                    counters[3]++;
+                }
+                else if (_dayPlans[i].Day == Day.Friday)
+                {
+                    counters[4]++;
+                }
+                else if (_dayPlans[i].Day == Day.Saturday)
+                {
+                    counters[5]++;
+                }
+                else if (_dayPlans[i].Day == Day.Sunday)
+                {
+                    counters[6]++;
+                }
+            }
+
+            if (counters.Contains(2))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public bool IsValidEditInput(UpdateWeekPlanInput editWeekPlanInput)
+        {
+
+            if (editWeekPlanInput.DayPlans.Count > 7)
+            {
+                return false;
+            }
+
+            int[] counters = { 0, 0, 0, 0, 0, 0, 0 };
+
+            List<DayPlanInput> _dayPlans = editWeekPlanInput.DayPlans.ToList();
 
             for (int i = 0; i < _dayPlans.Count; i++)
             {

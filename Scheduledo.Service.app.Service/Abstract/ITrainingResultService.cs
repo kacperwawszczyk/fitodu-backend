@@ -11,8 +11,8 @@ namespace Scheduledo.Service.Abstract
     public interface ITrainingResultService
     {
         Task<Result<ICollection<TrainingResult>>> GetTrainingsResults(int idTraining, string userId, UserRole role);
-        Task<Result> AddTrainingResult(TrainingResultInput trainingResult, string coachId);
-        Task<Result> EditTrainingResult(TrainingResult trainingResult, string coachId);
-        Task<Result> DeleteTrainingResult(int trainingResult, string coachId);
+        Task<Result> AddTrainingResult(string coachId, TrainingResultInput trainingResultInput);
+        Task<Result> EditTrainingResult(string coachId, TrainingResult trainingResult);
+        Task<Result> DeleteTrainingResult(string coachId, int trainingResultId);
     }
 }

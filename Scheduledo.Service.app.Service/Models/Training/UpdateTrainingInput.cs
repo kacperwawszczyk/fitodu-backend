@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Scheduledo.Service.Models.Training
 {
-    public class EditTrainingInput
+    public class UpdateTrainingInput
     {
         [Required]
         public int Id { get; set; }
