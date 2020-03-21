@@ -18,11 +18,13 @@ namespace Scheduledo.Service.Concrete
     {
         private readonly IMapper _mapper;
         private readonly Context _context;
-
-        public TrainingService(Context context, IMapper mapper)
+        private readonly IClientService _clientService;
+            
+        public TrainingService(Context context, IMapper mapper, IClientService clientService)
         {
             _context = context;
             _mapper = mapper;
+            _clientService = clientService;
         }
 
         //TODO: Usunąć jak na pewno nie będzie potrzebne
@@ -87,14 +89,21 @@ namespace Scheduledo.Service.Concrete
         //    return result;
         //}
 
-        public async Task<Result> AddTraining(TrainingInput trainingInput, string idCoach)
+        public async Task<Result> AddTraining(string coachId, TrainingInput trainingInput)
         {
             var result = new Result();
 
+            var clientsCoach = await _clientService.GetClientCoach(trainingInput.IdClient);
+            if(clientsCoach.IsDataNull || clientsCoach.Data.Id != coachId)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "This coach does not work with this client";
+                return result;
+            }
+
             Training _training = new Training();
             _training.IdClient = trainingInput.IdClient;
-            //_training.IdCoach = trainingInput.IdCoach;
-            _training.IdCoach = idCoach;
+            _training.IdCoach = coachId;
             if (trainingInput.Note != null) _training.Note = trainingInput.Note;
             _training.StartDate = trainingInput.StartDate;
             _training.EndDate = trainingInput.EndDate;
@@ -126,14 +135,21 @@ namespace Scheduledo.Service.Concrete
             return result;
         }
 
-        public async Task<Result> EditTraining(Training training)
+        public async Task<Result> EditTraining(string coachId, EditTrainingInput trainingInput)
         {
             var result = new Result();
-
+            var clientsCoach = await _clientService.GetClientCoach(trainingInput.IdClient);
+            if (clientsCoach.IsDataNull || clientsCoach.Data.Id != coachId)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "This coach does not work with this client";
+                return result;
+            }
             using (var transaction = _context.Database.BeginTransaction())
             {
+
                 var exisitngTraining = await _context.Trainings.Where(
-                x => x.Id == training.Id).FirstOrDefaultAsync();
+                x => x.Id == trainingInput.Id && x.IdCoach == coachId).FirstOrDefaultAsync();
 
                 if (exisitngTraining == null)
                 {
@@ -142,11 +158,11 @@ namespace Scheduledo.Service.Concrete
                     return result;
                 }
 
-                exisitngTraining.IdClient = training.IdClient;
-                exisitngTraining.Note = training.Note;
-                exisitngTraining.Description = training.Description;
-                exisitngTraining.StartDate = training.StartDate;
-                exisitngTraining.EndDate = training.EndDate;
+                exisitngTraining.IdClient = trainingInput.IdClient;
+                exisitngTraining.Note = trainingInput.Note;
+                exisitngTraining.Description = trainingInput.Description;
+                exisitngTraining.StartDate = trainingInput.StartDate;
+                exisitngTraining.EndDate = trainingInput.EndDate;
 
                 if (await _context.SaveChangesAsync() == 0)
                 {
@@ -160,13 +176,13 @@ namespace Scheduledo.Service.Concrete
         }
 
 
-        public async Task<Result> DeleteTraining(Training training)
+        public async Task<Result> DeleteTraining(string coachId, int trainingId)
         {
             var result = new Result();
             using (var transaction = _context.Database.BeginTransaction())
             {
                 var existingTraining = await _context.Trainings.Where(
-                x => x.Id == training.Id).FirstOrDefaultAsync();
+                x => x.Id == trainingId && x.IdCoach == coachId).FirstOrDefaultAsync();
 
                 if (existingTraining == null)
                 {
@@ -185,7 +201,7 @@ namespace Scheduledo.Service.Concrete
                 }
 
                 var trainingsExercises = await _context.TrainingExercises.Where
-                (x => x.IdTraining == training.Id).ToListAsync();
+                (x => x.IdTraining == trainingId).ToListAsync();
 
 
                 if (trainingsExercises.Count != 0)

@@ -98,7 +98,7 @@ namespace Scheduledo.Api.Controllers
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> AddTraining([FromBody]TrainingInput trainingInput)
         {
-            var result = await _trainingService.AddTraining(trainingInput, CurrentUser.Id);
+            var result = await _trainingService.AddTraining(CurrentUser.Id, trainingInput);
             return GetResult(result);
         }
 
@@ -106,14 +106,13 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// USed to modify an existing training for a requesting coach
         /// </summary>
-        /// <param name="training"></param>
+        /// <param name="editTrainingInput"></param>
         /// <returns></returns>
         [HttpPut("trainings")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> EditTraining([FromBody]Training training)
+        public async Task<IActionResult> EditTraining([FromBody]EditTrainingInput editTrainingInput)
         {
-            training.IdCoach = CurrentUser.Id;
-            var result = await _trainingService.EditTraining(training);
+            var result = await _trainingService.EditTraining(CurrentUser.Id, editTrainingInput);
             return GetResult(result);
         }
 
@@ -121,14 +120,13 @@ namespace Scheduledo.Api.Controllers
         /// <summary>
         /// USed to delete an existing training for a requesting coach
         /// </summary>
-        /// <param name="training"></param>
+        /// <param name="trainingId"></param>
         /// <returns></returns>
         [HttpDelete("trainings")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteTraining([FromBody]Training training)
+        public async Task<IActionResult> DeleteTraining(int trainingId)
         {
-            training.IdCoach = CurrentUser.Id;
-            var result = await _trainingService.DeleteTraining(training);
+            var result = await _trainingService.DeleteTraining(CurrentUser.Id, trainingId);
             return GetResult(result);
         }
     }

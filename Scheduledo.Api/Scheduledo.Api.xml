@@ -250,18 +250,18 @@
             <param name="trainingInput"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.TrainingController.EditTraining(Scheduledo.Model.Entities.Training)">
+        <member name="M:Scheduledo.Api.Controllers.TrainingController.EditTraining(Scheduledo.Service.Models.Training.EditTrainingInput)">
             <summary>
             USed to modify an existing training for a requesting coach
             </summary>
-            <param name="training"></param>
+            <param name="editTrainingInput"></param>
             <returns></returns>
         </member>
-        <member name="M:Scheduledo.Api.Controllers.TrainingController.DeleteTraining(Scheduledo.Model.Entities.Training)">
+        <member name="M:Scheduledo.Api.Controllers.TrainingController.DeleteTraining(System.Int32)">
             <summary>
             USed to delete an existing training for a requesting coach
             </summary>
-            <param name="training"></param>
+            <param name="trainingId"></param>
             <returns></returns>
         </member>
         <member name="M:Scheduledo.Api.Controllers.TrainingExerciseController.GetTrainingsExercises(System.Int32)">
