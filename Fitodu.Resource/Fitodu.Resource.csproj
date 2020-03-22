@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+     <Compile Update="Template - kopiować.Designer.cs">
+       <DependentUpon>Template.resx</DependentUpon>
+       <DesignTime>True</DesignTime>
+       <AutoGen>True</AutoGen>
+     </Compile>
+     <Compile Update="Validation.Designer.cs">
+       <DesignTime>True</DesignTime>
+       <AutoGen>True</AutoGen>
+       <DependentUpon>Validation.resx</DependentUpon>
+     </Compile>
+     <Compile Update="VerifyClientTemplate.Designer.cs">
+       <DesignTime>True</DesignTime>
+       <AutoGen>True</AutoGen>
+       <DependentUpon>VerifyClientTemplate.resx</DependentUpon>
+     </Compile>
+     <Compile Update="Internal.Designer.cs">
+       <DesignTime>True</DesignTime>
+       <AutoGen>True</AutoGen>
+       <DependentUpon>Internal.resx</DependentUpon>
+     </Compile>
+  </ItemGroup>
+
+ <ItemGroup>
+    <EmbeddedResource Update="VerifyClientTemplate.resx">
+      <LastGenOutput>VerifyClientTemplate.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Validation.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Validation.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Template.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>VerifyClientTemplate.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Internal.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Internal.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
