@@ -33,7 +33,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpGet("week-plans")]
         [Authorize]
-        [ProducesResponseType(typeof(ICollection<WeekPlan>), 200)]
+        [ProducesResponseType(typeof(ICollection<WeekPlanOutput>), 200)]
         public async Task<IActionResult> GetWeekPlans()
         {
             var result = await _weekPlanService.GetWeekPlans(CurrentUser.Id, CurrentUser.Role);
@@ -54,6 +54,17 @@ namespace Fitodu.Api.Controllers
             var result = await _weekPlanService.GetWeekPlansShort(CurrentUser.Id, CurrentUser.Role, model);
             return GetResult(result);
         }
+
+        // TODO: Testowa metoda (do wykorzystania lub usunięcia)
+        [HttpGet("week-plans/{weekPlanId}/booked-hours")]
+        [Authorize]
+        [ProducesResponseType(typeof(WeekPlanOutput), 200)]
+        public async Task<IActionResult> GetWeekPlansBookedHours(int weekPlanId)
+        {
+            var result = await _weekPlanService.GetWeekPlansBookedHours(CurrentUser.Id, CurrentUser.Role, weekPlanId);
+            return GetResult(result);
+        }
+
 
         /// <summary>
         /// Used to create a new week plan with related day plans and workout times.

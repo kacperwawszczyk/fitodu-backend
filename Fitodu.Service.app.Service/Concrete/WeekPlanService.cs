@@ -165,7 +165,7 @@ namespace Fitodu.Service.Concrete
                 
 
                 exisitngWeekPlan.IdCoach = coachId;
-                exisitngWeekPlan.StartDate = weekPlan.StartDate;
+                exisitngWeekPlan.StartDate = new DateTime(weekPlan.StartDate.Value.Date.Year, weekPlan.StartDate.Value.Date.Month, weekPlan.StartDate.Value.Date.Day, 0, 0, 0);
 
                 List<DayPlan> dayPlans = new List<DayPlan>();
                 foreach (DayPlanInput dayPlanInput in weekPlan.DayPlans)
@@ -214,7 +214,7 @@ namespace Fitodu.Service.Concrete
 
             WeekPlan _weekPlan = new WeekPlan();
             _weekPlan.IdCoach = coachId;
-            _weekPlan.StartDate = weekPlanInput.StartDate;
+            _weekPlan.StartDate = new DateTime(weekPlanInput.StartDate.Value.Date.Year, weekPlanInput.StartDate.Value.Date.Month, weekPlanInput.StartDate.Value.Date.Day, 0, 0, 0);
 
             List<DayPlan> dayPlans = new List<DayPlan>();
             foreach (DayPlanInput dayPlanInput in weekPlanInput.DayPlans)
@@ -452,6 +452,124 @@ namespace Fitodu.Service.Concrete
                 }
             }
             return true;
+        }
+
+        public async Task<Result<WeekPlanOutput>> GetWeekPlansBookedHours(string requesterId, UserRole requesterRole, int weekPlanId)
+        {
+            var result = new Result<WeekPlanOutput>();
+
+            string coachId = "";
+
+            if (requesterRole == UserRole.Coach)
+            {
+                coachId = requesterId;
+            }
+            else if (requesterRole == UserRole.Client)
+            {
+                //TODO: zmienić jeśli client może mieć wielu trenerów
+                var clientsCoach = await _clientService.GetClientCoach(requesterId);
+
+                if (clientsCoach == null)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "Coach not found";
+                    return result;
+                }
+                else
+                {
+                    coachId = clientsCoach.Data.Id;
+                }
+            }
+
+            //IQueryable weekPlan = _context.WeekPlans.Where(x => x.IdCoach == coachId && x.Id == weekPlanId);
+            //if (weekPlan == null)
+            //{
+            //    result.Error = ErrorType.NotFound;
+            //    return result;
+            //}
+
+            //var weekPlanOutput = await weekPlan.ProjectTo<WeekPlanOutput>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+            var weekPlan = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.Id == weekPlanId).FirstOrDefaultAsync();
+
+            var trainings = await _context.Trainings.Where(x => x.StartDate >= weekPlan.StartDate && x.EndDate <= weekPlan.StartDate.Value.AddDays(7)
+                && x.IdCoach == coachId).ToListAsync();
+
+            WeekPlanOutput weekPlanOutput = new WeekPlanOutput();
+            List<DayPlanOutput> dayPlanOutputs = new List<DayPlanOutput>();
+
+            dayPlanOutputs.Add(new DayPlanOutput { Day = Day.Monday, WorkoutTimes = new List<WorkoutTimeOutput>() });
+            dayPlanOutputs.Add(new DayPlanOutput { Day = Day.Tuesday, WorkoutTimes = new List<WorkoutTimeOutput>() });
+            dayPlanOutputs.Add(new DayPlanOutput { Day = Day.Wednesday, WorkoutTimes = new List<WorkoutTimeOutput>() });
+            dayPlanOutputs.Add(new DayPlanOutput { Day = Day.Thursday, WorkoutTimes = new List<WorkoutTimeOutput>() });
+            dayPlanOutputs.Add(new DayPlanOutput { Day = Day.Friday, WorkoutTimes = new List<WorkoutTimeOutput>() });
+            dayPlanOutputs.Add(new DayPlanOutput { Day = Day.Saturday, WorkoutTimes = new List<WorkoutTimeOutput>() });
+            dayPlanOutputs.Add(new DayPlanOutput { Day = Day.Sunday, WorkoutTimes = new List<WorkoutTimeOutput>() });
+
+            List<WorkoutTime> workoutTimes = new List<WorkoutTime>();
+            if(trainings != null)
+            {
+                foreach(Training training in trainings)
+                {
+                    switch(training.StartDate.Value.Date.DayOfWeek)
+                    {
+                        case DayOfWeek.Monday:
+                            dayPlanOutputs[0].WorkoutTimes.Add(new WorkoutTimeOutput { StartTime = (DateTime)training.StartDate, EndTime = (DateTime)training.EndDate });
+                            break;
+                        case DayOfWeek.Tuesday:
+                            dayPlanOutputs[1].WorkoutTimes.Add(new WorkoutTimeOutput { StartTime = (DateTime)training.StartDate, EndTime = (DateTime)training.EndDate });
+                            break;
+                        case DayOfWeek.Wednesday:
+                            dayPlanOutputs[2].WorkoutTimes.Add(new WorkoutTimeOutput { StartTime = (DateTime)training.StartDate, EndTime = (DateTime)training.EndDate });
+                            break;
+                        case DayOfWeek.Thursday:
+                            dayPlanOutputs[3].WorkoutTimes.Add(new WorkoutTimeOutput { StartTime = (DateTime)training.StartDate, EndTime = (DateTime)training.EndDate });
+                            break;
+                        case DayOfWeek.Friday:
+                            dayPlanOutputs[4].WorkoutTimes.Add(new WorkoutTimeOutput { StartTime = (DateTime)training.StartDate, EndTime = (DateTime)training.EndDate });
+                            break;
+                        case DayOfWeek.Saturday:
+                            dayPlanOutputs[5].WorkoutTimes.Add(new WorkoutTimeOutput { StartTime = (DateTime)training.StartDate, EndTime = (DateTime)training.EndDate });
+                            break;
+                        case DayOfWeek.Sunday:
+                            dayPlanOutputs[6].WorkoutTimes.Add(new WorkoutTimeOutput { StartTime = (DateTime)training.StartDate, EndTime = (DateTime)training.EndDate });
+                            break;
+                    }
+
+                    //foreach(DayPlanOutput dayPlan in weekPlanOutput.DayPlans)
+                    //{
+                    //    if(training.StartDate >= weekPlanOutput.StartDate.Value.Date.AddDays((int)dayPlan.Day))
+                    //    {
+                    //        foreach (WorkoutTimeOutput workoutTime in dayPlan.WorkoutTimes)
+                    //        {
+
+                    //            //workout time zaczyna się przed i kończy w trakcie
+                    //            //workout time zaczyna się przed i kończy po treningu
+                    //            //workout time zaczyna się w trakcie i kończy po treningu
+                    //            //workout time zaczyna się w trakcie i kończy w trakcie treningu
+
+                    //        }
+                    //    }
+                    //}
+
+
+                }
+            }
+
+            foreach(DayPlanOutput dayPlanOutput in dayPlanOutputs.ToList())
+            {
+                if(dayPlanOutput.WorkoutTimes.Count == 0)
+                {
+                    dayPlanOutputs.Remove(dayPlanOutput);
+                }
+            }
+
+            weekPlanOutput.IdCoach = weekPlan.IdCoach;
+            weekPlanOutput.StartDate = weekPlan.StartDate;
+            weekPlanOutput.IsDefault = weekPlan.IsDefault;
+            weekPlanOutput.DayPlans = dayPlanOutputs;
+
+            result.Data = weekPlanOutput;
+            return result;
         }
     }
 }

@@ -22,5 +22,6 @@ namespace Fitodu.Service.Abstract
 
         bool IsValidEditInput(UpdateWeekPlanInput editWeekPlanInput);
         Task<Result<ICollection<WeekPlanListOutput>>> GetWeekPlansShort(string requesterId, UserRole requesterRole, WeekPlanListInput model);
+        Task<Result<WeekPlanOutput>> GetWeekPlansBookedHours(string requesterId, UserRole requesterRole, int weekPlanId);
     }
 }
