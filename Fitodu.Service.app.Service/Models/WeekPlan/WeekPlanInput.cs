@@ -11,6 +11,7 @@ namespace Fitodu.Service.Models
     {
         [Column(TypeName = "datetime")]
         public DateTime? StartDate { get; set; }
+        public bool IsDefault { get; set; }
         public virtual ICollection<DayPlanInput> DayPlans { get; set; }
 
     }

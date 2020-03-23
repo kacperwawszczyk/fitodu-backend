@@ -14,6 +14,7 @@ namespace Fitodu.Service.Models
         public string IdCoach { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? StartDate { get; set; }
+        public bool IsDefault { get; set; }
         public virtual ICollection<DayPlanOutput> DayPlans { get; set; }
     }
 }

@@ -145,7 +145,24 @@ namespace Fitodu.Service.Concrete
                 _context.DayPlans.RemoveRange(exisitngWeekPlan.DayPlans);
 
                 //exisitngWeekPlan.DayPlans = weekPlan.DayPlans;
+                if(weekPlan.IsDefault)
+                {
+                    var existingDefaultWeekPlan = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.IsDefault == true).ToListAsync();
+                    if(existingDefaultWeekPlan != null)
+                    {
+                        foreach(WeekPlan defaultWeekPlan in existingDefaultWeekPlan)
+                        {
+                            defaultWeekPlan.IsDefault = false;
+                        }
+                    }
 
+                    exisitngWeekPlan.IsDefault = true;
+                }
+                else
+                {
+                    exisitngWeekPlan.IsDefault = false;
+                }
+                
 
                 exisitngWeekPlan.IdCoach = coachId;
                 exisitngWeekPlan.StartDate = weekPlan.StartDate;
@@ -218,6 +235,24 @@ namespace Fitodu.Service.Concrete
                 }
                 _dayPlan.WorkoutTimes = workoutTimes;
                 dayPlans.Add(_dayPlan);
+            }
+
+            if (weekPlanInput.IsDefault)
+            {
+                var existingDefaultWeekPlan = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.IsDefault == true).ToListAsync();
+                if (existingDefaultWeekPlan != null)
+                {
+                    foreach (WeekPlan defaultWeekPlan in existingDefaultWeekPlan)
+                    {
+                        defaultWeekPlan.IsDefault = false;
+                    }
+                }
+
+                _weekPlan.IsDefault = true;
+            }
+            else
+            {
+                _weekPlan.IsDefault = false;
             }
 
             _weekPlan.DayPlans = dayPlans;
@@ -302,14 +337,14 @@ namespace Fitodu.Service.Concrete
                 }
             }
 
-            if(counters.Contains(2))
+            for (int i = 0; i < 7; i++)
             {
-                return false;
+                if (counters[i] > 1)
+                {
+                    return false;
+                }
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
         public bool IsValidInput(WeekPlanInput weekPlanInput)
@@ -355,14 +390,14 @@ namespace Fitodu.Service.Concrete
                 }
             }
 
-            if (counters.Contains(2))
+            for(int i=0; i< 7; i++)
             {
-                return false;
+                if (counters[i] > 1)
+                {
+                    return false;
+                }
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
         public bool IsValidEditInput(UpdateWeekPlanInput editWeekPlanInput)
@@ -409,14 +444,14 @@ namespace Fitodu.Service.Concrete
                 }
             }
 
-            if (counters.Contains(2))
+            for (int i = 0; i < 7; i++)
             {
-                return false;
+                if (counters[i] > 1)
+                {
+                    return false;
+                }
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
     }
 }

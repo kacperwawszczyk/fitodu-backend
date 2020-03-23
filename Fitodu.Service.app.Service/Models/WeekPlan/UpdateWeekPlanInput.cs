@@ -13,6 +13,7 @@ namespace Fitodu.Service.Models.WeekPlan
         public int Id { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? StartDate { get; set; }
+        public bool IsDefault { get; set; }
         public virtual ICollection<DayPlanInput> DayPlans { get; set; }
     }
 }
