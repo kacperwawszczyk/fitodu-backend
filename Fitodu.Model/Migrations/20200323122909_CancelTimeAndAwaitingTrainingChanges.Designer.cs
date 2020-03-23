@@ -4,14 +4,16 @@ using Fitodu.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Fitodu.Model.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20200323122909_CancelTimeAndAwaitingTrainingChanges")]
+    partial class CancelTimeAndAwaitingTrainingChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,9 +110,9 @@ namespace Fitodu.Model.Migrations
 
                     b.Property<string>("AddressState");
 
-                    b.Property<long?>("CancelTimeHours");
+                    b.Property<int>("CancelTimeHours");
 
-                    b.Property<long?>("CancelTimeMinutes");
+                    b.Property<int>("CancelTimeMinutes");
 
                     b.Property<DateTime>("CreatedOn");
 

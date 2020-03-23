@@ -427,7 +427,7 @@ namespace Fitodu.Service.Concrete
             if(user.Role == UserRole.Coach)
             {
                 var coach = await _context.Coaches.Where(x => x.Id == user.Id).FirstOrDefaultAsync();
-                if(coach.TimeToResign == null || coach.TimeToResign == "")
+                if(coach.CancelTimeHours == null || coach.CancelTimeMinutes == null)
                 {
                     firstLogin = true;
                 }

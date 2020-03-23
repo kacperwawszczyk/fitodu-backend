@@ -1,4 +1,5 @@
 ﻿using Fitodu.Model.Entities;
+using Fitodu.Model.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,7 +19,8 @@ namespace Fitodu.Service.Models
         public string AddressCity { get; set; }
         public string AddressState { get; set; }
         public string AddressCountry { get; set; }
-        public string TimeToResign { get; set; }
+        public uint? CancelTimeHours { get; set; }
+        public uint? CancelTimeMinutes { get; set; }
 
         //public static CoachOutput GetCoachOutput(Coach coach)
         //{

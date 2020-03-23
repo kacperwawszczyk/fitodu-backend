@@ -160,7 +160,8 @@ namespace Fitodu.Service.Concrete
                 nc.Name = c.Name;
                 nc.Rules = c.Rules;
                 nc.Surname = c.Surname;
-                nc.TimeToResign = c.TimeToResign;
+                nc.CancelTimeHours = c.CancelTimeHours;
+                nc.CancelTimeMinutes = c.CancelTimeMinutes;
                 coachesResult.Add(nc);
             }
             result.Data = coachesResult;
@@ -183,7 +184,8 @@ namespace Fitodu.Service.Concrete
                     AddressCity = nc.AddressCity,
                     AddressState = nc.AddressState,
                     AddressCountry = nc.AddressCountry,
-                    TimeToResign = nc.TimeToResign
+                    CancelTimeHours = nc.CancelTimeHours,
+                    CancelTimeMinutes = nc.CancelTimeMinutes
                 })
                 .FirstOrDefaultAsync(x => x.Id == Id);
 
@@ -210,7 +212,14 @@ namespace Fitodu.Service.Concrete
 
             coach.Name = coachNew.Name;
             coach.Surname = coachNew.Surname;
-            coach.TimeToResign = coachNew.TimeToResign;
+            if(coachNew.CancelTimeMinutes > 59 || coachNew.CancelTimeHours >23)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Cancel time must be between 0 and 23:59";
+                return result;
+            }
+            coach.CancelTimeHours = coachNew.CancelTimeHours;
+            coach.CancelTimeMinutes = coachNew.CancelTimeMinutes;
             coach.AddressCity = coachNew.AddressCity;
             coach.AddressCountry = coachNew.AddressCountry;
             coach.AddressPostalCode = coachNew.AddressPostalCode;

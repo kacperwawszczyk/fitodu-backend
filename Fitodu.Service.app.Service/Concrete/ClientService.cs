@@ -601,7 +601,8 @@ namespace Fitodu.Service.Concrete
                             AddressCity = nc.AddressCity,
                             AddressState = nc.AddressState,
                             AddressCountry = nc.AddressCountry,
-                            TimeToResign = nc.TimeToResign
+                            CancelTimeHours = nc.CancelTimeHours,
+                            CancelTimeMinutes = nc.CancelTimeMinutes
                         })
                         .FirstOrDefaultAsync();
 

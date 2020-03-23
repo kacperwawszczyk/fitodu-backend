@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fitodu.Model.Extensions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -25,7 +26,8 @@ namespace Fitodu.Model.Entities
         public string AddressState { get; set; }
         public string AddressCountry { get; set; }
         public string VatIn { get; set; }
-        public string TimeToResign { get; set; }
+        public uint? CancelTimeHours { get; set; }
+        public uint? CancelTimeMinutes { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? EndOfLicenseDate { get; set; }
         public DateTime CreatedOn { get; set; }

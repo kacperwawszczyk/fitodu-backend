@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fitodu.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,5 +21,10 @@ namespace Fitodu.Model.Entities
         [Required]
         [Column(TypeName = "datetime")]
         public DateTime EndDate { get; set; }
+        [Required]
+        public UserRole Receiver { get; set; }
+        [Required]
+        public UserRole Sender { get; set; }
+
     }
 }
