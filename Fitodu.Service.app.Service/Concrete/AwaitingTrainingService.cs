@@ -111,8 +111,8 @@ namespace Fitodu.Service.Concrete
                 awaitingTraining.Sender = UserRole.Coach;
                 awaitingTraining.Receiver = UserRole.Client;
 
-                model.Subject = Resource.AwaitingTrainingMailTemplate.NewAwaitingTrainingCoachSubject;
-                model.HtmlBody = Resource.AwaitingTrainingMailTemplate.NewAwaitingTrainingCoachBody;
+                model.Subject = Resource.AwaitingTrainingMailTemplate.NewAwaitingTrainingClientSubject;
+                model.HtmlBody = Resource.AwaitingTrainingMailTemplate.NewAwaitingTrainingClientBody;
 
                 var coach = await _context.Coaches.Where(x => x.Id == requesterId).FirstOrDefaultAsync();
 
@@ -120,12 +120,12 @@ namespace Fitodu.Service.Concrete
                 
                 if(coach != null && client != null)
                 {
-                    model.HtmlBody = model.HtmlBody.Replace("-fullName-", coach.Name+" "+coach.Surname).Replace("-clientName-", client.Name+" "+client.Surname);
+                    model.HtmlBody = model.HtmlBody.Replace("-fullName-", client.Name + " " + client.Surname).Replace("-coachName-", coach.Name + " " + coach.Surname);
 
                 }
                 else
                 {
-                    model.HtmlBody = model.HtmlBody.Replace("-fullName-", "name").Replace("-clientName-", "fullname");
+                    model.HtmlBody = model.HtmlBody.Replace("-fullName-", "name").Replace("-coachName-", "Coach name");
                 }
             }
             else if (requesterRole == UserRole.Client)
@@ -142,8 +142,8 @@ namespace Fitodu.Service.Concrete
                 awaitingTraining.Sender = UserRole.Client;
                 awaitingTraining.Receiver = UserRole.Coach;
 
-                model.Subject = Resource.AwaitingTrainingMailTemplate.NewAwaitingTrainingClientSubject;
-                model.HtmlBody = Resource.AwaitingTrainingMailTemplate.NewAwaitingTrainingClientBody;
+                model.Subject = Resource.AwaitingTrainingMailTemplate.NewAwaitingTrainingCoachSubject;
+                model.HtmlBody = Resource.AwaitingTrainingMailTemplate.NewAwaitingTrainingCoachBody;
 
                 var coach = await _context.Coaches.Where(x => x.Id == awaitingTrainingInput.IdReceiver).FirstOrDefaultAsync();
 
@@ -151,12 +151,12 @@ namespace Fitodu.Service.Concrete
 
                 if (coach != null && client != null)
                 {
-                    model.HtmlBody = model.HtmlBody.Replace("-fullName-", client.Name + " " + client.Surname).Replace("-coachName-", coach.Name + " " + coach.Surname);
+                    model.HtmlBody = model.HtmlBody.Replace("-fullName-", coach.Name + " " + coach.Surname).Replace("-clientName-", client.Name + " " + client.Surname);
 
                 }
                 else
                 {
-                    model.HtmlBody = model.HtmlBody.Replace("-fullName-", "fullname").Replace("-coachName-", "Coach name");
+                    model.HtmlBody = model.HtmlBody.Replace("-fullName-", "fullname").Replace("-clientName-", "Client name");
                 }
             }
 
