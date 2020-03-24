@@ -24,30 +24,29 @@ namespace Fitodu.Service.Concrete
         private readonly ILogger<UserService> _logger;
         private readonly IConfiguration _configuration;
         private readonly IDateTimeService _dateTimeService;
-
-        //private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
-
         private readonly Context _context;
         private readonly IMapper _mapper;
-
-        //private readonly IEmailService _emailService;
         private readonly IEmailMarketingService _emailMarketingService;
+        //private readonly IEmailService _emailService;
+        //private readonly SignInManager<User> _signInManager;
         //private readonly IBillingService _billingService;
 
         public CoachService(
+            ILogger<UserService> logger,
             IConfiguration configuration,
-            Context context,
-            IMapper mapper,
             IDateTimeService dateTimeService,
             UserManager<User> userManager,
+            Context context,
+            IMapper mapper,
             IEmailMarketingService emailMarketingService)
         {
+            _logger = logger;
             _configuration = configuration;
-            _context = context;
-            _mapper = mapper;
             _dateTimeService = dateTimeService;
             _userManager = userManager;
+            _context = context;
+            _mapper = mapper;
             _emailMarketingService = emailMarketingService;
         }
 
