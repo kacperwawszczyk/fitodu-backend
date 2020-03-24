@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+     <Compile Update="AwaitingTrainingMailTemplate.Designer.cs">
+       <DesignTime>True</DesignTime>
+       <AutoGen>True</AutoGen>
+       <DependentUpon>AwaitingTrainingMailTemplate.resx</DependentUpon>
+     </Compile>
      <Compile Update="Template - kopiować.Designer.cs">
        <DependentUpon>Template.resx</DependentUpon>
        <DesignTime>True</DesignTime>
@@ -28,6 +33,10 @@
   </ItemGroup>
 
  <ItemGroup>
+    <EmbeddedResource Update="AwaitingTrainingMailTemplate.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AwaitingTrainingMailTemplate.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="VerifyClientTemplate.resx">
       <LastGenOutput>VerifyClientTemplate.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>

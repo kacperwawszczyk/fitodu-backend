@@ -63,6 +63,7 @@ namespace Fitodu.Service
             services.AddScoped<ITrainingService, TrainingService>();
             services.AddScoped<ITrainingResultService, TrainingResultService>();
             services.AddScoped<IWeekPlanService, WeekPlanService>();
+            services.AddScoped<IAwaitingTrainingService, AwaitingTrainingService>();
         }
     }
 }
