@@ -16,5 +16,6 @@ namespace Fitodu.Service.Abstract
         Task<Result> DeleteExercise(string coachId, int exerciseId);
         Task<Result<ICollection<ExerciseOutput>>> GetArchivedExercises(string coachId);
         Task<Result<ICollection<ExerciseOutput>>> GetNotArchivedExercises(string coachId);
+        Task<Result<ExerciseOutput>> GetExerciseById(string coachId, int exerciseId);
     }
 }

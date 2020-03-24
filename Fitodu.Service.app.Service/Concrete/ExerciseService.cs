@@ -203,5 +203,28 @@ namespace Fitodu.Service.Concrete
 
             return result;
         }
+
+        public async Task<Result<ExerciseOutput>> GetExerciseById(string coachId, int exerciseId)
+        {
+            var result = new Result<ExerciseOutput>();
+            ExerciseOutput exercise = await _context.Exercises
+               .Where(x => x.IdCoach == coachId && x.Id == exerciseId)
+               .Select(x => new ExerciseOutput
+               {
+                   Id = x.Id,
+                   Description = x.Description,
+                   Name = x.Name,
+                   Archived = x.Archived
+               }).FirstOrDefaultAsync();
+            if(exercise == null)
+            {
+                result.Error = ErrorType.NotFound;
+            }
+            else
+            {
+                result.Data = exercise;
+            }
+            return result;
+        }
     }
 }

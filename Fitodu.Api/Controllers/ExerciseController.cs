@@ -29,6 +29,20 @@ namespace Fitodu.Api.Controllers
         }
 
 
+    /// <summary>
+    /// Used by coach to get exercise by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+        [HttpGet("exercises/{id}")]
+        [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(ICollection<ExerciseOutput>), 200)]
+        public async Task<IActionResult> GetExerciseById(int id) 
+        { 
+            var result = await _exerciseService.GetExerciseById(CurrentUser.Id, id);
+            return GetResult(result);
+        }
+
         /// <summary>
         /// Used to get a list of all (archived and not-archvied) exercises of a requesting coach 
         /// </summary>
@@ -37,7 +51,7 @@ namespace Fitodu.Api.Controllers
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(ICollection<ExerciseOutput>), 200)]
         public async Task<IActionResult> GetAllExercises() //all exercises of a coach
-        { 
+        {
             var result = await _exerciseService.GetAllExercises(CurrentUser.Id);
             return GetResult(result);
         }

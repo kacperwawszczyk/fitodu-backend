@@ -86,6 +86,13 @@
             </summary>
             <returns> Returns ICollection of ClientOutput containing information about Clients </returns>
         </member>
+        <member name="M:Fitodu.Api.Controllers.ExerciseController.GetExerciseById(System.Int32)">
+            <summary>
+            Used by coach to get exercise by id.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:Fitodu.Api.Controllers.ExerciseController.GetAllExercises">
             <summary>
             Used to get a list of all (archived and not-archvied) exercises of a requesting coach 
