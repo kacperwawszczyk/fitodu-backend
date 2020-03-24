@@ -9,6 +9,7 @@ using Fitodu.Model.Entities;
 using Fitodu.Service.Abstract;
 using Fitodu.Service.Infrastructure.Attributes;
 using Fitodu.Service.Models.Exercise;
+using Fitodu.Service.Models;
 
 namespace Fitodu.Api.Controllers
 {
@@ -34,7 +35,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpGet("exercises")]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(ICollection<Exercise>), 200)]
+        [ProducesResponseType(typeof(ICollection<ExerciseOutput>), 200)]
         public async Task<IActionResult> GetAllExercises() //all exercises of a coach
         { 
             var result = await _exerciseService.GetAllExercises(CurrentUser.Id);
@@ -47,7 +48,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpGet("exercises/archived")]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(ICollection<Exercise>), 200)]
+        [ProducesResponseType(typeof(ICollection<ExerciseOutput>), 200)]
         public async Task<IActionResult> GetArchivedExercises() //all archived exercises of a coach
         {
             var result = await _exerciseService.GetArchivedExercises(CurrentUser.Id);
@@ -60,7 +61,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpGet("exercises/not-archived")]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(ICollection<Exercise>), 200)]
+        [ProducesResponseType(typeof(ICollection<ExerciseOutput>), 200)]
         public async Task<IActionResult> GetNotArchivedExercises() //all  not archived exercises of a coach
         {
             var result = await _exerciseService.GetNotArchivedExercises(CurrentUser.Id);

@@ -27,11 +27,19 @@ namespace Fitodu.Service.Concrete
 
 
 
-        public async Task<Result<ICollection<Exercise>>> GetAllExercises(string coachId)
+        public async Task<Result<ICollection<ExerciseOutput>>> GetAllExercises(string coachId)
         {
-            var result = new Result<ICollection<Exercise>>();
+            var result = new Result<ICollection<ExerciseOutput>>();
 
-            var exercises = await _context.Exercises.Where(x => x.IdCoach == coachId).ToListAsync();
+            var exercises = await _context
+                .Exercises.Where(x => x.IdCoach == coachId)
+                .Select(x => new ExerciseOutput { 
+                    Id = x.Id,
+                    Description = x.Description,
+                    Name = x.Name,
+                    Archived = x.Archived
+                })
+                .ToListAsync();
 
             if (exercises != null)
             {
@@ -144,11 +152,19 @@ namespace Fitodu.Service.Concrete
 
         }
 
-        public async Task<Result<ICollection<Exercise>>> GetArchivedExercises(string coachId)
+        public async Task<Result<ICollection<ExerciseOutput>>> GetArchivedExercises(string coachId)
         {
-            var result = new Result<ICollection<Exercise>>();
+            var result = new Result<ICollection<ExerciseOutput>>();
 
-            var exercises = await _context.Exercises.Where(x => x.IdCoach == coachId && x.Archived == true).ToListAsync();
+            var exercises = await _context.Exercises
+                .Where(x => x.IdCoach == coachId && x.Archived == true)
+                .Select(x => new ExerciseOutput
+                {
+                    Id = x.Id,
+                    Description = x.Description,
+                    Name = x.Name,
+                    Archived = x.Archived
+                }).ToListAsync();
 
             if (exercises != null)
             {
@@ -161,11 +177,20 @@ namespace Fitodu.Service.Concrete
 
             return result;
         }
-        public async Task<Result<ICollection<Exercise>>> GetNotArchivedExercises(string coachId)
+        public async Task<Result<ICollection<ExerciseOutput>>> GetNotArchivedExercises(string coachId)
         {
-            var result = new Result<ICollection<Exercise>>();
+            var result = new Result<ICollection<ExerciseOutput>>();
 
-            var exercises = await _context.Exercises.Where(x => x.IdCoach == coachId && x.Archived == false).ToListAsync();
+            var exercises = await _context.Exercises
+                .Where(x => x.IdCoach == coachId && x.Archived == false)
+                .Select(x => new ExerciseOutput
+                {
+                    Id = x.Id,
+                    Description = x.Description,
+                    Name = x.Name,
+                    Archived = x.Archived
+                })
+                .ToListAsync();
 
             if (exercises != null)
             {
