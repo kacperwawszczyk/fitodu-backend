@@ -17,6 +17,6 @@ namespace Fitodu.Service.Models.TrainingExercise
         [Column(TypeName = "text")]
         public string Description { get; set; }
         [Column(TypeName = "text")]
-        public string TrainerNote { get; set; }
+        public string Note { get; set; }
     }
 }

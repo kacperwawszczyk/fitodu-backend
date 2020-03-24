@@ -14,7 +14,7 @@ namespace Fitodu.Model.Configurations
         {
             builder.HasKey(o => new
             {
-                o.IdTrainingExercise
+                o.Id
             });
         }
     }

@@ -86,7 +86,7 @@ namespace Fitodu.Service.Concrete
             _trainingExercise.Repetitions = trainingExerciseInput.Repetitions;
             _trainingExercise.Description = trainingExerciseInput.Description;
             _trainingExercise.Time = trainingExerciseInput.Time;
-            _trainingExercise.TrainerNote = trainingExerciseInput.TrainerNote;
+            _trainingExercise.Note = trainingExerciseInput.Note;
 
             _context.TrainingExercises.Add(_trainingExercise);
 
@@ -113,7 +113,7 @@ namespace Fitodu.Service.Concrete
             using (var transaction = _context.Database.BeginTransaction())
             {
                 var existingTrainingExercise = await _context.TrainingExercises.Where
-                (x => x.IdTrainingExercise == trainingExercise.IdTrainingExercise).FirstOrDefaultAsync();
+                (x => x.Id == trainingExercise.Id).FirstOrDefaultAsync();
 
                 if (existingTrainingExercise == null)
                 {
@@ -125,7 +125,7 @@ namespace Fitodu.Service.Concrete
                 existingTrainingExercise.IdExercise = trainingExercise.IdExercise;
                 existingTrainingExercise.Repetitions = trainingExercise.Repetitions;
                 existingTrainingExercise.Time = trainingExercise.Time;
-                existingTrainingExercise.TrainerNote = trainingExercise.TrainerNote;
+                existingTrainingExercise.Note = trainingExercise.Note;
                 existingTrainingExercise.Description = trainingExercise.Description;
                 if (await _context.SaveChangesAsync() == 0)
                 {
@@ -146,7 +146,7 @@ namespace Fitodu.Service.Concrete
             using (var transaction = _context.Database.BeginTransaction())
             {
                 var existingTrainingExercise = await _context.TrainingExercises.Where
-                (x => x.IdTrainingExercise == trainingExerciseId).FirstOrDefaultAsync();
+                (x => x.Id == trainingExerciseId).FirstOrDefaultAsync();
 
                 if (existingTrainingExercise == null)
                 {

@@ -9,7 +9,7 @@ namespace Fitodu.Model.Entities
     public partial class TrainingExercise
     {
         [Key]
-        public int IdTrainingExercise { get; set; }
+        public int Id { get; set; }
         [Required]
         public int IdExercise { get; set; }
         [Required]
@@ -19,6 +19,6 @@ namespace Fitodu.Model.Entities
         [Column(TypeName = "text")]
         public string Description { get; set; }
         [Column(TypeName = "text")]
-        public string TrainerNote { get; set; }
+        public string Note { get; set; }
     }
 }
