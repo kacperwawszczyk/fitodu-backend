@@ -9,7 +9,7 @@ namespace Fitodu.Model.Entities
     public partial class TrainingResult
     {
         [Key]
-        public int IdTrainingResult { get; set; }
+        public int Id { get; set; }
         [Required]
         public int IdTrainingExercise { get; set; }
         [Required]

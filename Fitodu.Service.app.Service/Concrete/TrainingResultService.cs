@@ -158,7 +158,7 @@ namespace Fitodu.Service.Concrete
 
             using (var transaction = _context.Database.BeginTransaction())
             {
-                var existingResult = await _context.TrainingResults.Where(x => x.IdTrainingResult == trainingResultId).FirstOrDefaultAsync();
+                var existingResult = await _context.TrainingResults.Where(x => x.Id == trainingResultId).FirstOrDefaultAsync();
 
                 if (existingResult == null)
                 {
