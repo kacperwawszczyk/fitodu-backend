@@ -39,15 +39,16 @@ namespace Fitodu.Service.Concrete
 
             if (requesterRole == UserRole.Coach)
             {
-                 awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdCoach == requesterId)
-                    .Select(x => new AwaitingTrainingOutput { 
-                    Id = x.Id,
-                    EndDate = x.EndDate,
-                    StartDate = x.StartDate,
-                    IdCoach = x.IdCoach,
-                    IdClient = x.IdClient
-                    })
-                    .ToListAsync();
+                awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdCoach == requesterId)
+                   .Select(x => new AwaitingTrainingOutput
+                   {
+                       Id = x.Id,
+                       EndDate = x.EndDate,
+                       StartDate = x.StartDate,
+                       IdCoach = x.IdCoach,
+                       IdClient = x.IdClient
+                   })
+                   .ToListAsync();
             }
             else if (requesterRole == UserRole.Client)
             {
@@ -63,7 +64,7 @@ namespace Fitodu.Service.Concrete
                 .ToListAsync();
             }
 
-            if(awaitingTrainings == null)
+            if (awaitingTrainings == null)
             {
                 result.Error = ErrorType.NotFound;
                 return result;
@@ -74,6 +75,7 @@ namespace Fitodu.Service.Concrete
 
         public async Task<Result> CreateAwaitingTraining(string requesterId, UserRole requesterRole, AwaitingTrainingInput awaitingTrainingInput)
         {
+            //TODO : SPRAWDZANIE ILOSCI DOSTEPNYCH TRENINGOW
             var result = new Result();
 
             AwaitingTraining awaitingTraining = new AwaitingTraining();
@@ -117,8 +119,8 @@ namespace Fitodu.Service.Concrete
                 var coach = await _context.Coaches.Where(x => x.Id == requesterId).FirstOrDefaultAsync();
 
                 var client = await _context.Clients.Where(x => x.Id == awaitingTrainingInput.IdReceiver).FirstOrDefaultAsync();
-                
-                if(coach != null && client != null)
+
+                if (coach != null && client != null)
                 {
                     model.HtmlBody = model.HtmlBody.Replace("-fullName-", client.Name + " " + client.Surname).Replace("-coachName-", coach.Name + " " + coach.Surname);
 
@@ -129,7 +131,7 @@ namespace Fitodu.Service.Concrete
                 }
             }
             else if (requesterRole == UserRole.Client)
-            { 
+            {
                 var clientsCoach = await _clientService.GetClientCoach(requesterId);
                 if (clientsCoach == null || clientsCoach.Data.Id != awaitingTrainingInput.IdReceiver)
                 {
@@ -160,7 +162,7 @@ namespace Fitodu.Service.Concrete
                 }
             }
 
-            if(awaitingTrainingInput.StartDate >= awaitingTrainingInput.EndDate || awaitingTrainingInput.StartDate.Date != awaitingTrainingInput.EndDate.Date)
+            if (awaitingTrainingInput.StartDate >= awaitingTrainingInput.EndDate || awaitingTrainingInput.StartDate.Date != awaitingTrainingInput.EndDate.Date)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Incorrect date, start date is greater that end date or requester training does not start and end the same day";
@@ -170,13 +172,13 @@ namespace Fitodu.Service.Concrete
             x.DayPlan.WeekPlan.IdCoach == awaitingTraining.IdCoach &&
             x.DayPlan.WeekPlan.StartDate.Value.Date < awaitingTrainingInput.StartDate.Date &&
             x.DayPlan.WeekPlan.StartDate.Value.Date.AddDays(7) > awaitingTrainingInput.EndDate.Date &&
-            x.StartTime.TimeOfDay < awaitingTrainingInput.StartDate.TimeOfDay && 
+            x.StartTime.TimeOfDay < awaitingTrainingInput.StartDate.TimeOfDay &&
             x.EndTime.TimeOfDay > awaitingTrainingInput.EndDate.TimeOfDay);
 
             bool found = false;
             foreach (WorkoutTime workoutTime in workoutTimes)
             {
-                if((workoutTime.DayPlan.Day == Day.Monday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Monday) ||
+                if ((workoutTime.DayPlan.Day == Day.Monday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Monday) ||
                     (workoutTime.DayPlan.Day == Day.Wednesday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Wednesday) ||
                     (workoutTime.DayPlan.Day == Day.Tuesday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Tuesday) ||
                     (workoutTime.DayPlan.Day == Day.Thursday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Thursday) ||
@@ -191,7 +193,7 @@ namespace Fitodu.Service.Concrete
                 }
             }
 
-            if(!found)
+            if (!found)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "no workoutTimes matching requirements";
@@ -214,6 +216,159 @@ namespace Fitodu.Service.Concrete
             {
                 result.Error = ErrorType.InternalServerError;
                 result.ErrorMessage = "Added awaiting training but failed to send to mail";
+            }
+            return result;
+        }
+
+        public async Task<Result> DeleteAwaitingTraining(string requesterId, UserRole requesterRole, int id, bool? accept)
+        {
+            var result = new Result();
+
+            string clientName;
+            string coachName;
+            string date;
+            string email = "";
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                var exisitingAwaitingTraining = await _context.AwaitingTrainings.Where(x => x.Id == id).FirstOrDefaultAsync();
+
+                if (exisitingAwaitingTraining == null)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "awaiting training with this id does not exist";
+                    return result;
+                }
+                if (requesterRole == UserRole.Coach)
+                {
+                    if (requesterId != exisitingAwaitingTraining.IdCoach && exisitingAwaitingTraining.Sender != UserRole.Coach)
+                    {
+                        result.Error = ErrorType.NotFound;
+                        result.ErrorMessage = "awaiting training with this id, sender role and coach id does not exist";
+                        return result;
+                    }
+
+                    var receiverEmail = await _context.Users.Where(x => x.Id == exisitingAwaitingTraining.IdClient).FirstOrDefaultAsync();
+
+                    if (receiverEmail != null)
+                    {
+                        email = receiverEmail.NormalizedEmail;
+                    }
+
+                }
+                else if (requesterRole == UserRole.Client)
+                {
+                    if (requesterId != exisitingAwaitingTraining.IdClient && exisitingAwaitingTraining.Sender != UserRole.Client)
+                    {
+                        result.Error = ErrorType.NotFound;
+                        result.ErrorMessage = "awaiting training with this id, sender role and client id does not exist";
+                        return result;
+                    }
+
+                    var receiverEmail = await _context.Users.Where(x => x.Id == exisitingAwaitingTraining.IdClient).FirstOrDefaultAsync();
+
+                    if (receiverEmail != null)
+                    {
+                        email = receiverEmail.NormalizedEmail;
+                    }
+                }
+
+                if (accept == true)
+                {
+                    //utworzenie treningu
+                    Training training = new Training();
+                    training.IdClient = exisitingAwaitingTraining.IdClient;
+                    training.IdCoach = exisitingAwaitingTraining.IdCoach;
+                    training.StartDate = exisitingAwaitingTraining.StartDate;
+                    training.EndDate = exisitingAwaitingTraining.EndDate;
+                    training.Note = "";
+                    training.Description = "";
+
+                    _context.Trainings.Add(training);
+                }
+
+                _context.AwaitingTrainings.Remove(exisitingAwaitingTraining);
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+
+
+                var client = await _context.Clients.Where(x => x.Id == exisitingAwaitingTraining.IdClient).FirstOrDefaultAsync();
+                var coach = await _context.Coaches.Where(x => x.Id == exisitingAwaitingTraining.IdCoach).FirstOrDefaultAsync();
+
+                if (client == null || coach == null)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "Mail: no coach or client with that Id, mail not sent";
+                    return result;
+                }
+                clientName = client.Name + " " + client.Surname;
+                coachName = coach.Name + " " + coach.Surname;
+                date = exisitingAwaitingTraining.StartDate.ToString();
+
+                transaction.Commit();
+            }
+
+            //wysyłanie maili
+            if (accept != null)
+            {
+                if (email == "" || email == null)
+                {
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Mail: receiver email not found, mail not sent";
+                    return result;
+                }
+
+                var model = new EmailInput()
+                {
+                    To = email
+                };
+
+                if (requesterRole == UserRole.Coach)
+                {
+                    if (accept == true)
+                    {
+                        model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingAcceptedClientSubject;
+                        model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingAcceptedClientBody;
+                    }
+                    else if (accept == false)
+                    {
+                        model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedClientSubject;
+                        model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedClientBody;
+                    }
+                }
+                else if (requesterRole == UserRole.Client)
+                {
+                    if (accept == true)
+                    {
+                        model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingAcceptedCoachSubject;
+                        model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingAcceptedCoachBody;
+                    }
+                    else if (accept == false)
+                    {
+                        model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedCoachSubject;
+                        model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedCoachBody;
+                    }
+                    model.HtmlBody = model.HtmlBody.Replace("-coachName-", coachName);
+                }
+
+
+                string url = "https://fitodu.azurewebsites.net";
+                model.HtmlBody = model.HtmlBody.Replace("-url-", url);
+                model.HtmlBody = model.HtmlBody.Replace("-clientName-", clientName);
+                model.HtmlBody = model.HtmlBody.Replace("-date-", date);
+
+                var response = await _emailService.Send(model);
+
+                if (response.Code != HttpStatusCode.Accepted && response.Code != HttpStatusCode.OK)
+                {
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Mail: mail not sent";
+                }
+                
             }
             return result;
         }

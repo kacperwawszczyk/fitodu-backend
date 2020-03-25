@@ -12,5 +12,6 @@ namespace Fitodu.Service.Abstract
     {
         Task<Result<ICollection<AwaitingTrainingOutput>>> GetAwaitingTraining(string requesterId, UserRole requesterRole);
         Task<Result> CreateAwaitingTraining(string requesterId, UserRole requesterRole, AwaitingTrainingInput awaitingTrainingInput);
+        Task<Result> DeleteAwaitingTraining(string requesterId, UserRole requesterRole, int id, bool? accept);
     }
 }

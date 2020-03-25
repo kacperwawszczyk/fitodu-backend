@@ -42,5 +42,18 @@ namespace Fitodu.Api.Controllers
             return GetResult(result);
         }
 
+        /// <summary>
+        /// Used to delete, accept or reject awaiting training
+        /// </summary>
+        /// <param name="accept">bool - true = accept, false = reject, null = delete</param>
+        /// <param name="id">AwaitingTraining Id</param>
+        /// <returns></returns>
+        [HttpDelete("awaiting-trainings/{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteAwaitingTraining(int id, [FromQuery] bool? accept)
+        {
+            var result = await _awaitingTraningService.DeleteAwaitingTraining(CurrentUser.Id, CurrentUser.Role, id, accept);
+            return GetResult(result);
+        }
     }
 }

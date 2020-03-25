@@ -61,6 +61,78 @@ namespace Fitodu.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hi -clientName-! &lt;br&gt;&lt;br&gt; Your workout starting at -date-, has just been accepted by your coach! Head to &lt;a href=&quot;-url-&quot;&gt;FITODU&lt;/a&gt; to take a look!.
+        /// </summary>
+        public static string AwaitingTrainingAcceptedClientBody {
+            get {
+                return ResourceManager.GetString("AwaitingTrainingAcceptedClientBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fitodu - you have a new workout planned!.
+        /// </summary>
+        public static string AwaitingTrainingAcceptedClientSubject {
+            get {
+                return ResourceManager.GetString("AwaitingTrainingAcceptedClientSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hi -coachName-! &lt;br&gt;&lt;br&gt; Your workout with -clientName-, starting at -date-, has just been accepted by your client! Head to &lt;a href=&quot;-url-&quot;&gt;FITODU&lt;/a&gt; to take a look!.
+        /// </summary>
+        public static string AwaitingTrainingAcceptedCoachBody {
+            get {
+                return ResourceManager.GetString("AwaitingTrainingAcceptedCoachBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fitodu - you have a new workout planned!.
+        /// </summary>
+        public static string AwaitingTrainingAcceptedCoachSubject {
+            get {
+                return ResourceManager.GetString("AwaitingTrainingAcceptedCoachSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hi -clientName-! &lt;br&gt;&lt;br&gt; Your workout starting at -date-, has just been rejected by your coach. Head to &lt;a href=&quot;-url-&quot;&gt;FITODU&lt;/a&gt; to plan your workout at a different date!.
+        /// </summary>
+        public static string AwaitingTrainingRejectedClientBody {
+            get {
+                return ResourceManager.GetString("AwaitingTrainingRejectedClientBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fitodu - your workout has been rejected.
+        /// </summary>
+        public static string AwaitingTrainingRejectedClientSubject {
+            get {
+                return ResourceManager.GetString("AwaitingTrainingRejectedClientSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hi -coachName-! &lt;br&gt;&lt;br&gt; Your workout with -clientName-, starting at -date-, has just been rejected by your client. Head to &lt;a href=&quot;-url-&quot;&gt;FITODU&lt;/a&gt; to plan your workout at a different date!.
+        /// </summary>
+        public static string AwaitingTrainingRejectedCoachBody {
+            get {
+                return ResourceManager.GetString("AwaitingTrainingRejectedCoachBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fitodu - your workout has been rejected.
+        /// </summary>
+        public static string AwaitingTrainingRejectedCoachSubject {
+            get {
+                return ResourceManager.GetString("AwaitingTrainingRejectedCoachSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hi -fullName-!&lt;br&gt;&lt;br&gt;You have a new training request from -coachName-!&lt;br&gt;&lt;br&gt;To approve or reject it go to  our website: &lt;a href=&quot;-url-&quot;&gt;HERE&lt;/a&gt;. .
         /// </summary>
         public static string NewAwaitingTrainingClientBody {
