@@ -18,7 +18,5 @@ namespace Fitodu.Model.Entities
         public string Place { get; set; }
         public int PurchasedTrainings { get; set; }
         public int AvailableTrainings { get; set; }
-        [StringLength(30)]
-        public string TimeToResign { get; set; }
     }
 }

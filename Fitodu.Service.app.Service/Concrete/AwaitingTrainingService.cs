@@ -75,7 +75,6 @@ namespace Fitodu.Service.Concrete
 
         public async Task<Result> CreateAwaitingTraining(string requesterId, UserRole requesterRole, AwaitingTrainingInput awaitingTrainingInput)
         {
-            //TODO : SPRAWDZANIE ILOSCI DOSTEPNYCH TRENINGOW
             var result = new Result();
 
             AwaitingTraining awaitingTraining = new AwaitingTraining();
@@ -108,6 +107,13 @@ namespace Fitodu.Service.Concrete
                     result.ErrorMessage = "Client not found";
                     return result;
                 }
+                if(coachClient.AvailableTrainings <= 0)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "Client does not have any trainings left";
+                    return result;
+                }
+                coachClient.AvailableTrainings--;
                 awaitingTraining.IdCoach = requesterId;
                 awaitingTraining.IdClient = awaitingTrainingInput.IdReceiver;
                 awaitingTraining.Sender = UserRole.Coach;
@@ -139,6 +145,21 @@ namespace Fitodu.Service.Concrete
                     result.ErrorMessage = "Coach not found";
                     return result;
                 }
+                var coachClient = await _context.CoachClients.Where(x => x.IdCoach == clientsCoach.Data.Id && x.IdClient == requesterId).FirstOrDefaultAsync();
+                if (coachClient == null)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "User is not a client of this coach";
+                    return result;
+                }
+                if (coachClient.AvailableTrainings <= 0)
+                {
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "Client does not have any trainings left";
+                    return result;
+                }
+                coachClient.AvailableTrainings--;
+
                 awaitingTraining.IdCoach = awaitingTrainingInput.IdReceiver;
                 awaitingTraining.IdClient = requesterId;
                 awaitingTraining.Sender = UserRole.Client;

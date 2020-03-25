@@ -192,7 +192,7 @@ namespace Fitodu.Service.Concrete
             User coachAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
             coach.PhoneNumber = coachAcc.PhoneNumber;
 
-            if(coach == null)
+            if (coach == null)
             {
                 result.Error = ErrorType.NotFound;
                 return result;
@@ -212,7 +212,7 @@ namespace Fitodu.Service.Concrete
 
             coach.Name = coachNew.Name;
             coach.Surname = coachNew.Surname;
-            if(coachNew.CancelTimeMinutes > 59 || coachNew.CancelTimeHours >23)
+            if (coachNew.CancelTimeMinutes > 59 || coachNew.CancelTimeHours > 23)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Cancel time must be between 0 and 23:59";
@@ -290,7 +290,7 @@ namespace Fitodu.Service.Concrete
                 })
                 .FirstOrDefaultAsync();
                 User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == client.Id);
-                if(clientAcc != null)
+                if (clientAcc != null)
                 {
                     client.PhoneNumber = clientAcc.PhoneNumber;
                     client.Email = clientAcc.Email;
@@ -299,6 +299,32 @@ namespace Fitodu.Service.Concrete
                 clients.Add(client);
             }
             result.Data = clients;
+            return result;
+        }
+
+        public async Task<Result> SetClientsTrainingsAvailable(string requesterId, UserRole role, string clientId, int value)
+        {
+            var result = new Result();
+            using (var transcation = _context.Database.BeginTransaction())
+            {
+                var coachClient = await _context.CoachClients.Where(x => x.IdCoach == requesterId && x.IdClient == clientId).FirstOrDefaultAsync();
+
+                if (role != UserRole.Coach || coachClient == null || value < 0)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    return result;
+                }
+
+                coachClient.AvailableTrainings = value;
+
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    transcation.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
+                transcation.Commit();
+            }
             return result;
         }
     }
