@@ -32,14 +32,14 @@ namespace Fitodu.Model.Entities
         public DateTime? EndOfLicenseDate { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
-        //public virtual ICollection<CoachClient> CoachClients { get; set; }
-        //public virtual ICollection<AwaitingTraining> AwaitingTrainings { get; set; }
-        //public virtual ICollection<PublicNote> PublicNotes { get; set; }
-        //public virtual ICollection<PrivateNote> PrivateNotes { get; set; }
-        //public virtual ICollection<Exercise> Exercises { get; set; }
-        //public virtual ICollection<PlannedTraining> PlannedTrainings { get; set; }
-        //public virtual ICollection<Training> Trainings { get; set; }
-        //public virtual ICollection<WorkTime> WorkTimes { get; set; }
+        public virtual ICollection<CoachClient> CoachClients { get; set; }
+        public virtual ICollection<AwaitingTraining> AwaitingTrainings { get; set; }
+        public virtual ICollection<PublicNote> PublicNotes { get; set; }
+        public virtual ICollection<PrivateNote> PrivateNotes { get; set; }
+        public virtual ICollection<Exercise> Exercises { get; set; }
+        public virtual ICollection<Training> Trainings { get; set; }
+        public virtual ICollection<WorkTime> WorkTimes { get; set; }
+        public virtual ICollection<WeekPlan> WeekPlans { get; set; }
 
         public Coach()
         {

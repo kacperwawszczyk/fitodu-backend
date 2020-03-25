@@ -16,6 +16,9 @@ namespace Fitodu.Model.Configurations
                 o.IdExercise,
                 o.IdClient
             });
+
+            builder.HasOne(x => x.Client).WithMany(y => y.Maximums).HasForeignKey(z => z.IdClient);
+            builder.HasOne(x => x.Exercise).WithMany(y => y.Maximums).HasForeignKey(z => z.IdExercise);
         }
     }
 }

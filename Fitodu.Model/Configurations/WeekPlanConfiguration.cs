@@ -15,6 +15,10 @@ namespace Fitodu.Model.Configurations
             {
                 o.Id
             });
+
+            builder.HasMany(x => x.DayPlans).WithOne(y => y.WeekPlan);
+
+            builder.HasOne(x => x.Coach).WithMany(y => y.WeekPlans).HasForeignKey(z => z.IdCoach).IsRequired();
         }
     }
 }

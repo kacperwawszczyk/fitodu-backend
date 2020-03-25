@@ -10,10 +10,12 @@ namespace Fitodu.Model.Entities
     {
         [Required]
         public string IdClient { get; set; }
-        //public virtual Client Cli { get; set; }
+        [ForeignKey("IdClient")]
+        public virtual Client Client { get; set; }
         [Required]
         public string IdCoach { get; set; }
-        //public virtual Coach Coa { get; set; }
+        [ForeignKey("IdCoach")]
+        public virtual Coach Coach { get; set; }
         [Column(TypeName = "text")]
         public string Place { get; set; }
         public int PurchasedTrainings { get; set; }

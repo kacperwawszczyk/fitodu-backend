@@ -30,10 +30,10 @@ namespace Fitodu.Api.Controllers
         /// Used by coach to get a list of all maximums of all exercises of selected client
         /// </summary>
         /// <param name="IdClient"> string type </param>
-        /// <returns> Returns ICollection of Maximum </returns>
+        /// <returns> Returns ICollection of MaximumOutput </returns>
         [HttpGet("maximums/client")]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(ICollection<Maximum>), 200)]
+        [ProducesResponseType(typeof(ICollection<MaximumOutput>), 200)]
         public async Task<IActionResult> GetAllMaximums(string IdClient)
         {
             var result = await _maximumService.GetAllMaximums(CurrentUser.Id, IdClient);
@@ -45,10 +45,10 @@ namespace Fitodu.Api.Controllers
         /// </summary>
         /// <param name="IdClient"> string type </param>
         /// <param name="IdExercise"> int type </param>
-        /// <returns> Returns Maximum </returns>
+        /// <returns> Returns MaximumOutput </returns>
         [HttpGet("maximums/client-exercise")]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(Maximum), 200)]
+        [ProducesResponseType(typeof(MaximumOutput), 200)]
         public async Task<IActionResult> GetClientMaximum(string IdClient, int IdExercise)
         {
             var result = await _maximumService.GetClientMaximum(CurrentUser.Id, IdClient, IdExercise);
@@ -58,11 +58,11 @@ namespace Fitodu.Api.Controllers
         /// <summary>
         /// Used by coach to create a new maximum
         /// </summary>
-        /// <param name="max"> CreateMaximumInput type </param>
+        /// <param name="max"> MaximumInput type </param>
         /// <returns></returns>
         [HttpPost("maximums")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> CreateMaximum([FromBody]CreateMaximumInput max)
+        public async Task<IActionResult> CreateMaximum([FromBody]MaximumInput max)
         {
             var result = await _maximumService.CreateMaximum(CurrentUser.Id, max);
             return GetResult(result);
@@ -71,11 +71,11 @@ namespace Fitodu.Api.Controllers
         /// <summary>
         /// Used by coach to modify an existing maximum
         /// </summary>
-        /// <param name="max"> Maximum type </param>
+        /// <param name="max"> MaximumInput type </param>
         /// <returns></returns>
         [HttpPut("maximums")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> UpdateMaximum([FromBody]Maximum max)
+        public async Task<IActionResult> UpdateMaximum([FromBody]MaximumInput max)
         {
             var result = await _maximumService.UpdateMaximum(CurrentUser.Id, max);
             return GetResult(result);

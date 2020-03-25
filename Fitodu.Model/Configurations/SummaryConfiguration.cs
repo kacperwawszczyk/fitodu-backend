@@ -7,16 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fitodu.Model.Configurations
 {
-    class WorkTimeConfiguration : IEntityTypeConfiguration<WorkTime>
+    class SummaryConfiguration : IEntityTypeConfiguration<Summary>
     {
-        public void Configure(EntityTypeBuilder<WorkTime> builder)
+        public void Configure(EntityTypeBuilder<Summary> builder)
         {
             builder.HasKey(o => new
             {
                 o.Id
             });
 
-            builder.HasOne(x => x.Coach).WithMany(y => y.WorkTimes).HasForeignKey(z => z.IdCoach).IsRequired();
+            builder.HasOne(x => x.Training).WithMany(y => y.Summaries).HasForeignKey(z => z.IdTraining);
         }
     }
 }

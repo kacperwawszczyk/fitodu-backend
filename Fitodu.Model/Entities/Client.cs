@@ -31,12 +31,12 @@ namespace Fitodu.Model.Entities
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public bool IsRegistered { get; set; }
-        //public virtual ICollection<CoachClient> ClientCoaches { get; set; }
-        //public virtual ICollection<Maximum> Maximums { get; set; }
-        //public virtual ICollection<AwaitingTraining> AwaitingTrainings { get; set; }
-        //public virtual ICollection<PrivateNote> PrivateNotes { get; set; }
-        //public virtual ICollection<PublicNote> PublicNotes { get; set; }
-        //public virtual ICollection<Training> Trainings { get; set; }
+        public virtual ICollection<CoachClient> ClientCoaches { get; set; }
+        public virtual ICollection<Maximum> Maximums { get; set; }
+        public virtual ICollection<AwaitingTraining> AwaitingTrainings { get; set; }
+        public virtual ICollection<PrivateNote> PrivateNotes { get; set; }
+        public virtual ICollection<PublicNote> PublicNotes { get; set; }
+        public virtual ICollection<Training> Trainings { get; set; }
 
         public Client()
         {

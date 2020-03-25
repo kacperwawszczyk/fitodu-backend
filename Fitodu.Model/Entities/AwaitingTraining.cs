@@ -13,8 +13,12 @@ namespace Fitodu.Model.Entities
         public int Id { get; set; }
         [Required]
         public string IdCoach { get; set; }
+        [ForeignKey("IdCoach")]
+        public virtual Coach Coach { get; set; }
         [Required]
         public string IdClient { get; set; }
+        [ForeignKey("IdClient")]
+        public virtual Client Client { get; set; }
         [Required]
         [Column(TypeName = "datetime")]
         public DateTime StartDate { get; set; }

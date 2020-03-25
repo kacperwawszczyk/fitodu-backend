@@ -16,6 +16,13 @@ namespace Fitodu.Model.Configurations
             {
                 o.Id
             });
+
+            builder.HasMany(x => x.Maximums).WithOne(y => y.Client).HasForeignKey(z => z.IdClient);
+            builder.HasMany(x => x.PrivateNotes).WithOne(y => y.Client).HasForeignKey(z => z.IdClient).IsRequired();
+            builder.HasMany(x => x.PublicNotes).WithOne(y => y.Client).HasForeignKey(z => z.IdClient).IsRequired();
+            builder.HasMany(x => x.Trainings).WithOne(y => y.Client).HasForeignKey(z => z.IdClient);
+            builder.HasMany(x => x.AwaitingTrainings).WithOne(y => y.Client).HasForeignKey(z => z.IdClient).IsRequired();
+            builder.HasMany(x => x.ClientCoaches).WithOne(y => y.Client).HasForeignKey(z => z.IdClient).IsRequired();
         }
     }
 }

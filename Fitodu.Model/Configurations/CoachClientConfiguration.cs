@@ -16,6 +16,9 @@ namespace Fitodu.Model.Configurations
                 o.IdCoach,
                 o.IdClient
             });
+
+            builder.HasOne(x => x.Coach).WithMany(y => y.CoachClients).HasForeignKey(z => z.IdCoach).IsRequired();
+            builder.HasOne(x => x.Client).WithMany(y => y.ClientCoaches).HasForeignKey(z => z.IdClient).IsRequired();
         }
     }
 }
