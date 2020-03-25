@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Fitodu.Core.Enums;
 
 namespace Fitodu.Service.Abstract
 {
@@ -15,5 +16,6 @@ namespace Fitodu.Service.Abstract
         Task<Result<CoachOutput>> GetCoach(string id);
         Task<Result> CoachRegister(RegisterCoachInput model);
         Task<Result<long>> UpdateCoach(string Id, UpdateCoachInput coach);
+        Task<Result> SetClientsTrainingsAvailable(string requesterId, UserRole role, string clientId, int value);
     }
 }

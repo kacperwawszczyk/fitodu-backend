@@ -86,5 +86,13 @@ namespace Fitodu.Api.Controllers
             var result = await _coachService.GetAllClients(CurrentUser.Id);
             return GetResult(result);
         }
+
+        [HttpPut("coaches/clients/{id}/trainings-available/{value}")]
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> SetClientsTrainingsAvailable(string id, int value)
+        {
+            var result = await _coachService.SetClientsTrainingsAvailable(CurrentUser.Id, CurrentUser.Role, id, value);
+            return GetResult(result);
+        }
     }
 }

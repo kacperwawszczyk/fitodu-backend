@@ -4,6 +4,20 @@
         <name>Fitodu.Api</name>
     </assembly>
     <members>
+        <member name="M:Fitodu.Api.Controllers.AwaitingTrainingController.GetAwaitingTrainings">
+            <summary>
+            Used to get all awaiting trainings of a requestiong coach or a client
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.AwaitingTrainingController.DeleteAwaitingTraining(System.Int32,System.Nullable{System.Boolean})">
+            <summary>
+            Used to delete, accept or reject awaiting training
+            </summary>
+            <param name="accept">bool - true = accept, false = reject, null = delete</param>
+            <param name="id">AwaitingTraining Id</param>
+            <returns></returns>
+        </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.DummyClientRegister(System.String,Fitodu.Service.Models.RegisterDummyClientInput)">
             <summary>
             Used by Coach to create dummy Client account.
