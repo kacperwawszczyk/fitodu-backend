@@ -511,6 +511,11 @@ namespace Fitodu.Service.Concrete
                     client.PhoneNumber = clientAcc.PhoneNumber;
                     client.Email = clientAcc.Email;
                 }
+                CoachClient clientTrain = await _context.CoachClients.Where(x => x.IdClient == Id).FirstOrDefaultAsync();
+                if(clientTrain != null)
+                {
+                    client.AvailableTrainings = clientTrain.AvailableTrainings;
+                }
                 result.Data = client;
             }
             return result;
@@ -677,6 +682,11 @@ namespace Fitodu.Service.Concrete
                         {
                             client.PhoneNumber = clientAcc.PhoneNumber;
                             client.Email = clientAcc.Email;
+                        }
+                        CoachClient clientTrain = await _context.CoachClients.Where(x => x.IdClient == Id).FirstOrDefaultAsync();
+                        if (clientTrain != null)
+                        {
+                            client.AvailableTrainings = clientTrain.AvailableTrainings;
                         }
                         result.Data = client;
                     }
