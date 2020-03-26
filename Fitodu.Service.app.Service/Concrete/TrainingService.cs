@@ -101,14 +101,40 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
+            var client = await _context.Users.Where(x => x.Id == trainingInput.IdClient).FirstOrDefaultAsync();
+
+            if (client != null)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "This client does have an account";
+                return result;
+            }
+
+            if(trainingInput.StartDate >= trainingInput.EndDate)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "End date is lesser than or equal to start date";
+                return result;
+            }
+
+            if(trainingInput.StartDate.Value.Date != trainingInput.EndDate.Value.Date)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "end date and start date are not on the same day";
+                return result;
+            }
+
             Training _training = new Training();
             _training.IdClient = trainingInput.IdClient;
             _training.IdCoach = coachId;
             if (trainingInput.Note != null) _training.Note = trainingInput.Note;
-            _training.StartDate = trainingInput.StartDate;
-            _training.EndDate = trainingInput.EndDate;
+            _training.StartDate = new DateTime(trainingInput.StartDate.Value.Year, trainingInput.StartDate.Value.Month, trainingInput.StartDate.Value.Day
+                , trainingInput.StartDate.Value.Hour, trainingInput.StartDate.Value.Minute, 0);
+            _training.EndDate = new DateTime(trainingInput.EndDate.Value.Year, trainingInput.EndDate.Value.Month, trainingInput.EndDate.Value.Day
+                , trainingInput.EndDate.Value.Hour, trainingInput.EndDate.Value.Minute, 0);
             _training.Description = trainingInput.Description;
 
+            
 
             _context.Trainings.Add(_training);
             if (await _context.SaveChangesAsync() == 0)

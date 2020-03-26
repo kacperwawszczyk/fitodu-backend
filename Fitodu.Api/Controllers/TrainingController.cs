@@ -90,7 +90,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to create a new training for a requesting coach
+        /// Used to create a new training for a requesting coach (can only be used to create a training with a client that does not have an account)
         /// </summary>
         /// <param name="trainingInput"></param>
         /// <returns></returns>
