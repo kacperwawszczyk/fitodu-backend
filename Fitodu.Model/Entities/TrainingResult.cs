@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Fitodu.Model.Entities
 {
+    //TODO : USUNĄĆ TRAINING RESULT (controller, service, migracja itd.) jeśli na pewno nie będzie potrzebne
     public partial class TrainingResult
     {
         [Key]

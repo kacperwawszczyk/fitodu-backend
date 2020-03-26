@@ -16,9 +16,7 @@ namespace Fitodu.Model.Entities
         public int IdTraining { get; set; }
         public int Repetitions { get; set; }
         public TimeSpan? Time { get; set; }
-        [Column(TypeName = "text")]
-        public string Description { get; set; }
-        [Column(TypeName = "text")]
-        public string Note { get; set; }
+        public int RepetitionsResult { get; set; }
+        public TimeSpan? TimeResult { get; set; }
     }
 }

@@ -83,10 +83,14 @@ namespace Fitodu.Service.Concrete
              TrainingExercise _trainingExercise = new TrainingExercise();
             _trainingExercise.IdExercise = trainingExerciseInput.IdExercise;
             _trainingExercise.IdTraining = trainingExerciseInput.IdTraining;
+            if(trainingExerciseInput.Repetitions < 0)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "repetitions cannot be set to a value lesser than 0";
+                return result;
+            }
             _trainingExercise.Repetitions = trainingExerciseInput.Repetitions;
-            _trainingExercise.Description = trainingExerciseInput.Description;
             _trainingExercise.Time = trainingExerciseInput.Time;
-            _trainingExercise.Note = trainingExerciseInput.Note;
 
             _context.TrainingExercises.Add(_trainingExercise);
 
@@ -123,10 +127,23 @@ namespace Fitodu.Service.Concrete
                 }
 
                 existingTrainingExercise.IdExercise = trainingExercise.IdExercise;
+                if (trainingExercise.Repetitions < 0)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "repetitions cannot be set to a value lesser than 0";
+                    return result;
+                }
                 existingTrainingExercise.Repetitions = trainingExercise.Repetitions;
                 existingTrainingExercise.Time = trainingExercise.Time;
-                existingTrainingExercise.Note = trainingExercise.Note;
-                existingTrainingExercise.Description = trainingExercise.Description;
+                if (trainingExercise.RepetitionsResult < 0)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "repetitions result cannot be set to a value lesser than 0";
+                    return result;
+                }
+                existingTrainingExercise.RepetitionsResult = trainingExercise.RepetitionsResult;
+                existingTrainingExercise.TimeResult = trainingExercise.TimeResult;
+
                 if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();

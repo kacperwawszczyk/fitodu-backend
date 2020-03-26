@@ -14,9 +14,5 @@ namespace Fitodu.Service.Models.TrainingExercise
         public int IdTraining { get; set; }
         public int Repetitions { get; set; }
         public TimeSpan? Time { get; set; }
-        [Column(TypeName = "text")]
-        public string Description { get; set; }
-        [Column(TypeName = "text")]
-        public string Note { get; set; }
     }
 }
