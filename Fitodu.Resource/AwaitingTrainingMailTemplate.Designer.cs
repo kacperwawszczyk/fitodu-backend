@@ -133,6 +133,42 @@ namespace Fitodu.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hi -clientName-! &lt;br&gt;&lt;br&gt; Your workout awaiting your confirmation starting at -date-, has just been withdrawn by your coach. Head to &lt;a href=&quot;-url-&quot;&gt;FITODU&lt;/a&gt; if you want to suggest a new workout date to your coach!.
+        /// </summary>
+        public static string AwaitingTrainingWithdrawnClientBody {
+            get {
+                return ResourceManager.GetString("AwaitingTrainingWithdrawnClientBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fitodu - one of your awaiting workouts had been withdrawn.
+        /// </summary>
+        public static string AwaitingTrainingWithdrawnClientSubject {
+            get {
+                return ResourceManager.GetString("AwaitingTrainingWithdrawnClientSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hi -coachName-! &lt;br&gt;&lt;br&gt; Workout with -clientName- awaiting your confirmation starting at -date-, has just been withdrawn by the client. Head to &lt;a href=&quot;-url-&quot;&gt;FITODU&lt;/a&gt; if you want to suggest a new workout date to your client!.
+        /// </summary>
+        public static string AwaitingTrainingWithdrawnCoachBody {
+            get {
+                return ResourceManager.GetString("AwaitingTrainingWithdrawnCoachBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fitodu - one of your awaiting workouts had been withdrawn.
+        /// </summary>
+        public static string AwaitingTrainingWithdrawnCoachSubject {
+            get {
+                return ResourceManager.GetString("AwaitingTrainingWithdrawnCoachSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hi -fullName-!&lt;br&gt;&lt;br&gt;You have a new training request from -coachName-!&lt;br&gt;&lt;br&gt;To approve or reject it go to  our website: &lt;a href=&quot;-url-&quot;&gt;HERE&lt;/a&gt;. .
         /// </summary>
         public static string NewAwaitingTrainingClientBody {

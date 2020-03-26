@@ -307,6 +307,13 @@ namespace Fitodu.Service.Concrete
 
                     _context.Trainings.Add(training);
                 }
+                else
+                {
+                    var coachClient = await _context.CoachClients.Where(x => x.IdCoach == exisitingAwaitingTraining.IdCoach && x.IdClient == exisitingAwaitingTraining.IdClient).FirstOrDefaultAsync();
+                    coachClient.AvailableTrainings += 1;
+                }
+
+
 
                 _context.AwaitingTrainings.Remove(exisitingAwaitingTraining);
                 if (await _context.SaveChangesAsync() == 0)
@@ -360,6 +367,11 @@ namespace Fitodu.Service.Concrete
                         model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedClientSubject;
                         model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedClientBody;
                     }
+                    else if(accept == null)
+                    {
+                        model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnClientSubject;
+                        model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnClientBody;
+                    }
                 }
                 else if (requesterRole == UserRole.Client)
                 {
@@ -372,6 +384,11 @@ namespace Fitodu.Service.Concrete
                     {
                         model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedCoachSubject;
                         model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedCoachBody;
+                    }
+                    else if (accept == null)
+                    {
+                        model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnCoachSubject;
+                        model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnCoachBody;
                     }
                     model.HtmlBody = model.HtmlBody.Replace("-coachName-", coachName);
                 }
