@@ -683,7 +683,7 @@ namespace Fitodu.Service.Concrete
                             client.PhoneNumber = clientAcc.PhoneNumber;
                             client.Email = clientAcc.Email;
                         }
-                        CoachClient clientTrain = await _context.CoachClients.Where(x => x.IdClient == Id).FirstOrDefaultAsync();
+                        CoachClient clientTrain = await _context.CoachClients.Where(x => x.IdClient == clientId).FirstOrDefaultAsync();
                         if (clientTrain != null)
                         {
                             client.AvailableTrainings = clientTrain.AvailableTrainings;
