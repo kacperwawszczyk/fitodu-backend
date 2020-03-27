@@ -128,6 +128,23 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
+            if (weekPlan.StartDate.Value.Date.DayOfWeek != DayOfWeek.Monday && weekPlan.IsDefault == false)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Week plan must start at a Monday if it's not default";
+                return result;
+            }
+
+            var exisitingWeekPlanStartDate = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.StartDate.Value.Date == weekPlan.StartDate.Value.Date &&
+            x.Id != weekPlan.Id).FirstOrDefaultAsync();
+
+            if (exisitingWeekPlanStartDate != null)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Can not change this weekplans StartDate to the one given because this coach already has a different weekplan starting at that date";
+                return result;
+            }
+
             using (var transaction = _context.Database.BeginTransaction())
             {
                 var exisitngWeekPlan = await _context.WeekPlans
@@ -212,6 +229,22 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
+            if(weekPlanInput.StartDate.Value.Date.DayOfWeek != DayOfWeek.Monday && weekPlanInput.IsDefault == false)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Week plan must start at a Monday if it's not default";
+                return result;
+            }
+
+            var exisitingWeekPlan = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.StartDate.Value.Date == weekPlanInput.StartDate.Value.Date).FirstOrDefaultAsync();
+
+            if(exisitingWeekPlan != null)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Week plan of this coach, starting at this date already exists";
+                return result;
+            }
+
             WeekPlan _weekPlan = new WeekPlan();
             _weekPlan.IdCoach = coachId;
             _weekPlan.StartDate = new DateTime(weekPlanInput.StartDate.Value.Date.Year, weekPlanInput.StartDate.Value.Date.Month, weekPlanInput.StartDate.Value.Date.Day, 0, 0, 0);
@@ -226,6 +259,7 @@ namespace Fitodu.Service.Concrete
                 List<WorkoutTime> workoutTimes = new List<WorkoutTime>();
                 foreach (WorkoutTimeInput workoutTimeInput in dayPlanInput.WorkoutTimes)
                 {
+
                     WorkoutTime _workoutTime = new WorkoutTime();
                     _workoutTime.DayPlan = _dayPlan;
                     _workoutTime.StartTime = workoutTimeInput.StartTime;
