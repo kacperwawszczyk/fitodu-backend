@@ -30,22 +30,22 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to get a list of exercises in the given training
+        /// Used to get a list of exercises in the given training.
         /// </summary>
-        /// <param name="idTraining"></param>
+        /// <param name="training-">Id of the training you wish to list exercises for</param>
         /// <returns></returns>
         [HttpGet("training-exercises")] 
         [Authorize]
         [ProducesResponseType(typeof(ICollection<TrainingExercise>), 200)]
-        public async Task<IActionResult> GetTrainingsExercises(int idTraining)
+        public async Task<IActionResult> GetTrainingsExercises(int training)
         {
-            var result = await _trainingExerciseService.GetTrainingsExercises(idTraining, CurrentUser.Id, CurrentUser.Role);
+            var result = await _trainingExerciseService.GetTrainingsExercises(training, CurrentUser.Id, CurrentUser.Role);
             return GetResult(result);
         }
 
 
         /// <summary>
-        ///  Used to add a new exercise to the training
+        ///  Used to add a new exercise to the training.
         /// </summary>
         /// <param name="trainingExerciseInput"></param>
         /// <returns></returns>
@@ -59,7 +59,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to modify an exisitng exercise in the training
+        /// Used to modify an exisitng exercise in the training. Use this method if you want to set results for repetitions or time.
         /// </summary>
         /// <param name="trainingExercise"></param>
         /// <returns></returns>
@@ -74,15 +74,15 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to delete an exercise from the training
+        /// Used to delete an exercise from the training.
         /// </summary>
-        /// <param name="trainingExerciseId"></param>
+        /// <param name="id">Id of the TrainingExercise you wish to delete</param>
         /// <returns></returns>
         [HttpDelete("training-exercises")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteTrainingExercise(int trainingExerciseId)
+        public async Task<IActionResult> DeleteTrainingExercise(int id)
         {
-            var result = await _trainingExerciseService.DeleteTrainingExercise(CurrentUser.Id, trainingExerciseId);
+            var result = await _trainingExerciseService.DeleteTrainingExercise(CurrentUser.Id, id);
             return GetResult(result);
         }
 

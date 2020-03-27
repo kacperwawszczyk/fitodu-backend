@@ -87,6 +87,12 @@ namespace Fitodu.Api.Controllers
             return GetResult(result);
         }
 
+        /// <summary>
+        /// Used by a coach to set a new value for client's available trainings.
+        /// </summary>
+        /// <param name="id">Id of the client you wish to change the value for</param>
+        /// <param name="value">new value that will be set, it has be greater than or equal to 0</param>
+        /// <returns></returns>
         [HttpPut("coaches/clients/{id}/trainings-available/{value}")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> SetClientsTrainingsAvailable(string id, int value)

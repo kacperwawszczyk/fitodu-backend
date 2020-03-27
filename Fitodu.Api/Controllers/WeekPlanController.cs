@@ -56,12 +56,17 @@ namespace Fitodu.Api.Controllers
         }
 
         // TODO: Testowa metoda (do wykorzystania lub usunięcia)
-        [HttpGet("week-plans/{weekPlanId}/booked-hours")]
+        /// <summary>
+        /// Creates a weekPlan object based on all the workouts coach has planned for a specified week. TEST METHOD
+        /// </summary>
+        /// <param name="id">weekPlanId</param>
+        /// <returns></returns>
+        [HttpGet("week-plans/{id}/booked-hours")]
         [Authorize]
         [ProducesResponseType(typeof(WeekPlanOutput), 200)]
-        public async Task<IActionResult> GetWeekPlansBookedHours(int weekPlanId)
+        public async Task<IActionResult> GetWeekPlansBookedHours(int id)
         {
-            var result = await _weekPlanService.GetWeekPlansBookedHours(CurrentUser.Id, CurrentUser.Role, weekPlanId);
+            var result = await _weekPlanService.GetWeekPlansBookedHours(CurrentUser.Id, CurrentUser.Role, id);
             return GetResult(result);
         }
 
@@ -99,13 +104,13 @@ namespace Fitodu.Api.Controllers
         /// <summary>
         /// Used to delete an existing week plan with related day plans and workout times
         /// </summary>
-        /// <param name="weekPlanId"></param>
+        /// <param name="id">Id of the weekplan you wish to delete</param>
         /// <returns></returns>
-        [HttpDelete("week-plans/{weekPlanId}")]
+        [HttpDelete("week-plans/{id}")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteWeekPlan(int weekPlanId)
+        public async Task<IActionResult> DeleteWeekPlan(int id)
         {
-            var result = await _weekPlanService.DeleteWeekPlan(CurrentUser.Id, weekPlanId);
+            var result = await _weekPlanService.DeleteWeekPlan(CurrentUser.Id, id);
             return GetResult(result);
         }
 

@@ -31,7 +31,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to get a list of all private notes of a requsting coach
+        /// Used to get a list of all private notes of a requsting coach.
         /// </summary>
         /// <returns></returns>
         [HttpGet("private-notes")]
@@ -44,21 +44,21 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to get a single private notes of a requsting coach
+        /// Used to get a single private note of a requsting coach.
         /// </summary>
-        /// <param name="clientId"></param>
+        /// <param name="client">Id of the client you wish to get the private note of</param>
         /// <returns></returns>
-        [HttpGet("private-notes/{clientId}")]
+        [HttpGet("private-notes/{client}")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(PrivateNote), 200)]
-        public async Task<IActionResult> GetUsersNote(string clientId)
+        public async Task<IActionResult> GetUsersNote(string client)
         {
-            var result = await _privateNoteService.GetClientsNote(CurrentUser.Id, clientId);
+            var result = await _privateNoteService.GetClientsNote(CurrentUser.Id, client);
             return GetResult(result);
         }
 
         /// <summary>
-        /// Used to create a new private note
+        /// Used to create a new private note. There can only be one private note for a single coach's client.
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
@@ -71,7 +71,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to modify an existing private note
+        /// Used to modify an existing private note.
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
@@ -85,15 +85,15 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to delete an existing private note
+        /// Used to delete an existing private note.
         /// </summary>
-        /// <param name="clientId"></param>
+        /// <param name="client">Id of the client you wish to delete the private note of</param>
         /// <returns></returns>
-        [HttpDelete("private-notes/{clientId}")]
+        [HttpDelete("private-notes/{client}")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteNote(string clientId)
+        public async Task<IActionResult> DeleteNote(string client)
         {
-            var result = await _privateNoteService.DeleteNote(CurrentUser.Id, clientId);
+            var result = await _privateNoteService.DeleteNote(CurrentUser.Id, client);
             return GetResult(result);
         }
 

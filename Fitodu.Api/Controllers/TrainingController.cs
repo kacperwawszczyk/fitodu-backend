@@ -77,8 +77,10 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to get training with a StartDate greater than given
+        /// Used to get training with a StartDate greater than given.
         /// </summary>
+        /// <param name="from">StartDate</param>
+        /// <param name="idClient">if not specified method will return trainings with all coach's clients</param>
         /// <returns></returns>
         [HttpGet("trainings")]
         [Authorize]
@@ -90,7 +92,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to create a new training for a requesting coach (can only be used to create a training with a client that does not have an account)
+        /// Used to create a new training for a requesting coach (can only be used to create a training with a client that does not have an account). Automatically sets seconds property of StartDate and EndDate to 0.
         /// </summary>
         /// <param name="trainingInput"></param>
         /// <returns></returns>
@@ -104,7 +106,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// USed to modify an existing training for a requesting coach
+        /// Used to modify an existing training for a requesting coach.  Automatically sets seconds property of StartDate and EndDate to 0.
         /// </summary>
         /// <param name="editTrainingInput"></param>
         /// <returns></returns>
@@ -118,15 +120,15 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// USed to delete an existing training for a requesting coach
+        /// Used to delete an existing training for a requesting coach. Also deletes all TrainingExercises related to that training.
         /// </summary>
-        /// <param name="trainingId"></param>
+        /// <param name="id">Id of the training you wish to delete</param>
         /// <returns></returns>
         [HttpDelete("trainings")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteTraining(int trainingId)
+        public async Task<IActionResult> DeleteTraining(int id)
         {
-            var result = await _trainingService.DeleteTraining(CurrentUser.Id, trainingId);
+            var result = await _trainingService.DeleteTraining(CurrentUser.Id, id);
             return GetResult(result);
         }
     }

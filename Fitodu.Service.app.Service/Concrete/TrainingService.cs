@@ -183,12 +183,27 @@ namespace Fitodu.Service.Concrete
                     result.ErrorMessage = "Training with this Id does not exist in the database";
                     return result;
                 }
+                if (trainingInput.StartDate >= trainingInput.EndDate)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "End date is lesser than or equal to start date";
+                    return result;
+                }
+
+                if (trainingInput.StartDate.Value.Date != trainingInput.EndDate.Value.Date)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "end date and start date are not on the same day";
+                    return result;
+                }
 
                 exisitngTraining.IdClient = trainingInput.IdClient;
                 exisitngTraining.Note = trainingInput.Note;
                 exisitngTraining.Description = trainingInput.Description;
-                exisitngTraining.StartDate = trainingInput.StartDate;
-                exisitngTraining.EndDate = trainingInput.EndDate;
+                exisitngTraining.StartDate = new DateTime(trainingInput.StartDate.Value.Year, trainingInput.StartDate.Value.Month, trainingInput.StartDate.Value.Day
+                , trainingInput.StartDate.Value.Hour, trainingInput.StartDate.Value.Minute, 0);
+                exisitngTraining.EndDate = new DateTime(trainingInput.EndDate.Value.Year, trainingInput.EndDate.Value.Month, trainingInput.EndDate.Value.Day
+                , trainingInput.EndDate.Value.Hour, trainingInput.EndDate.Value.Minute, 0);
 
                 if (await _context.SaveChangesAsync() == 0)
                 {

@@ -32,7 +32,7 @@ namespace Fitodu.Api.Controllers
     /// <summary>
     /// Used by coach to get exercise by id.
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">Id of the exercise</param>
     /// <returns></returns>
         [HttpGet("exercises/{id}")]
         [AuthorizePolicy(UserRole.Coach)]
@@ -44,7 +44,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to get a list of all (archived and not-archvied) exercises of a requesting coach 
+        /// Used to get a list of all (archived and not-archvied) exercises of a requesting coach .
         /// </summary>
         /// <returns></returns>
         [HttpGet("exercises")]
@@ -57,7 +57,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to get a list of archived exercises of a requesting coach 
+        /// Used to get a list of archived exercises of a requesting coach.
         /// </summary>
         /// <returns></returns>
         [HttpGet("exercises/archived")]
@@ -70,7 +70,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to get a list of not-archived exercises of a requesting coach 
+        /// Used to get a list of not-archived exercises of a requesting coach.
         /// </summary>
         /// <returns></returns>
         [HttpGet("exercises/not-archived")]
@@ -84,7 +84,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to create a new exercise for a requesting coach (if it doesn't already exist)
+        /// Used to create a new exercise for a requesting coach (if an exercise with given name doesn't already exist).
         /// </summary>
         /// <param name="exercise"></param>
         /// <returns></returns>
@@ -98,7 +98,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to modify an existing exercise for a requesting coach
+        /// Used to modify an existing exercise for a requesting coach.
         /// </summary>
         /// <param name="exercise"></param>
         /// <returns></returns>
@@ -111,15 +111,15 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to delete an existing exercise for a requesting coach
+        /// Used to delete an existing exercise for a requesting coach.
         /// </summary>
-        /// <param name="exerciseId"></param>
+        /// <param name="id">Id of the exercise you wish to delete</param>
         /// <returns></returns>
-        [HttpDelete("exercises/{exerciseId}")]
+        [HttpDelete("exercises/{id}")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteExercise(int exerciseId)
+        public async Task<IActionResult> DeleteExercise(int id)
         {
-            var result = await _exerciseService.DeleteExercise(CurrentUser.Id, exerciseId);
+            var result = await _exerciseService.DeleteExercise(CurrentUser.Id, id);
             return GetResult(result);
         }
     }

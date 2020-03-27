@@ -22,7 +22,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to get all awaiting trainings of a requestiong coach or a client
+        /// Used to get all awaiting trainings of a requesting coach or a client.
         /// </summary>
         /// <returns></returns>
         [HttpGet("awaiting-trainings")]
@@ -34,6 +34,12 @@ namespace Fitodu.Api.Controllers
             return GetResult(result);
         }
 
+        /// <summary>
+        /// Used to create a new workout request by a coach or a client. 
+        /// Creating a requests sends a mail notification to the requests' receiver and lowers client's available trainings value by one.
+        /// </summary>
+        /// <param name="awaitingTrainingInput"></param>
+        /// <returns></returns>
         [HttpPost("awaiting-trainings")]
         [Authorize]
         public async Task<IActionResult> CreateAwaitingTraining([FromBody] AwaitingTrainingInput awaitingTrainingInput)
@@ -43,10 +49,12 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to delete, accept or reject awaiting training
+        /// Used to delete, accept or reject awaiting training.
+        /// Deleting can only be used if someone wants to withdrew his workout requests before it gets acctepted or rejected. All actions send a mail notification.
+        /// Deleting or rejecting an awaiting training increases client's available trainings value by one.
         /// </summary>
         /// <param name="accept">bool - true = accept, false = reject, null = delete</param>
-        /// <param name="id">AwaitingTraining Id</param>
+        /// <param name="id">Id of the awaiting training you wish to delete/accept/reject</param>
         /// <returns></returns>
         [HttpDelete("awaiting-trainings/{id}")]
         [Authorize]

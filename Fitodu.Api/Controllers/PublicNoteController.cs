@@ -28,7 +28,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to get a list of all public notes of a requsting coach
+        /// Used to get a list of all public notes of a requsting coach.
         /// </summary>
         /// <returns></returns>
         [HttpGet("public-notes")]
@@ -41,21 +41,21 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to get a single public note of a client with given Id
+        /// Used to get a single public note of a client with given Id.
         /// </summary>
-        /// <param name="clientId"></param>
+        /// <param name="client">Id of the client you wish to get the public note of</param>
         /// <returns></returns>
-        [HttpGet("public-notes/{clientId}")]
+        [HttpGet("public-notes/{client}")]
         [Authorize]
         [ProducesResponseType(typeof(PublicNote), 200)]
-        public async Task<IActionResult> GetUsersNote(string clientId)
+        public async Task<IActionResult> GetUsersNote(string client)
         {
-            var result = await _publicNoteService.GetClientsNote(clientId, CurrentUser.Id);
+            var result = await _publicNoteService.GetClientsNote(client, CurrentUser.Id);
             return GetResult(result);
         }
 
         /// <summary>
-        /// Used to create a new public note
+        /// Used to create a new public note. There can only be one public note for a single coach's client.
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
@@ -68,7 +68,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to modify an existing public note
+        /// Used to modify an existing public note.
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
@@ -81,15 +81,15 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to delete an existing public note
+        /// Used to delete an existing public note.
         /// </summary>
-        /// <param name="clientId"></param>
+        /// <param name="client">Id of the client you wish to delete the public note of</param>
         /// <returns></returns>
-        [HttpDelete("public-notes/{clientId}")]
+        [HttpDelete("public-notes/{client}")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteNote(string clientId)
+        public async Task<IActionResult> DeleteNote(string client)
         {
-            var result = await _publicNoteService.DeleteNote(CurrentUser.Id, clientId);
+            var result = await _publicNoteService.DeleteNote(CurrentUser.Id, client);
             return GetResult(result);
         }
 
