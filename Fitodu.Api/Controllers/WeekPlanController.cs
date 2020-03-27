@@ -72,7 +72,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to create a new week plan with related day plans and workout times.
+        /// Used to create a new week plan with related day plans and workout times. There can not be two different week plans starting at the same day. All week plans have to start on Monday.
         /// </summary>
         /// <param name="weekPlanInput"></param>
         /// <returns></returns>
