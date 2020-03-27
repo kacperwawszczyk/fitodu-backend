@@ -88,7 +88,7 @@ namespace Fitodu.Api.Controllers
         /// Used to modify and existing week plan for a requesting coach (sending a week plan with an empty day plan collection removes 
         /// related day plans; sending a week plan with a day plan colletion containing objects that do not exist in the database
         /// will create those objects; sending a week plan with a day plan colletion not containing objects that exist in the database
-        /// will remove those objects
+        /// will remove those objects. There can not be two different week plans starting at the same day. All week plans have to start on Monday.
         /// </summary>
         /// <param name="weekPlan"></param>
         /// <returns></returns>
