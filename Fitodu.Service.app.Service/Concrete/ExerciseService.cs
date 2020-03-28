@@ -54,9 +54,9 @@ namespace Fitodu.Service.Concrete
         }
 
 
-        public async Task<Result> CreateExercise(string coachId, ExerciseInput exercise)
+        public async Task<Result<int>> CreateExercise(string coachId, ExerciseInput exercise)
         {
-            var result = new Result();
+            var result = new Result<int>();
 
             Exercise existingExercise = await _context.Exercises
                 .Where(x => x.IdCoach == coachId && x.Name == exercise.Name)
@@ -85,6 +85,18 @@ namespace Fitodu.Service.Concrete
                 }
                 transaction.Commit();
             }
+
+            existingExercise = await _context.Exercises
+                .Where(x => x.IdCoach == coachId && x.Name == exercise.Name)
+                .FirstOrDefaultAsync();
+
+            if (existingExercise == null) 
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "couldn't get the id of the exercise after adding it to the database";
+                return result;
+            }
+            result.Data = existingExercise.Id;
             return result;
         }
 

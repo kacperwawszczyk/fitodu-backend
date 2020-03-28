@@ -90,6 +90,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpPost("exercises")]
         [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> CreateExercise([FromBody]ExerciseInput exercise)
         {
             var result = await _exerciseService.CreateExercise(CurrentUser.Id, exercise);

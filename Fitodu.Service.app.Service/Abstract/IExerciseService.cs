@@ -11,7 +11,7 @@ namespace Fitodu.Service.Abstract
     public interface IExerciseService
     {
         Task<Result<ICollection<ExerciseOutput>>> GetAllExercises(string coachId);
-        Task<Result> CreateExercise(string coachId, ExerciseInput exercise);
+        Task<Result<int>> CreateExercise(string coachId, ExerciseInput exercise);
         Task<Result> EditExercise(string coachId, UpdateExerciseInput exercise);
         Task<Result> DeleteExercise(string coachId, int exerciseId);
         Task<Result<ICollection<ExerciseOutput>>> GetArchivedExercises(string coachId);
