@@ -78,6 +78,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpPost("week-plans")]
         [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> CreateWeekPlan([FromBody] WeekPlanInput weekPlanInput)
         {
             var result = await _weekPlanService.CreateWeekPlan(CurrentUser.Id, weekPlanInput);

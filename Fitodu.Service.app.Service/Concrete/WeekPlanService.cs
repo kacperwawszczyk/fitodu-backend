@@ -219,9 +219,9 @@ namespace Fitodu.Service.Concrete
         }
 
 
-        public async Task<Result> CreateWeekPlan(string coachId, WeekPlanInput weekPlanInput)
+        public async Task<Result<int>> CreateWeekPlan(string coachId, WeekPlanInput weekPlanInput)
         {
-            var result = new Result();
+            var result = new Result<int>();
 
             if (!IsValidInput(weekPlanInput))
             {
@@ -297,6 +297,7 @@ namespace Fitodu.Service.Concrete
             {
                 result.Error = ErrorType.InternalServerError;
             }
+            result.Data = _weekPlan.Id;
             return result;
         }
 

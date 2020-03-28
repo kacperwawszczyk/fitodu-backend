@@ -67,9 +67,9 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result> AddTrainingExercise(string coachId, TrainingExerciseInput trainingExerciseInput)
+        public async Task<Result<int>> AddTrainingExercise(string coachId, TrainingExerciseInput trainingExerciseInput)
         {
-            var result = new Result();
+            var result = new Result<int>();
 
             var trainingsCoachResult = await _trainingService.GetTrainingsCoach(trainingExerciseInput.IdTraining);
 
@@ -98,6 +98,7 @@ namespace Fitodu.Service.Concrete
             {
                 result.Error = ErrorType.InternalServerError;
             }
+            result.Data = _trainingExercise.Id;
             return result;
         }
 

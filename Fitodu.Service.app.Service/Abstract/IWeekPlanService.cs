@@ -13,7 +13,7 @@ namespace Fitodu.Service.Abstract
     {
         Task<Result<ICollection<WeekPlanOutput>>> GetWeekPlans(string requesterId, UserRole requesterRole);
         Task<Result> EditWeekPlan(string coachId, UpdateWeekPlanInput weekPlan);
-        Task<Result> CreateWeekPlan(string coachId, WeekPlanInput weekPlanInput);
+        Task<Result<int>> CreateWeekPlan(string coachId, WeekPlanInput weekPlanInput);
         Task<Result> DeleteWeekPlan(string coachId, int weekPlanId);
 
         bool IsValid(WeekPlan weekPlan);

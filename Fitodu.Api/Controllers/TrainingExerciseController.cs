@@ -51,6 +51,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpPost("training-exercises")]
         [AuthorizePolicy(UserRole.Coach)]
+        [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> AddTrainingExercise([FromBody]TrainingExerciseInput trainingExerciseInput)
         {
             var result = await _trainingExerciseService.AddTrainingExercise(CurrentUser.Id, trainingExerciseInput);

@@ -239,16 +239,7 @@ namespace Fitodu.Service.Concrete
                 result.ErrorMessage = "Added awaiting training but failed to send to mail";
             }
 
-            var existingAwaitingTraining = await _context.AwaitingTrainings.Where(x => x.IdCoach == awaitingTraining.IdCoach && x.IdClient == awaitingTraining.IdClient &&
-            x.StartDate == awaitingTraining.StartDate && x.EndDate == awaitingTraining.EndDate && x.Receiver == awaitingTraining.Receiver && x.Sender == awaitingTraining.Sender).FirstOrDefaultAsync();
-
-            if(existingAwaitingTraining == null)
-            {
-                result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "couldn't get the id of the awaiting training after adding it to the database";
-                return result;
-            }
-            result.Data = existingAwaitingTraining.Id;
+            result.Data = awaitingTraining.Id;
             return result;
         }
 
