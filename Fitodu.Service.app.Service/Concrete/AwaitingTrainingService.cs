@@ -73,9 +73,9 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result> CreateAwaitingTraining(string requesterId, UserRole requesterRole, AwaitingTrainingInput awaitingTrainingInput)
+        public async Task<Result<int>> CreateAwaitingTraining(string requesterId, UserRole requesterRole, AwaitingTrainingInput awaitingTrainingInput)
         {
-            var result = new Result();
+            var result = new Result<int>();
 
             AwaitingTraining awaitingTraining = new AwaitingTraining();
 
@@ -191,7 +191,7 @@ namespace Fitodu.Service.Concrete
 
             var workoutTimes = _context.WorkoutTimes.Where(x =>
             x.DayPlan.WeekPlan.IdCoach == awaitingTraining.IdCoach &&
-            x.DayPlan.WeekPlan.StartDate.Value.Date < awaitingTrainingInput.StartDate.Date &&
+            x.DayPlan.WeekPlan.StartDate.Value.Date <= awaitingTrainingInput.StartDate.Date &&
             x.DayPlan.WeekPlan.StartDate.Value.Date.AddDays(7) > awaitingTrainingInput.EndDate.Date &&
             x.StartTime.TimeOfDay < awaitingTrainingInput.StartDate.TimeOfDay &&
             x.EndTime.TimeOfDay > awaitingTrainingInput.EndDate.TimeOfDay);
@@ -238,6 +238,17 @@ namespace Fitodu.Service.Concrete
                 result.Error = ErrorType.InternalServerError;
                 result.ErrorMessage = "Added awaiting training but failed to send to mail";
             }
+
+            var existingAwaitingTraining = await _context.AwaitingTrainings.Where(x => x.IdCoach == awaitingTraining.IdCoach && x.IdClient == awaitingTraining.IdClient &&
+            x.StartDate == awaitingTraining.StartDate && x.EndDate == awaitingTraining.EndDate && x.Receiver == awaitingTraining.Receiver && x.Sender == awaitingTraining.Sender).FirstOrDefaultAsync();
+
+            if(existingAwaitingTraining == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "couldn't get the id of the awaiting training after adding it to the database";
+                return result;
+            }
+            result.Data = existingAwaitingTraining.Id;
             return result;
         }
 

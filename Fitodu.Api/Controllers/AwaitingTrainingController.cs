@@ -42,6 +42,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpPost("awaiting-trainings")]
         [Authorize]
+        [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> CreateAwaitingTraining([FromBody] AwaitingTrainingInput awaitingTrainingInput)
         {
             var result = await _awaitingTraningService.CreateAwaitingTraining(CurrentUser.Id, CurrentUser.Role, awaitingTrainingInput);
