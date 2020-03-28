@@ -89,9 +89,9 @@ namespace Fitodu.Service.Concrete
         //    return result;
         //}
 
-        public async Task<Result> AddTraining(string coachId, TrainingInput trainingInput)
+        public async Task<Result<int>> AddTraining(string coachId, TrainingInput trainingInput)
         {
-            var result = new Result();
+            var result = new Result<int>();
 
             var clientsCoach = await _clientService.GetClientCoach(trainingInput.IdClient);
             if(clientsCoach.IsDataNull || clientsCoach.Data.Id != coachId)
@@ -134,14 +134,15 @@ namespace Fitodu.Service.Concrete
                 , trainingInput.EndDate.Value.Hour, trainingInput.EndDate.Value.Minute, 0);
             _training.Description = trainingInput.Description;
 
-            
-
             _context.Trainings.Add(_training);
             if (await _context.SaveChangesAsync() == 0)
             {
                 result.Error = ErrorType.InternalServerError;
             }
+
+            result.Data = _training.Id;
             return result;
+
         }
 
         public async Task<Result<string>> GetTrainingsCoach(int idTraining)
