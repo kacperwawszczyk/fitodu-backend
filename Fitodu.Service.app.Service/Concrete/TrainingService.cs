@@ -127,6 +127,7 @@ namespace Fitodu.Service.Concrete
             Training _training = new Training();
             _training.IdClient = trainingInput.IdClient;
             _training.IdCoach = coachId;
+            _training.Name = trainingInput.Name;
             if (trainingInput.Note != null) _training.Note = trainingInput.Note;
             _training.StartDate = new DateTime(trainingInput.StartDate.Value.Year, trainingInput.StartDate.Value.Month, trainingInput.StartDate.Value.Day
                 , trainingInput.StartDate.Value.Hour, trainingInput.StartDate.Value.Minute, 0);
@@ -199,6 +200,7 @@ namespace Fitodu.Service.Concrete
                 }
 
                 exisitngTraining.IdClient = trainingInput.IdClient;
+                exisitngTraining.Name = trainingInput.Name;
                 exisitngTraining.Note = trainingInput.Note;
                 exisitngTraining.Description = trainingInput.Description;
                 exisitngTraining.StartDate = new DateTime(trainingInput.StartDate.Value.Year, trainingInput.StartDate.Value.Month, trainingInput.StartDate.Value.Day

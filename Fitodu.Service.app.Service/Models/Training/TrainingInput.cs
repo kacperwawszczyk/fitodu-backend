@@ -8,6 +8,7 @@ namespace Fitodu.Service.Models.Training
     public class TrainingInput
     {
         public string IdClient { get; set; }
+        public string Name { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? StartDate { get; set; }
         [Column(TypeName = "datetime")]
