@@ -39,20 +39,32 @@ namespace Fitodu.Service.Concrete
 
             if (requesterRole == UserRole.Coach)
             {
-                awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdCoach == requesterId)
+                var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdCoach == requesterId)
                    .Select(x => new AwaitingTrainingOutput
                    {
                        Id = x.Id,
                        EndDate = x.EndDate,
                        StartDate = x.StartDate,
                        IdCoach = x.IdCoach,
-                       IdClient = x.IdClient
+                       IdClient = x.IdClient,
                    })
                    .ToListAsync();
+
+                foreach(var x in _awaitingTrainings)
+                {
+                    var user = await _context.Clients.Where(y => y.Id == x.IdClient).FirstOrDefaultAsync();
+                    if(user != null)
+                    {
+                        x.RequestedName = user.Name;
+                        x.RequestedSurname = user.Surname;
+                    }
+                }
+
+                awaitingTrainings = _awaitingTrainings;
             }
             else if (requesterRole == UserRole.Client)
             {
-                awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdClient == requesterId)
+                var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdClient == requesterId)
                 .Select(x => new AwaitingTrainingOutput
                 {
                     Id = x.Id,
@@ -62,6 +74,17 @@ namespace Fitodu.Service.Concrete
                     IdClient = x.IdClient
                 })
                 .ToListAsync();
+
+                foreach (var x in _awaitingTrainings)
+                {
+                    var user =  await _context.Coaches.Where(y => y.Id == x.IdCoach).FirstOrDefaultAsync();
+                    if (user != null)
+                    {
+                        x.RequestedName = user.Name;
+                        x.RequestedSurname = user.Surname;
+                    }
+                }
+                awaitingTrainings = _awaitingTrainings;
             }
 
             if (awaitingTrainings == null)
