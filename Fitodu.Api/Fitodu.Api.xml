@@ -179,14 +179,14 @@
             <param name="IdExercise"> int type </param>
             <returns> Returns MaximumOutput </returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.MaximumController.CreateMaximum(Fitodu.Service.Models.Maximum.MaximumInput)">
+        <member name="M:Fitodu.Api.Controllers.MaximumController.CreateMaximum(Fitodu.Service.Models.MaximumInput)">
             <summary>
             Used by coach to create a new maximum
             </summary>
             <param name="max"> MaximumInput type </param>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.MaximumController.UpdateMaximum(Fitodu.Service.Models.Maximum.MaximumInput)">
+        <member name="M:Fitodu.Api.Controllers.MaximumController.UpdateMaximum(Fitodu.Service.Models.MaximumInput)">
             <summary>
             Used by coach to modify an existing maximum
             </summary>
@@ -312,7 +312,7 @@
             <param name="training--">Id of the training you wish to list exercises for</param>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.TrainingExerciseController.AddTrainingExercise(Fitodu.Service.Models.TrainingExercise.TrainingExerciseInput)">
+        <member name="M:Fitodu.Api.Controllers.TrainingExerciseController.AddTrainingExercise(Fitodu.Service.Models.TrainingExerciseInput)">
             <summary>
              Used to add a new exercise to the training.
             </summary>

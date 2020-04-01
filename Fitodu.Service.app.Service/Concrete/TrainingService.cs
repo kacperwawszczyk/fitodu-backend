@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper.QueryableExtensions;
 
 namespace Fitodu.Service.Concrete
 {
@@ -280,11 +281,11 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result<ICollection<Training>>> GetTrainings(string id, UserRole role, string date, string idClient)
+        public async Task<Result<ICollection<TrainingOutput>>> GetTrainings(string id, UserRole role, string date, string idClient)
         {
-            var result = new Result<ICollection<Training>>();
+            var result = new Result<ICollection<TrainingOutput>>();
 
-            var trainings = new List<Training>();
+            IQueryable trainings = null;
 
             //var workoutDate = new DateTime(int.Parse(date.Substring(0, 4)), int.Parse(date.Substring(5, 2)), int.Parse(date.Substring(8, 2)),0,0,0);
             if (!String.IsNullOrEmpty(date))
@@ -297,7 +298,7 @@ namespace Fitodu.Service.Concrete
                         var client = _context.Clients.Where(x => x.Id == idClient).FirstOrDefaultAsync();
                         if (client != null)
                         {
-                            trainings = await _context.Trainings.Where(x => x.IdCoach == id && x.StartDate > workoutDate && x.IdClient == idClient).ToListAsync();
+                            trainings = _context.Trainings.Where(x => x.IdCoach == id && x.StartDate > workoutDate && x.IdClient == idClient);
                         }
                         else
                         {
@@ -308,18 +309,18 @@ namespace Fitodu.Service.Concrete
                     }
                     else if (role == UserRole.Client)
                     {
-                        trainings = await _context.Trainings.Where(x => x.IdClient == id && x.StartDate > workoutDate).ToListAsync();
+                        trainings = _context.Trainings.Where(x => x.IdClient == id && x.StartDate > workoutDate);
                     }
                 }
                 else
                 {
                     if (role == UserRole.Coach)
                     {
-                        trainings = await _context.Trainings.Where(x => x.IdCoach == id && x.StartDate > workoutDate).ToListAsync();
+                        trainings = _context.Trainings.Where(x => x.IdCoach == id && x.StartDate > workoutDate);
                     }
                     else if (role == UserRole.Client)
                     {
-                        trainings = await _context.Trainings.Where(x => x.IdClient == id && x.StartDate > workoutDate).ToListAsync();
+                        trainings = _context.Trainings.Where(x => x.IdClient == id && x.StartDate > workoutDate);
                     }
                 }
             }
@@ -332,7 +333,7 @@ namespace Fitodu.Service.Concrete
                         var client = _context.Clients.Where(x => x.Id == idClient).FirstOrDefaultAsync();
                         if (client != null)
                         {
-                            trainings = await _context.Trainings.Where(x => x.IdCoach == id && x.IdClient == idClient).ToListAsync();
+                            trainings = _context.Trainings.Where(x => x.IdCoach == id && x.IdClient == idClient);
                         }
                         else
                         {
@@ -343,55 +344,97 @@ namespace Fitodu.Service.Concrete
                     }
                     else if (role == UserRole.Client)
                     {
-                        trainings = await _context.Trainings.Where(x => x.IdClient == id).ToListAsync();
+                        trainings = _context.Trainings.Where(x => x.IdClient == id);
                     }
                 }
                 else
                 {
                     if (role == UserRole.Coach)
                     {
-                        trainings = await _context.Trainings.Where(x => x.IdCoach == id).ToListAsync();
+                        trainings = _context.Trainings.Where(x => x.IdCoach == id);
                     }
                     else if (role == UserRole.Client)
                     {
-                        trainings = await _context.Trainings.Where(x => x.IdClient == id).ToListAsync();
+                        trainings = _context.Trainings.Where(x => x.IdClient == id);
                     }
                 }
             }
+            
+            result.Data = await trainings.ProjectTo<TrainingOutput>(_mapper.ConfigurationProvider).ToListAsync();
 
-            if (trainings != null)
+            if (result.Data == null)
             {
-                result.Data = trainings;
+                result.Error = ErrorType.NotFound;
             }
             else
             {
-                result.Error = ErrorType.NotFound;
+                var _trainings = result.Data;
+                foreach (TrainingOutput trainingOutput in _trainings)
+                {
+                    foreach(TrainingExerciseOutput trainingExerciseOutput in trainingOutput.TrainingExercises.ToList())
+                    {
+                        if (trainingExerciseOutput != null)
+                        {
+                            if(trainingExerciseOutput.Exercise != null)
+                            {
+                                var max = await _context.Maximums.Where(x => x.IdExercise == trainingExerciseOutput.Exercise.Id && x.IdClient == trainingOutput.IdClient).FirstOrDefaultAsync();
+                                if (max != null)
+                                {
+                                    MaximumOutput maxi = new MaximumOutput();
+                                    maxi.Max = max.Max;
+                                    trainingExerciseOutput.Maximum = maxi;
+                                }
+                                
+                            }
+
+                        }
+                    }
+                }
+                result.Data = _trainings;
             }
             return result;
         }
 
-        public async Task<Result<Training>> GetTraining(string userId, UserRole role, int trainingId)
+        public async Task<Result<TrainingOutput>> GetTraining(string userId, UserRole role, int trainingId)
         {
-            var result = new Result<Training>();
+            var result = new Result<TrainingOutput>();
 
-            var training = new Training();
+            IQueryable training = null;
 
             if (role == UserRole.Coach)
             {
-                training = await _context.Trainings.Where(x => x.IdCoach == userId && x.Id == trainingId).FirstOrDefaultAsync();
+                training = _context.Trainings.Where(x => x.IdCoach == userId && x.Id == trainingId);
             }
             else if (role == UserRole.Client)
             {
-                training = await _context.Trainings.Where(x => x.IdClient == userId && x.Id == trainingId).FirstOrDefaultAsync();
+                training = _context.Trainings.Where(x => x.IdClient == userId && x.Id == trainingId);
             }
+            result.Data = await training.ProjectTo<TrainingOutput>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
-            if (training != null)
+            if (result.Data == null)
             {
-                result.Data = training;
+                result.Error = ErrorType.NotFound;
             }
             else
             {
-                result.Error = ErrorType.NotFound;
+
+                foreach (TrainingExerciseOutput trainingExerciseOutput in result.Data.TrainingExercises)
+                {
+                    if (trainingExerciseOutput != null)
+                    {
+                        if (trainingExerciseOutput.Exercise != null)
+                        {
+                            var max = await _context.Maximums.Where(x => x.IdExercise == trainingExerciseOutput.Exercise.Id && x.IdClient == result.Data.IdClient).FirstOrDefaultAsync();
+                            if (max != null)
+                            {
+                                MaximumOutput maxi = new MaximumOutput();
+                                maxi.Max = max.Max;
+                                trainingExerciseOutput.Maximum = maxi;
+                            }
+
+                        }
+                    }
+                }
             }
             return result;
         }

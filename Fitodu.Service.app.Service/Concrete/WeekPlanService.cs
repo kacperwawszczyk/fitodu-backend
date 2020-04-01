@@ -58,13 +58,8 @@ namespace Fitodu.Service.Concrete
             }
             IQueryable weekPlans = null;
             weekPlans = _context.WeekPlans.Where(x => x.IdCoach == coachId);
-
-            if(weekPlans != null)
-            {
-                result.Data = await weekPlans.ProjectTo<WeekPlanOutput>(_mapper.ConfigurationProvider)
-                .ToListAsync();
-            }
-            else
+            result.Data = await weekPlans.ProjectTo<WeekPlanOutput>(_mapper.ConfigurationProvider).ToListAsync();
+            if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
             }

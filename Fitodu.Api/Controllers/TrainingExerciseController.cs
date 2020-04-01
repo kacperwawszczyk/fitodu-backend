@@ -8,7 +8,7 @@ using Fitodu.Core.Enums;
 using Fitodu.Model.Entities;
 using Fitodu.Service.Abstract;
 using Fitodu.Service.Infrastructure.Attributes;
-using Fitodu.Service.Models.TrainingExercise;
+using Fitodu.Service.Models;
 
 namespace Fitodu.Api.Controllers
 {
@@ -36,7 +36,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpGet("training-exercises")] 
         [Authorize]
-        [ProducesResponseType(typeof(ICollection<TrainingExercise>), 200)]
+        [ProducesResponseType(typeof(ICollection<TrainingExerciseOutput>), 200)]
         public async Task<IActionResult> GetTrainingsExercises(int training)
         {
             var result = await _trainingExerciseService.GetTrainingsExercises(training, CurrentUser.Id, CurrentUser.Role);

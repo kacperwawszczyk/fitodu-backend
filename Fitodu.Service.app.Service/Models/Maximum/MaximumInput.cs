@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Fitodu.Service.Models.Maximum
+namespace Fitodu.Service.Models
 {
     public class MaximumInput
     {

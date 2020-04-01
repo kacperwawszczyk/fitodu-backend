@@ -9,7 +9,7 @@ using Fitodu.Core.Enums;
 using Fitodu.Model.Entities;
 using Fitodu.Service.Abstract;
 using Fitodu.Service.Infrastructure.Attributes;
-using Fitodu.Service.Models.Maximum;
+using Fitodu.Service.Models;
 
 namespace Fitodu.Api.Controllers
 {

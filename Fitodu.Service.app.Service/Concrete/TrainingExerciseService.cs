@@ -5,12 +5,12 @@ using Fitodu.Model;
 using Fitodu.Model.Entities;
 using Fitodu.Service.Abstract;
 using Fitodu.Service.Models;
-using Fitodu.Service.Models.TrainingExercise;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper.QueryableExtensions;
 
 namespace Fitodu.Service.Concrete
 {
@@ -28,9 +28,10 @@ namespace Fitodu.Service.Concrete
             _trainingService = trainingService;
         }
 
-        public async Task<Result<ICollection<TrainingExercise>>> GetTrainingsExercises(int idTraining, string userId, UserRole role)
+        public async Task<Result<ICollection<TrainingExerciseOutput>>> GetTrainingsExercises(int idTraining, string userId, UserRole role)
         {
-            var result = new Result<ICollection<TrainingExercise>>();
+            var result = new Result<ICollection<TrainingExerciseOutput>>();
+            string clientId = "";
             if (role == UserRole.Coach)
             {
                 var trainingsCoachResult = await _trainingService.GetTrainingsCoach(idTraining);
@@ -41,6 +42,9 @@ namespace Fitodu.Service.Concrete
                     result.Error = ErrorType.Forbidden;
                     return result;
                 }
+
+                var training = await _context.Trainings.Where(x => x.Id == idTraining).FirstOrDefaultAsync();
+                clientId = training.IdClient;
             }
             else if (role == UserRole.Client)
             {
@@ -52,17 +56,29 @@ namespace Fitodu.Service.Concrete
                     result.Error = ErrorType.Forbidden;
                     return result;
                 }
+                clientId = userId;
             }
 
-            var trainingResults = await _context.TrainingExercises.Where(x => x.IdTraining == idTraining).ToListAsync();
+            IQueryable trainingResults = _context.TrainingExercises.Where(x => x.IdTraining == idTraining);
 
-            if (trainingResults != null)
+            result.Data = await trainingResults.ProjectTo<TrainingExerciseOutput>(_mapper.ConfigurationProvider).ToListAsync();
+
+            if (result.Data == null)
             {
-                result.Data = trainingResults;
+                result.Error = ErrorType.NotFound;
             }
             else
             {
-                result.Error = ErrorType.NotFound;
+                foreach (TrainingExerciseOutput trainingExerciseOutput in result.Data)
+                {
+                    var max = await _context.Maximums.Where(x => x.IdExercise == trainingExerciseOutput.Exercise.Id && x.IdClient == clientId).FirstOrDefaultAsync();
+                    if (max != null)
+                    {
+                        MaximumOutput maxi = new MaximumOutput();
+                        maxi.Max = max.Max;
+                        trainingExerciseOutput.Maximum = maxi;
+                    }
+                }
             }
             return result;
         }
@@ -80,10 +96,10 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-             TrainingExercise _trainingExercise = new TrainingExercise();
+            TrainingExercise _trainingExercise = new TrainingExercise();
             _trainingExercise.IdExercise = trainingExerciseInput.IdExercise;
             _trainingExercise.IdTraining = trainingExerciseInput.IdTraining;
-            if(trainingExerciseInput.Repetitions < 0)
+            if (trainingExerciseInput.Repetitions < 0)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "repetitions cannot be set to a value lesser than 0";

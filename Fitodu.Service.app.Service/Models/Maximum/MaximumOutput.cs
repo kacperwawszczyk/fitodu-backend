@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fitodu.Service.Models.Maximum
+namespace Fitodu.Service.Models
 {
     public class MaximumOutput
     {

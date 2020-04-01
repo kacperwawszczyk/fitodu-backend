@@ -11,7 +11,7 @@ using Fitodu.Model.Entities;
 using Fitodu.Service.Abstract;
 using Fitodu.Service.Infrastructure.Attributes;
 using Fitodu.Service.Models.Training;
-using Fitodu.Service.Models.TrainingExercise;
+using Fitodu.Service.Models;
 
 namespace Fitodu.Api.Controllers
 {
@@ -69,7 +69,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpGet("trainings/{id}")]
         [Authorize]
-        [ProducesResponseType(typeof(Training), 200)]
+        [ProducesResponseType(typeof(TrainingOutput), 200)]
         public async Task<IActionResult> GetTraining(string id)
         {
             var result = await _trainingService.GetTraining(CurrentUser.Id, CurrentUser.Role, int.Parse(id));
@@ -84,7 +84,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpGet("trainings")]
         [Authorize]
-        [ProducesResponseType(typeof(ICollection<Training>), 200)]
+        [ProducesResponseType(typeof(ICollection<TrainingOutput>), 200)]
         public async Task<IActionResult> GetFutureTrainings([FromQuery]string from, [FromQuery] string idClient)
         {
             var result = await _trainingService.GetTrainings(CurrentUser.Id, CurrentUser.Role, from, idClient);

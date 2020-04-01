@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Fitodu.Service.Models
+{
+    public class TrainingOutput
+    {
+        public int Id { get; set; }
+        public string IdClient { get; set; }
+        public string Name { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string Description { get; set; }
+        public string Note { get; set; }
+        public ICollection<TrainingExerciseOutput> TrainingExercises { get; set; }
+    }
+}
