@@ -9,6 +9,8 @@ namespace Fitodu.Model.Entities
     {
         public int Id { get; set; }
         public int IdTraining { get; set; }
+        [ForeignKey("IdTraining")]
+        public virtual Training Training { get; set; }
         [Column(TypeName = "decimal(3, 2)")]
         public decimal? WeightChange { get; set; }
         [Column(TypeName = "text")]

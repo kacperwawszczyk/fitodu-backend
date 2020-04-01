@@ -16,6 +16,11 @@ namespace Fitodu.Model.Configurations
             {
                 o.Id
             });
+
+            builder.HasOne(x => x.Training).WithMany(y => y.TrainingExercises).HasForeignKey(z => z.IdTraining).IsRequired();
+
+            builder.HasOne(x => x.Exercise).WithOne(y => y.TrainingExercise).HasForeignKey<TrainingExercise>(z => z.IdExercise).IsRequired();
+            builder.HasOne(x => x.TrainingResult).WithOne(y => y.TrainingExercise).HasForeignKey<TrainingResult>(z => z.IdTrainingExercise).IsRequired();
         }
     }
 }

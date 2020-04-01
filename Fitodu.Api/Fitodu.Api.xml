@@ -169,7 +169,7 @@
             Used by coach to get a list of all maximums of all exercises of selected client
             </summary>
             <param name="IdClient"> string type </param>
-            <returns> Returns ICollection of Maximum </returns>
+            <returns> Returns ICollection of MaximumOutput </returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.MaximumController.GetClientMaximum(System.String,System.Int32)">
             <summary>
@@ -177,20 +177,20 @@
             </summary>
             <param name="IdClient"> string type </param>
             <param name="IdExercise"> int type </param>
-            <returns> Returns Maximum </returns>
+            <returns> Returns MaximumOutput </returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.MaximumController.CreateMaximum(Fitodu.Service.Models.Maximum.CreateMaximumInput)">
+        <member name="M:Fitodu.Api.Controllers.MaximumController.CreateMaximum(Fitodu.Service.Models.Maximum.MaximumInput)">
             <summary>
             Used by coach to create a new maximum
             </summary>
-            <param name="max"> CreateMaximumInput type </param>
+            <param name="max"> MaximumInput type </param>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.MaximumController.UpdateMaximum(Fitodu.Model.Entities.Maximum)">
+        <member name="M:Fitodu.Api.Controllers.MaximumController.UpdateMaximum(Fitodu.Service.Models.Maximum.MaximumInput)">
             <summary>
             Used by coach to modify an existing maximum
             </summary>
-            <param name="max"> Maximum type </param>
+            <param name="max"> MaximumInput type </param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.MaximumController.DeleteMaximum(System.String,System.Int32)">

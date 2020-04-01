@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Fitodu.Service.Models.Maximum
 {
-    public class CreateMaximumInput
+    public class MaximumInput
     {
         [Required(AllowEmptyStrings = false, ErrorMessage = "RequiredError")]
         public string IdClient { get; set; }

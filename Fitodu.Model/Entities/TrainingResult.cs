@@ -13,10 +13,16 @@ namespace Fitodu.Model.Entities
         public int Id { get; set; }
         [Required]
         public int IdTrainingExercise { get; set; }
+        [ForeignKey("IdTrainingExercise")]
+        public virtual TrainingExercise TrainingExercise { get; set; }
         [Required]
         public int IdExercise { get; set; }
+        [ForeignKey("IdExercise")]
+        public virtual Exercise Exercise { get; set; }
         [Required]
         public int IdTraining { get; set; }
+        [ForeignKey("IdTraining")]
+        public virtual Training Training { get; set; }
         public int Repetitions { get; set; }
         public TimeSpan? Time { get; set; }
         [Column(TypeName = "text")]

@@ -11,10 +11,12 @@ namespace Fitodu.Model.Configurations
     {
         public void Configure(EntityTypeBuilder<DayPlan> builder)
         {
-            //builder.HasKey(o => new
-            //{
-            //    o.Id
-            //});
+            builder.HasKey(o => new
+            {
+                o.Id
+            });
+
+            builder.HasMany(x => x.WorkoutTimes).WithOne(y => y.DayPlan);
 
             builder.HasOne(x => x.WeekPlan).WithMany(y => y.DayPlans).IsRequired().OnDelete(DeleteBehavior.Cascade);
         }

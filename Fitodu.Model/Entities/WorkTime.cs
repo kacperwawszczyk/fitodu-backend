@@ -14,6 +14,8 @@ namespace Fitodu.Model.Entities
         public int Id { get; set; }
         [Required]
         public string IdCoach { get; set; }
+        [ForeignKey("IdCoach")]
+        public virtual Coach Coach { get; set; }
         [Column(TypeName = "date")]
         public DateTime? Day { get; set; }
         public TimeSpan? StartHour { get; set; }

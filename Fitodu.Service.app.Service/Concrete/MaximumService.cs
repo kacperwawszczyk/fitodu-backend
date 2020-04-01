@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper.QueryableExtensions;
 
 namespace Fitodu.Service.Concrete
 {
@@ -27,9 +28,9 @@ namespace Fitodu.Service.Concrete
             _mapper = mapper;
         }
 
-        public async Task<Result<ICollection<Maximum>>> GetAllMaximums(string IdCoach, string IdClient)
+        public async Task<Result<ICollection<MaximumOutput>>> GetAllMaximums(string IdCoach, string IdClient)
         {
-            var result = new Result<ICollection<Maximum>>();
+            var result = new Result<ICollection<MaximumOutput>>();
 
             if (IdCoach == null)
             {
@@ -37,7 +38,7 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            var max = await _context.Maximums.Where(x => x.IdClient == IdClient).ToListAsync();
+            //var max = await _context.Maximums.Where(x => x.IdClient == IdClient).ToListAsync();
 
             CoachClient coachClient = await _context.CoachClients
                 .Where(x => x.IdCoach == IdCoach && x.IdClient == IdClient)
@@ -50,9 +51,16 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
+            IQueryable max = null;
+            max = _context.Maximums
+                .Where(x => x.IdClient == IdClient);
+
             if (max != null)
             {
-                result.Data = max;
+                //result.Data = max;
+                result.Data = await max
+                    .ProjectTo<MaximumOutput>(_mapper.ConfigurationProvider)
+                    .ToListAsync();
             }
             else
             {
@@ -61,9 +69,9 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result<Maximum>> GetClientMaximum(string IdCoach, string IdClient, int IdExercise)
+        public async Task<Result<MaximumOutput>> GetClientMaximum(string IdCoach, string IdClient, int IdExercise)
         {
-            var result = new Result<Maximum>();
+            var result = new Result<MaximumOutput>();
 
             if (IdCoach == null)
             {
@@ -71,9 +79,9 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            var max = await _context.Maximums
+            /*var max = await _context.Maximums
                 .Where(x => x.IdClient == IdClient && x.IdExercise == IdExercise)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync();*/
 
             CoachClient coachClient = await _context.CoachClients
                 .Where(x => x.IdCoach == IdCoach && x.IdClient == IdClient)
@@ -86,9 +94,26 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
+            Maximum m = await _context.Maximums
+                .Where(x => x.IdExercise == IdExercise)
+                .FirstOrDefaultAsync();
+
+            if (m == null)
+            {
+                result.Error = ErrorType.NotFound;
+                return result;
+            }
+
+            IQueryable max = null;
+            max = _context.Maximums
+                .Where(x => x.IdClient == IdClient && x.IdExercise == IdExercise);
+
             if (max != null)
             {
-                result.Data = max;
+                //result.Data = max;
+                result.Data = await max
+                    .ProjectTo<MaximumOutput>(_mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync();
             }
             else
             {
@@ -97,7 +122,7 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result> CreateMaximum(string IdCoach, CreateMaximumInput max)
+        public async Task<Result> CreateMaximum(string IdCoach, MaximumInput max)
         {
             var result = new Result();
 
@@ -151,7 +176,7 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result> UpdateMaximum(string IdCoach, Maximum max)
+        public async Task<Result> UpdateMaximum(string IdCoach, MaximumInput max)
         {
             var result = new Result();
 
