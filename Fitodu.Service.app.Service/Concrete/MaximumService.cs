@@ -37,8 +37,6 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            //var max = await _context.Maximums.Where(x => x.IdClient == IdClient).ToListAsync();
-
             CoachClient coachClient = await _context.CoachClients
                 .Where(x => x.IdCoach == IdCoach && x.IdClient == IdClient)
                 .FirstOrDefaultAsync();
@@ -51,17 +49,13 @@ namespace Fitodu.Service.Concrete
             }
 
             IQueryable max = null;
-            max = _context.Maximums
-                .Where(x => x.IdClient == IdClient);
+            max = _context.Maximums.Where(x => x.IdClient == IdClient);
 
-            if (max != null)
-            {
-                //result.Data = max;
-                result.Data = await max
+            result.Data = await max
                     .ProjectTo<MaximumOutput>(_mapper.ConfigurationProvider)
                     .ToListAsync();
-            }
-            else
+
+            if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
             }
@@ -77,10 +71,6 @@ namespace Fitodu.Service.Concrete
                 result.Error = ErrorType.BadRequest;
                 return result;
             }
-
-            /*var max = await _context.Maximums
-                .Where(x => x.IdClient == IdClient && x.IdExercise == IdExercise)
-                .FirstOrDefaultAsync();*/
 
             CoachClient coachClient = await _context.CoachClients
                 .Where(x => x.IdCoach == IdCoach && x.IdClient == IdClient)
@@ -104,17 +94,13 @@ namespace Fitodu.Service.Concrete
             }
 
             IQueryable max = null;
-            max = _context.Maximums
-                .Where(x => x.IdClient == IdClient && x.IdExercise == IdExercise);
-
-            if (max != null)
-            {
-                //result.Data = max;
-                result.Data = await max
+            max = _context.Maximums.Where(x => x.IdClient == IdClient && x.IdExercise == IdExercise);
+            
+            result.Data = await max
                     .ProjectTo<MaximumOutput>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync();
-            }
-            else
+
+            if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
             }
