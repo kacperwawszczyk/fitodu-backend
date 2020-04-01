@@ -18,8 +18,8 @@ namespace Fitodu.Model.Entities
         public string Description { get; set; }
         [Required]
         public bool Archived { get; set; } = false;
-        public virtual TrainingExercise TrainingExercise { get; set; }
-        public virtual TrainingResult TrainingResult { get; set; }
+        public virtual ICollection<TrainingExercise> TrainingExercises { get; set; }
+        //public virtual TrainingResult TrainingResult { get; set; }
         public virtual ICollection<Maximum> Maximums { get; set; }
     }
 }

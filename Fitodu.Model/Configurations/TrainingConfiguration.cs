@@ -17,7 +17,7 @@ namespace Fitodu.Model.Configurations
             });
 
             builder.HasMany(x => x.TrainingExercises).WithOne(y => y.Training).HasForeignKey(z => z.IdTraining).IsRequired();
-            builder.HasMany(x => x.TrainingResults).WithOne(y => y.Training).HasForeignKey(z => z.IdTraining).IsRequired();
+            //builder.HasMany(x => x.TrainingResults).WithOne(y => y.Training).HasForeignKey(z => z.IdTraining).IsRequired();
             builder.HasMany(x => x.Summaries).WithOne(y => y.Training).HasForeignKey(z => z.IdTraining);
 
             builder.HasOne(x => x.Coach).WithMany(y => y.Trainings).HasForeignKey(z => z.IdCoach);
