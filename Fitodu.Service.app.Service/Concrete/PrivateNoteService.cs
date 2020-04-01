@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper.QueryableExtensions;
 
 namespace Fitodu.Service.Concrete
 {
@@ -18,7 +19,7 @@ namespace Fitodu.Service.Concrete
     {
         private readonly IMapper _mapper;
         private readonly Context _context;
-        
+
 
         public PrivateNoteService(Context context,
            IMapper mapper)
@@ -27,36 +28,30 @@ namespace Fitodu.Service.Concrete
             _mapper = mapper;
         }
 
-        public async Task <Result<ICollection<PrivateNote>>> GetAllNotes(string Id)
+        public async Task<Result<ICollection<PrivateNoteOutput>>> GetAllNotes(string Id)
         {
+            var result = new Result<ICollection<PrivateNoteOutput>>();
 
-            var result = new Result<ICollection<PrivateNote>>();
+            IQueryable notes = null;
+            notes = _context.PrivateNotes.Where(x => x.IdCoach == Id);
+            result.Data = await notes.ProjectTo<PrivateNoteOutput>(_mapper.ConfigurationProvider).ToListAsync();
 
-            var notes = await _context.PrivateNotes.Where(x => x.IdCoach == Id)
-                                                  .ToListAsync();
-            if(notes != null)
-            {
-                result.Data = notes;
-
-            }
-            else
+            if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
             }
             return result;
         }
 
-        public async Task<Result<PrivateNote>> GetClientsNote(string coachId, string clientId)
+        public async Task<Result<PrivateNoteOutput>> GetClientsNote(string coachId, string clientId)
         {
+            var result = new Result<PrivateNoteOutput>();
 
-            var result = new Result<PrivateNote>();
-            var note = await _context.PrivateNotes.FindAsync(coachId, clientId);
+            IQueryable note = null;
+            note = _context.PrivateNotes.Where(x => x.IdCoach == coachId && x.IdClient == clientId);
+            result.Data = await note.ProjectTo<PrivateNoteOutput>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
-            if (note != null)
-            {
-                result.Data = note;
-            }
-            else
+            if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
             }
@@ -80,7 +75,7 @@ namespace Fitodu.Service.Concrete
                 .Where(x => x.IdCoach == coachId && x.IdClient == noteInput.IdClient)
                 .FirstOrDefaultAsync();
 
-                if(existingNote != null)
+                if (existingNote != null)
                 {
                     result.Error = ErrorType.BadRequest;
                     result.ErrorMessage = "this coach already has a private note for that client";
@@ -92,7 +87,7 @@ namespace Fitodu.Service.Concrete
                 note.IdCoach = coachId;
                 note.IdClient = noteInput.IdClient;
                 note.Note = noteInput.Note;
-            
+
                 _context.PrivateNotes.Add(note);
                 if (await _context.SaveChangesAsync() == 0)
                 {

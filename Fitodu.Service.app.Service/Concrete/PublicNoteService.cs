@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper.QueryableExtensions;
 
 namespace Fitodu.Service.Concrete
 {
@@ -27,50 +28,46 @@ namespace Fitodu.Service.Concrete
             _mapper = mapper;
         }
 
-        public async Task <Result<ICollection<PublicNote>>> GetAllNotes(string coachId)
+        public async Task <Result<ICollection<PublicNoteOutput>>> GetAllNotes(string coachId)
         {
 
-            var result = new Result<ICollection<PublicNote>>();
+            var result = new Result<ICollection<PublicNoteOutput>>();
 
-            var notes = await _context.PublicNotes.Where(x => x.IdCoach == coachId)
-                                                  .ToListAsync();
+            IQueryable notes = _context.PublicNotes.Where(x => x.IdCoach == coachId);
 
-            if(notes != null)
-            {
-                result.Data = notes;
-            }
-            else
+            result.Data = await notes.ProjectTo<PublicNoteOutput>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
             }
             return result;
         }
 
-        public async Task<Result<PublicNote>> GetClientsNote(string clientId, string requesterId)
+        public async Task<Result<PublicNoteOutput>> GetClientsNote(string clientId, string requesterId)
         {
 
-            var result = new Result<PublicNote>();
-            var note = new PublicNote();
+            var result = new Result<PublicNoteOutput>();
+            IQueryable note = null;
+
             if( clientId == requesterId)
             {
-                note = await _context.PublicNotes.Where(x => x.IdClient == clientId).FirstOrDefaultAsync();
+                note =  _context.PublicNotes.Where(x => x.IdClient == clientId);
 
             }
             else
             {
-                note = await _context.PublicNotes.Where(x => x.IdClient == clientId && x.IdCoach == requesterId).FirstOrDefaultAsync();
+                note =  _context.PublicNotes.Where(x => x.IdClient == clientId && x.IdCoach == requesterId);
             }
 
-            if (note != null)
-            {
-                result.Data = note;
-            }
-            else
+            result.Data = await note.ProjectTo<PublicNoteOutput>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+
+            if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
             }
             return result;
-
         }
 
         public async Task<Result> CreateNote(string coachId, PublicNoteInput noteInput)

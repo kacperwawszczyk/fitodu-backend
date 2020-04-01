@@ -36,7 +36,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpGet("private-notes")]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(ICollection<PrivateNote>), 200)]
+        [ProducesResponseType(typeof(ICollection<PrivateNoteOutput>), 200)]
         public async Task<IActionResult> GetAllNotes()
         {
             var result = await _privateNoteService.GetAllNotes(CurrentUser.Id);
@@ -50,7 +50,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpGet("private-notes/{client}")]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(PrivateNote), 200)]
+        [ProducesResponseType(typeof(PrivateNoteOutput), 200)]
         public async Task<IActionResult> GetUsersNote(string client)
         {
             var result = await _privateNoteService.GetClientsNote(CurrentUser.Id, client);

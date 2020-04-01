@@ -10,8 +10,8 @@ namespace Fitodu.Service.Abstract
 {
     public interface IPrivateNoteService
     {
-        Task<Result<ICollection<PrivateNote>>> GetAllNotes(string Id);
-        Task<Result<PrivateNote>> GetClientsNote(string coachId, string clientId);
+        Task<Result<ICollection<PrivateNoteOutput>>> GetAllNotes(string Id);
+        Task<Result<PrivateNoteOutput>> GetClientsNote(string coachId, string clientId);
         Task<Result> CreateNote(string coachId, PrivateNoteInput noteInput);
         Task<Result> UpdateNote(string coachId, PrivateNoteInput note);
         Task<Result> DeleteNote(string coachId, string clientId);
