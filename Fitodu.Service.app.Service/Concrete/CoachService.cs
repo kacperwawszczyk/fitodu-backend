@@ -194,6 +194,7 @@ namespace Fitodu.Service.Concrete
             if (coach == null)
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Coach with given id does not exist";
                 return result;
             }
             else
@@ -312,6 +313,7 @@ namespace Fitodu.Service.Concrete
                 if (role != UserRole.Coach || coachClient == null || value < 0)
                 {
                     result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "Invalid value of available trainings or user is not a coach or this user is not client of this coach.";
                     return result;
                 }
 
@@ -321,6 +323,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transcation.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
                 transcation.Commit();
