@@ -85,6 +85,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Fitodu.Api.Controllers.ClientController.GetClientNotes(System.String)">
+            <summary>
+            Used to get both private and public note of a client
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:Fitodu.Api.Controllers.CoachController.GetAllCoaches">
             <summary>
             Used by anyone to get list of all coaches

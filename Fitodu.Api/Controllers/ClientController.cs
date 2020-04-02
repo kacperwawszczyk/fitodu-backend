@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Fitodu.Service.Models.Client;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Fitodu.Api.Controllers
 {
@@ -140,5 +142,20 @@ namespace Fitodu.Api.Controllers
 			var result = await _clientService.GetClientById(CurrentUser.Id, id);
 			return GetResult(result);
 		}
+
+		/// <summary>
+		/// Used to get both private and public note of a client (can by used by a coach to return notes of one of his clients, or by a client to return his own notes)
+		/// </summary>
+		/// <param name="id">Id of the client</param>
+		/// <returns></returns>
+		[HttpGet("clients/{id}/notes")]
+		[Authorize]
+		[ProducesResponseType(typeof(ClientNotes), 200)]
+		public async Task<IActionResult> GetClientNotes(string id)
+		{
+			var result = await _clientService.GetClientNotes(CurrentUser.Id, CurrentUser.Role, id);
+			return GetResult(result);
+		}
+
 	}
 }

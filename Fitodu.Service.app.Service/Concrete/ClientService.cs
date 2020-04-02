@@ -18,6 +18,11 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Fitodu.Service.Models.Client;
+using AutoMapper.QueryableExtensions;
+using Fitodu.Service.Models.PrivateNote;
+using AutoMapper;
+using Fitodu.Service.Models.PublicNote;
 
 namespace Fitodu.Service.Concrete
 {
@@ -28,14 +33,16 @@ namespace Fitodu.Service.Concrete
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
         private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
 
-        public ClientService(Context context, IDateTimeService dateTimeService, IConfiguration configuration, IEmailService emailService, UserManager<User> userManager)
+        public ClientService(Context context, IDateTimeService dateTimeService, IConfiguration configuration, IEmailService emailService, UserManager<User> userManager, IMapper mapper)
         {
             _context = context;
             _dateTimeService = dateTimeService;
             _configuration = configuration;
             _emailService = emailService;
             _userManager = userManager;
+            _mapper = mapper;
         }
         public async Task<Result> CreateClientAccount(RegisterClientInput model)
         {
@@ -695,5 +702,36 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
+        public async Task<Result<ClientNotes>> GetClientNotes(string requesterId, UserRole role, string clientId)
+        {
+            var result = new Result<ClientNotes>();
+
+            IQueryable privateNote = null;
+            IQueryable publicNote = null;
+
+            if (role == UserRole.Coach)
+            {
+                privateNote = _context.PrivateNotes.Where(x => x.IdCoach == requesterId && x.IdClient == clientId);
+                publicNote = _context.PublicNotes.Where(x => x.IdCoach == requesterId && x.IdClient == clientId);
+            }
+            else if (role == UserRole.Client)
+            {
+                if(requesterId != clientId)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    return result;
+                }
+
+                privateNote = _context.PrivateNotes.Where(x => x.IdClient == clientId);
+                publicNote = _context.PublicNotes.Where(x => x.IdClient == clientId);
+            }
+
+            ClientNotes clientNotes = new ClientNotes();
+            clientNotes.PrivateNote = await privateNote.ProjectTo<PrivateNoteOutput>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+            clientNotes.PublicNote = await publicNote.ProjectTo<PublicNoteOutput>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+
+            result.Data = clientNotes;
+            return result;
+        }
     }
 }

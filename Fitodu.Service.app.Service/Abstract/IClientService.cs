@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Fitodu.Service.Models.Client;
+using Fitodu.Core.Enums;
 
 namespace Fitodu.Service.Abstract
 {
@@ -18,5 +20,6 @@ namespace Fitodu.Service.Abstract
 		Task<Result<long>> UpdateClient(string Id, UpdateClientInput model);
 		Task<Result<CoachOutput>> GetClientCoach(string Id);
 		Task<Result<ClientOutput>> GetClientById(string coachId, string clientId);
-	}
+        Task<Result<ClientNotes>> GetClientNotes(string requesterId, UserRole role, string clientId);
+    }
 }
