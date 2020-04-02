@@ -389,6 +389,12 @@ namespace Fitodu.Service.Concrete
 
                         }
                     }
+                    var client = await _context.Clients.Where(x => x.Id == trainingOutput.IdClient).FirstOrDefaultAsync();
+                    if (client != null)
+                    {
+                        trainingOutput.ClientName = client.Name;
+                        trainingOutput.ClientSurname = client.Surname;
+                    }
                 }
                 result.Data = _trainings;
             }
@@ -417,7 +423,6 @@ namespace Fitodu.Service.Concrete
             }
             else
             {
-
                 foreach (TrainingExerciseOutput trainingExerciseOutput in result.Data.TrainingExercises)
                 {
                     if (trainingExerciseOutput != null)
@@ -431,9 +436,15 @@ namespace Fitodu.Service.Concrete
                                 maxi.Max = max.Max;
                                 trainingExerciseOutput.Maximum = maxi;
                             }
-
                         }
                     }
+                }
+
+                var client = await _context.Clients.Where(x => x.Id == result.Data.IdClient).FirstOrDefaultAsync();
+                if (client != null)
+                {
+                    result.Data.ClientName = client.Name;
+                    result.Data.ClientSurname = client.Surname;
                 }
             }
             return result;

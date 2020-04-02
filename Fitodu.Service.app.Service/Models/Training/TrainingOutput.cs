@@ -13,6 +13,8 @@ namespace Fitodu.Service.Models
         public DateTime? EndDate { get; set; }
         public string Description { get; set; }
         public string Note { get; set; }
+        public string ClientName { get; set; }
+        public string ClientSurname { get; set; }
         public ICollection<TrainingExerciseOutput> TrainingExercises { get; set; }
     }
 }
