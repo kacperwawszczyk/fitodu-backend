@@ -87,9 +87,9 @@
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.GetClientNotes(System.String)">
             <summary>
-            Used to get both private and public note of a client
+            Used to get both private and public note of a client (can by used by a coach to return notes of one of his clients, or by a client to return his own notes)
             </summary>
-            <param name="id"></param>
+            <param name="id">Id of the client</param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.CoachController.GetAllCoaches">
@@ -326,7 +326,7 @@
             <param name="trainingExerciseInput"></param>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.TrainingExerciseController.EditTrainingExercise(Fitodu.Model.Entities.TrainingExercise)">
+        <member name="M:Fitodu.Api.Controllers.TrainingExerciseController.EditTrainingExercise(Fitodu.Service.Models.TrainingExercise.UpdateTrainingExerciseInput)">
             <summary>
             Used to modify an exisitng exercise in the training. Use this method if you want to set results for repetitions or time.
             </summary>

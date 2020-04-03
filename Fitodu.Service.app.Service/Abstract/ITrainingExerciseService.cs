@@ -1,6 +1,7 @@
 ﻿using Fitodu.Core.Enums;
 using Fitodu.Model.Entities;
 using Fitodu.Service.Models;
+using Fitodu.Service.Models.TrainingExercise;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +13,7 @@ namespace Fitodu.Service.Abstract
     {
         Task<Result<ICollection<TrainingExerciseOutput>>> GetTrainingsExercises(int idTraining, string userId, UserRole role);
         Task<Result<int>> AddTrainingExercise(string coachId, TrainingExerciseInput trainingExerciseInput);
-        Task<Result> EditTrainingExercise(string coachId, TrainingExercise trainingExercise);
+        Task<Result> EditTrainingExercise(string coachId, UpdateTrainingExerciseInput trainingExercise);
         Task<Result> DeleteTrainingExercise(string coachId, int trainingExerciseId);
        // Task<Result> DeleteTrainingsExercises(int idTraining);
     }

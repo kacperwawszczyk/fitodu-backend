@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper.QueryableExtensions;
+using Fitodu.Service.Models.TrainingExercise;
 
 namespace Fitodu.Service.Concrete
 {
@@ -118,7 +119,7 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result> EditTrainingExercise(string coachId, TrainingExercise trainingExercise)
+        public async Task<Result> EditTrainingExercise(string coachId, UpdateTrainingExerciseInput trainingExercise)
         {
             var result = new Result();
 

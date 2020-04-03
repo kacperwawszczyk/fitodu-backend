@@ -9,6 +9,7 @@ using Fitodu.Model.Entities;
 using Fitodu.Service.Abstract;
 using Fitodu.Service.Infrastructure.Attributes;
 using Fitodu.Service.Models;
+using Fitodu.Service.Models.TrainingExercise;
 
 namespace Fitodu.Api.Controllers
 {
@@ -66,7 +67,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpPut("training-exercises")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> EditTrainingExercise([FromBody]TrainingExercise trainingExercise)
+        public async Task<IActionResult> EditTrainingExercise([FromBody]UpdateTrainingExerciseInput trainingExercise)
         {
 
             var result = await _trainingExerciseService.EditTrainingExercise(CurrentUser.Id, trainingExercise);
