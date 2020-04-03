@@ -59,6 +59,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpDelete("awaiting-trainings/{id}")]
         [Authorize]
+        [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> DeleteAwaitingTraining(int id, [FromQuery] bool? accept)
         {
             var result = await _awaitingTraningService.DeleteAwaitingTraining(CurrentUser.Id, CurrentUser.Role, id, accept);

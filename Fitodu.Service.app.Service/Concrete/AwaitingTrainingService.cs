@@ -268,9 +268,10 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result> DeleteAwaitingTraining(string requesterId, UserRole requesterRole, int id, bool? accept)
+        public async Task<Result<int>> DeleteAwaitingTraining(string requesterId, UserRole requesterRole, int id, bool? accept)
         {
-            var result = new Result();
+            var result = new Result<int>();
+            result.Data = -1;
 
             string clientName;
             string coachName;
@@ -320,11 +321,11 @@ namespace Fitodu.Service.Concrete
                         email = receiverEmail.NormalizedEmail;
                     }
                 }
-
+                Training training = new Training();
                 if (accept == true)
                 {
                     //utworzenie treningu
-                    Training training = new Training();
+                    
                     training.IdClient = exisitingAwaitingTraining.IdClient;
                     training.IdCoach = exisitingAwaitingTraining.IdCoach;
                     training.StartDate = exisitingAwaitingTraining.StartDate;
@@ -350,7 +351,10 @@ namespace Fitodu.Service.Concrete
                     result.ErrorMessage = "Couldn't save changes to the database";
                     return result;
                 }
-
+                if (accept == true)
+                {
+                    result.Data = training.Id;
+                }
 
                 var client = await _context.Clients.Where(x => x.Id == exisitingAwaitingTraining.IdClient).FirstOrDefaultAsync();
                 var coach = await _context.Coaches.Where(x => x.Id == exisitingAwaitingTraining.IdCoach).FirstOrDefaultAsync();
