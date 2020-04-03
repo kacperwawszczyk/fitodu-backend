@@ -567,6 +567,7 @@ namespace Fitodu.Service.Concrete
                     {
                         transaction.Rollback();
                         result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Couldn't execute changes to the database.";
                     }
                     else
                     {
@@ -719,6 +720,7 @@ namespace Fitodu.Service.Concrete
                 if(requesterId != clientId)
                 {
                     result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "Cannot get notes of another client.";
                     return result;
                 }
 

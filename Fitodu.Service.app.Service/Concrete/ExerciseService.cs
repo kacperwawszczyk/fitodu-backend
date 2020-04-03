@@ -48,6 +48,7 @@ namespace Fitodu.Service.Concrete
             else
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "This coach doesn't have any exercises.";
             }
 
             return result;
@@ -65,7 +66,7 @@ namespace Fitodu.Service.Concrete
             if (existingExercise != null) //this coach already has an exercise with given name
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "this coach already has an exercise with given name";
+                result.ErrorMessage = "This coach already has an exercise with given name.";
                 return result;
             }
 
@@ -81,6 +82,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
                 transaction.Commit();
@@ -103,7 +105,7 @@ namespace Fitodu.Service.Concrete
                 if (existingExercise == null) //this coach does not have an exercise with that Id
                 {
                     result.Error = ErrorType.BadRequest;
-                    result.ErrorMessage = "this coach does not have an exercise with given Id";
+                    result.ErrorMessage = "This coach does not have an exercise with given Id.";
                     return result;
                 }
 
@@ -115,6 +117,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
                 transaction.Commit();
@@ -146,6 +149,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
                 transaction.Commit();
@@ -175,6 +179,7 @@ namespace Fitodu.Service.Concrete
             else
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Couldn't find any archived exercises";
             }
 
             return result;
@@ -201,6 +206,7 @@ namespace Fitodu.Service.Concrete
             else
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Couldn't find any not archived exercises";
             }
 
             return result;
@@ -221,6 +227,7 @@ namespace Fitodu.Service.Concrete
             if(exercise == null)
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Couldn't find exercise with given id.";
             }
             else
             {

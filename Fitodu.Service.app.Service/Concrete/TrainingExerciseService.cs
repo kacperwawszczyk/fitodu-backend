@@ -41,6 +41,7 @@ namespace Fitodu.Service.Concrete
                 if (trainingsCoachResult.Data != userId)
                 {
                     result.Error = ErrorType.Forbidden;
+                    result.ErrorMessage = "This coach isn't related with the training or training/coach doesn't exist";
                     return result;
                 }
 
@@ -55,6 +56,7 @@ namespace Fitodu.Service.Concrete
                 if (trainingsCoachResult.Data != userId)
                 {
                     result.Error = ErrorType.Forbidden;
+                    result.ErrorMessage = "This client isn't related with the training or training/client doesn't exist";
                     return result;
                 }
                 clientId = userId;
@@ -67,6 +69,7 @@ namespace Fitodu.Service.Concrete
             if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Exercises not found.";
             }
             else
             {
@@ -94,6 +97,7 @@ namespace Fitodu.Service.Concrete
             if (trainingsCoachResult.Data != coachId)
             {
                 result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "This coach isn't related with the training or training/coach doesn't exist";
                 return result;
             }
 
@@ -129,6 +133,7 @@ namespace Fitodu.Service.Concrete
             if (trainingsCoachResult.Data != coachId)
             {
                 result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "This coach isn't related with the training or training/coach doesn't exist";
                 return result;
             }
 
@@ -196,6 +201,7 @@ namespace Fitodu.Service.Concrete
                 if (trainingsCoachResult.Data != coachId)
                 {
                     result.Error = ErrorType.Forbidden;
+                    result.ErrorMessage = "This coach isn't related with the training or training/coach doesn't exist";
                     return result;
                 }
 
