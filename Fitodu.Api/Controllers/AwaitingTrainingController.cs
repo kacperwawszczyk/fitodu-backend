@@ -56,7 +56,7 @@ namespace Fitodu.Api.Controllers
         /// </summary>
         /// <param name="accept">bool - true = accept, false = reject, null = delete</param>
         /// <param name="id">Id of the awaiting training you wish to delete/accept/reject</param>
-        /// <returns></returns>
+        /// <returns> -1 if no training was created, otherwise returns the id of the created trainin</returns>
         [HttpDelete("awaiting-trainings/{id}")]
         [Authorize]
         [ProducesResponseType(typeof(int), 200)]
