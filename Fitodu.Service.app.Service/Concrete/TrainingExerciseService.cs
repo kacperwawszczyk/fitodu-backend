@@ -118,6 +118,7 @@ namespace Fitodu.Service.Concrete
             if (await _context.SaveChangesAsync() == 0)
             {
                 result.Error = ErrorType.InternalServerError;
+                result.ErrorMessage = "Couldn't save changes to the database.";
             }
             result.Data = _trainingExercise.Id;
             return result;
@@ -171,6 +172,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
                 transaction.Commit();
@@ -210,6 +212,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
                 transaction.Commit();

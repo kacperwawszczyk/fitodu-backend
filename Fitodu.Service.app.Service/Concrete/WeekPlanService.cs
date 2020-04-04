@@ -62,6 +62,7 @@ namespace Fitodu.Service.Concrete
             if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Couldn't find any weekplans of that coach";
             }
             return result;
 
@@ -120,6 +121,7 @@ namespace Fitodu.Service.Concrete
             if(!IsValidEditInput(weekPlan))
             {
                 result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Invalid input (more than 7 days or one day is written twice)";
                 return result;
             }
 
@@ -206,6 +208,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database";
                     return result;
                 }
                 transaction.Commit();
@@ -221,6 +224,7 @@ namespace Fitodu.Service.Concrete
             if (!IsValidInput(weekPlanInput))
             {
                 result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Invalid input (more than 7 days or one day is written twice)";
                 return result;
             }
 
@@ -291,6 +295,7 @@ namespace Fitodu.Service.Concrete
             if (await _context.SaveChangesAsync() == 0)
             {
                 result.Error = ErrorType.InternalServerError;
+                result.ErrorMessage = "Couldn't save changes to the database.";
             }
             result.Data = _weekPlan.Id;
             return result;
@@ -316,6 +321,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database";
                     return result;
                 }
                 transaction.Commit();

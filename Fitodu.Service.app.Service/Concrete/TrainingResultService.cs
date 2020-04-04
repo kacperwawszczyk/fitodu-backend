@@ -38,6 +38,7 @@ namespace Fitodu.Service.Concrete
                 if (trainingsCoachResult.Data != userId)
                 {
                     result.Error = ErrorType.Forbidden;
+                    result.ErrorMessage = "This coach doesn't belong to this training";
                     return result;
                 }
             }
@@ -49,6 +50,7 @@ namespace Fitodu.Service.Concrete
                 if (trainingsCoachResult.Data != userId)
                 {
                     result.Error = ErrorType.Forbidden;
+                    result.ErrorMessage = "This client doesn't belong to this training";
                     return result;
                 }
             }
@@ -62,6 +64,7 @@ namespace Fitodu.Service.Concrete
             else
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Couldn't training result with given id";
             }
             return result;
         }
@@ -76,6 +79,7 @@ namespace Fitodu.Service.Concrete
             if (trainingsCoachResult.Data != coachId)
             {
                 result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "This coach doesn't belong to this training";
                 return result;
             }
             
@@ -104,6 +108,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
                 transaction.Commit();
@@ -121,6 +126,7 @@ namespace Fitodu.Service.Concrete
             if (trainingsCoachResult.Data != coachId)
             {
                 result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "This coach doesn't belong to this training";
                 return result;
             }
 
@@ -173,6 +179,7 @@ namespace Fitodu.Service.Concrete
                 if (trainingsCoachResult.Data != coachId)
                 {
                     result.Error = ErrorType.Forbidden;
+                    result.ErrorMessage = "This coach doesn't belong to this training";
                     return result;
                 }
 
@@ -181,6 +188,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
                 transaction.Commit();

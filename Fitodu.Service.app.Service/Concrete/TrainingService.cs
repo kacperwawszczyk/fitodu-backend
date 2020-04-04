@@ -140,6 +140,7 @@ namespace Fitodu.Service.Concrete
             if (await _context.SaveChangesAsync() == 0)
             {
                 result.Error = ErrorType.InternalServerError;
+                result.ErrorMessage = "Couldn't save changes to the database";
             }
 
             result.Data = _training.Id;
@@ -160,6 +161,7 @@ namespace Fitodu.Service.Concrete
             else
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "This coach isn't related to that training";
             }
             return result;
         }
@@ -213,6 +215,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database";
                     return result;
                 }
                 transaction.Commit();
@@ -242,6 +245,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database";
                     return result;
                 }
 
@@ -256,6 +260,7 @@ namespace Fitodu.Service.Concrete
                     {
                         transaction.Rollback();
                         result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Couldn't save changes to the database";
                         return result;
                     }
                 }
@@ -277,6 +282,7 @@ namespace Fitodu.Service.Concrete
             else
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "This client isn't related with that training.";
             }
             return result;
         }
@@ -365,6 +371,7 @@ namespace Fitodu.Service.Concrete
             if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "No trainings found.";
             }
             else
             {
@@ -420,6 +427,7 @@ namespace Fitodu.Service.Concrete
             if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Couldn't find training with given id";
             }
             else
             {

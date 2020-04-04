@@ -41,6 +41,7 @@ namespace Fitodu.Service.Concrete
             if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Couldn't find any public notes of this coach";
             }
             return result;
         }
@@ -66,6 +67,7 @@ namespace Fitodu.Service.Concrete
             if (result.Data == null)
             {
                 result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Couldn't finde public note of this client";
             }
             return result;
         }
@@ -77,6 +79,7 @@ namespace Fitodu.Service.Concrete
             if (clientsCoach == null)
             {
                 result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "This coach isn't related to that client.";
                 return result;
             }
 
@@ -103,6 +106,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
                 transaction.Commit();
@@ -132,6 +136,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
                 transaction.Commit();
@@ -160,6 +165,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
                 transaction.Commit();
