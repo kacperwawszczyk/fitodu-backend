@@ -31,13 +31,22 @@ namespace Fitodu.Api.Controllers
 		/// </summary>
 		/// <param name="Authorization"></param>
 		/// <param name="model"></param>
-		/// <returns></returns>
+		/// <returns>Id of dummy client</returns>
 		[AuthorizePolicy(UserRole.Coach)]
 		[HttpPost("clients/dummy-register")]
+		[ProducesResponseType(typeof(string), 200)]
 		public async Task<IActionResult> DummyClientRegister([FromHeader] string Authorization, [FromBody]RegisterDummyClientInput model)
 		{
 			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
 			var result = await _clientService.DummyClientRegister(CoachId.Data, model);
+			return GetResult(result);
+		}
+
+		[AuthorizePolicy(UserRole.Coach)]
+		[HttpDelete("clients/dummy-clients/{id}")]
+		public async Task<IActionResult> DummyClientDelete(string id)
+		{
+			var result = await _clientService.DummyClientDelete(CurrentUser.Id, CurrentUser.Role, id);
 			return GetResult(result);
 		}
 		/// <summary>

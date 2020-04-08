@@ -11,7 +11,7 @@ namespace Fitodu.Service.Abstract
 {
 	public interface IClientService
 	{
-		Task<Result> DummyClientRegister(string CoachId, RegisterDummyClientInput model);
+		Task<Result<string>> DummyClientRegister(string CoachId, RegisterDummyClientInput model);
 		Task<Result> CreateClientAccount(RegisterClientInput model);
 		Task<Result> SelfCreateClientAccount(SelfRegisterClientInput model);
 		Task<Result> SendCreationLinkToClient(string CoachId, CreateClientVerificationTokenInput model);
@@ -21,5 +21,6 @@ namespace Fitodu.Service.Abstract
 		Task<Result<CoachOutput>> GetClientCoach(string Id);
 		Task<Result<ClientOutput>> GetClientById(string coachId, string clientId);
         Task<Result<ClientNotes>> GetClientNotes(string requesterId, UserRole role, string clientId);
+        Task<Result> DummyClientDelete(string requesterId, UserRole requesterRole, string clientId);
     }
 }

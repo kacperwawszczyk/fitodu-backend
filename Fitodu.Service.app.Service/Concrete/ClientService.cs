@@ -137,9 +137,9 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result> DummyClientRegister(string CoachId, RegisterDummyClientInput model)
+        public async Task<Result<string>> DummyClientRegister(string CoachId, RegisterDummyClientInput model)
         {
-            var result = new Result();
+            var result = new Result<string>();
 
             var coach = await _context.Coaches.Where(x => x.Id == CoachId).FirstOrDefaultAsync();
 
@@ -193,6 +193,7 @@ namespace Fitodu.Service.Concrete
                 transaction.Commit();
 
             }
+            result.Data = newClient.Id;
             return result;
         }
 
@@ -733,6 +734,62 @@ namespace Fitodu.Service.Concrete
             clientNotes.PublicNote = await publicNote.ProjectTo<PublicNoteOutput>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
             result.Data = clientNotes;
+            return result;
+        }
+
+        public async Task<Result> DummyClientDelete(string requesterId, UserRole requesterRole, string clientId)
+        {
+            Result result = new Result();
+            if(requesterRole != UserRole.Coach)
+            {
+                result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "This user is not a coach";
+                return result;
+            }
+
+            var coachClient = await _context.CoachClients.Where(x => x.IdCoach == requesterId && x.IdClient == clientId).FirstOrDefaultAsync();
+
+            if(coachClient == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Selected user is not a client of this coach.";
+                return result;
+            }
+
+            var client = await _context.Clients.Where(x => x.Id == clientId).FirstOrDefaultAsync();
+
+            if(client == null)
+            {
+                result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "This client does not exist.";
+                return result;
+            }
+
+            var clientAcc = await _context.Users.Where(x => x.Id == client.Id).FirstOrDefaultAsync();
+
+            if(clientAcc != null)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "This client is not a dummy client.";
+                return result;
+            }
+
+            using(var transaction = _context.Database.BeginTransaction())
+            {
+                _context.CoachClients.Remove(coachClient);
+                _context.Clients.Remove(client);
+                if (await _context.SaveChangesAsync() <= 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Could not save changes to the database.";
+                    return result;
+                }
+                else
+                {
+                    transaction.Commit();
+                }
+            }
             return result;
         }
     }

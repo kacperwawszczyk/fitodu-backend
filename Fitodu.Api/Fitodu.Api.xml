@@ -34,7 +34,7 @@
             </summary>
             <param name="Authorization"></param>
             <param name="model"></param>
-            <returns></returns>
+            <returns>Id of dummy client</returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.CreateClientAccount(Fitodu.Service.Models.RegisterClientInput)">
             <summary>
