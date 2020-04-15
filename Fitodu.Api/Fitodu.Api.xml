@@ -28,13 +28,19 @@
             <param name="id">Id of the awaiting training you wish to delete/accept/reject</param>
             <returns> -1 if no training was created, otherwise returns the id of the created trainin</returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.ClientController.DummyClientRegister(System.String,Fitodu.Service.Models.RegisterDummyClientInput)">
+        <member name="M:Fitodu.Api.Controllers.ClientController.DummyClientRegister(Fitodu.Service.Models.RegisterDummyClientInput)">
             <summary>
             Used by Coach to create dummy Client account.
             </summary>
-            <param name="Authorization"></param>
             <param name="model"></param>
             <returns>Id of dummy client</returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.ClientController.DummyClientDelete(System.String)">
+            <summary>
+            Used to delete dummy client by coach.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.CreateClientAccount(Fitodu.Service.Models.RegisterClientInput)">
             <summary>

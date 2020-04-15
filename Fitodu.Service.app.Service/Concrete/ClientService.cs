@@ -792,5 +792,64 @@ namespace Fitodu.Service.Concrete
             }
             return result;
         }
+
+        public async Task<Result> DummyClientUpdate(string CoachId, UserRole role, string ClientId, DummyClientUpdateInput model)
+        {
+            Result result = new Result();
+
+            if (role != UserRole.Coach)
+            {
+                result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "This user is not a coach";
+                return result;
+            }
+
+            var coachClient = await _context.CoachClients.Where(x => x.IdCoach == CoachId && x.IdClient == ClientId).FirstOrDefaultAsync();
+
+            if (coachClient == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Selected user is not a client of this coach.";
+                return result;
+            }
+
+            var client = await _context.Clients.Where(x => x.Id == ClientId).FirstOrDefaultAsync();
+
+            if (client == null)
+            {
+                result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "This client does not exist.";
+                return result;
+            }
+
+            var clientAcc = await _context.Users.Where(x => x.Id == client.Id).FirstOrDefaultAsync();
+
+            if (clientAcc != null)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "This client is not a dummy client.";
+                return result;
+            }
+
+            client.Name = model.Name;
+            client.Surname = model.Surname;
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                _context.Clients.Update(client);
+                if (await _context.SaveChangesAsync() <= 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Could not save changes to the database.";
+                    return result;
+                }
+                else
+                {
+                    transaction.Commit();
+                }
+            }
+            return result;
+        }
     }
 }

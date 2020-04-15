@@ -29,24 +29,40 @@ namespace Fitodu.Api.Controllers
 		/// <summary>
 		/// Used by Coach to create dummy Client account.
 		/// </summary>
-		/// <param name="Authorization"></param>
 		/// <param name="model"></param>
 		/// <returns>Id of dummy client</returns>
 		[AuthorizePolicy(UserRole.Coach)]
 		[HttpPost("clients/dummy-register")]
 		[ProducesResponseType(typeof(string), 200)]
-		public async Task<IActionResult> DummyClientRegister([FromHeader] string Authorization, [FromBody]RegisterDummyClientInput model)
+		public async Task<IActionResult> DummyClientRegister([FromBody]RegisterDummyClientInput model)
 		{
-			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
-			var result = await _clientService.DummyClientRegister(CoachId.Data, model);
+			//var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
+			var result = await _clientService.DummyClientRegister(CurrentUser.Id, model);
 			return GetResult(result);
 		}
-
+		/// <summary>
+		/// Used to delete dummy client by coach.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Coach)]
 		[HttpDelete("clients/dummy-clients/{id}")]
 		public async Task<IActionResult> DummyClientDelete(string id)
 		{
 			var result = await _clientService.DummyClientDelete(CurrentUser.Id, CurrentUser.Role, id);
+			return GetResult(result);
+		}
+		/// <summary>
+		/// Used by coach to update dummy client information.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[AuthorizePolicy(UserRole.Coach)]
+		[HttpPut("clients/dummy-clients/{id}")]
+		public async Task<IActionResult> DummyClientUpdate(string id, DummyClientUpdateInput model)
+		{
+			var result = await _clientService.DummyClientUpdate(CurrentUser.Id, CurrentUser.Role, id, model);
 			return GetResult(result);
 		}
 		/// <summary>
