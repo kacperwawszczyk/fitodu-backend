@@ -28,6 +28,8 @@ namespace Fitodu.Model.Entities
         public string AddressCity { get; set; }
         public string AddressState { get; set; }
         public string AddressCountry { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public bool IsRegistered { get; set; }

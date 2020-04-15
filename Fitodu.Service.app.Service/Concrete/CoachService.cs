@@ -287,7 +287,9 @@ namespace Fitodu.Service.Concrete
                     Surname = x.Surname,
                     Weight = x.Weight,
                     IsRegistered = x.IsRegistered,
-                    AvailableTrainings = y.AvailableTrainings
+                    AvailableTrainings = y.AvailableTrainings,
+                    Email = x.Email,
+                    PhoneNumber = x.PhoneNumber
                 })
                 .FirstOrDefaultAsync();
                 User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == client.Id);

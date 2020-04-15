@@ -500,7 +500,9 @@ namespace Fitodu.Service.Concrete
                     AddressLine1 = x.AddressLine1,
                     AddressLine2 = x.AddressLine2,
                     AddressPostalCode = x.AddressPostalCode,
-                    AddressState = x.AddressState
+                    AddressState = x.AddressState,
+                    PhoneNumber = x.PhoneNumber,
+                    Email = x.Email
                 })
                 .FirstOrDefaultAsync();
 
@@ -676,7 +678,9 @@ namespace Fitodu.Service.Concrete
                                                             AddressLine1 = x.AddressLine1,
                                                             AddressLine2 = x.AddressLine2,
                                                             AddressPostalCode = x.AddressPostalCode,
-                                                            AddressState = x.AddressState
+                                                            AddressState = x.AddressState,
+                                                            PhoneNumber = x.PhoneNumber,
+                                                            Email = x.Email
                                                         })
                                                         .FirstOrDefaultAsync();
                     if (client == null)
@@ -833,6 +837,17 @@ namespace Fitodu.Service.Concrete
 
             client.Name = model.Name;
             client.Surname = model.Surname;
+            client.Email = model.Email;
+            client.PhoneNumber = model.PhoneNumber;
+            client.Weight = model.Weight;
+            client.Height = model.Height;
+            client.FatPercentage = model.FatPercentage;
+            client.AddressCity = model.AddressCity;
+            client.AddressCountry = model.AddressCountry;
+            client.AddressLine1 = model.AddressLine1;
+            client.AddressLine2 = model.AddressLine2;
+            client.AddressPostalCode = model.AddressPostalCode;
+            client.AddressState = model.AddressState;
 
             using (var transaction = _context.Database.BeginTransaction())
             {
