@@ -217,8 +217,18 @@ namespace Fitodu.Service.Concrete
             x.DayPlan.WeekPlan.IdCoach == awaitingTraining.IdCoach &&
             x.DayPlan.WeekPlan.StartDate.Value.Date <= awaitingTrainingInput.StartDate.Date &&
             x.DayPlan.WeekPlan.StartDate.Value.Date.AddDays(7) > awaitingTrainingInput.EndDate.Date &&
-            x.StartTime.TimeOfDay < awaitingTrainingInput.StartDate.TimeOfDay &&
-            x.EndTime.TimeOfDay > awaitingTrainingInput.EndDate.TimeOfDay);
+            x.StartTime.TimeOfDay <= awaitingTrainingInput.StartDate.TimeOfDay &&
+            x.EndTime.TimeOfDay >= awaitingTrainingInput.EndDate.TimeOfDay);
+
+            var defaultWeekplan = await _context.WeekPlans.Where(x => x.IsDefault == true && x.IdCoach == awaitingTraining.IdCoach).FirstOrDefaultAsync();
+
+            if(defaultWeekplan != null)
+            {
+                var defaultWorkoutTimes = _context.WorkoutTimes.Where(x => x.DayPlan.WeekPlan.Id == defaultWeekplan.Id);
+
+                workoutTimes = workoutTimes.Concat(defaultWorkoutTimes);
+            }
+
 
             bool found = false;
             foreach (WorkoutTime workoutTime in workoutTimes)
