@@ -224,7 +224,9 @@ namespace Fitodu.Service.Concrete
 
             if(defaultWeekplan != null)
             {
-                var defaultWorkoutTimes = _context.WorkoutTimes.Where(x => x.DayPlan.WeekPlan.Id == defaultWeekplan.Id);
+                var defaultWorkoutTimes = _context.WorkoutTimes.Where(x => x.DayPlan.WeekPlan.Id == defaultWeekplan.Id &&
+                            x.StartTime.TimeOfDay <= awaitingTrainingInput.StartDate.TimeOfDay &&
+                            x.EndTime.TimeOfDay >= awaitingTrainingInput.EndDate.TimeOfDay);
 
                 workoutTimes = workoutTimes.Concat(defaultWorkoutTimes);
             }
