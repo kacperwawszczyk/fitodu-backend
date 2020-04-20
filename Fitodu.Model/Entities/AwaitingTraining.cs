@@ -29,5 +29,6 @@ namespace Fitodu.Model.Entities
         public UserRole Receiver { get; set; }
         [Required]
         public UserRole Sender { get; set; }
+        public string Name { get; set; }
     }
 }

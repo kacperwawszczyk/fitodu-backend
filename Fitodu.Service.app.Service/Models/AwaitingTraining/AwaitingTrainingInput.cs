@@ -16,5 +16,6 @@ namespace Fitodu.Service.Models.AwaitingTraining
         [Required]
         [Column(TypeName = "datetime")]
         public DateTime EndDate { get; set; }
+        public string Name { get; set; }
     }
 }

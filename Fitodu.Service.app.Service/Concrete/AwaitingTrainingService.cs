@@ -47,6 +47,7 @@ namespace Fitodu.Service.Concrete
                        StartDate = x.StartDate,
                        IdCoach = x.IdCoach,
                        IdClient = x.IdClient,
+                       Name = x.Name
                    })
                    .ToListAsync();
 
@@ -71,7 +72,8 @@ namespace Fitodu.Service.Concrete
                     EndDate = x.EndDate,
                     StartDate = x.StartDate,
                     IdCoach = x.IdCoach,
-                    IdClient = x.IdClient
+                    IdClient = x.IdClient,
+                    Name = x.Name
                 })
                 .ToListAsync();
 
@@ -217,6 +219,7 @@ namespace Fitodu.Service.Concrete
             {
                 awaitingTraining.EndDate = awaitingTrainingInput.EndDate;
                 awaitingTraining.StartDate = awaitingTrainingInput.StartDate;
+                awaitingTraining.Name = awaitingTraining.Name;
             }
             else
             {
@@ -351,6 +354,7 @@ namespace Fitodu.Service.Concrete
                     training.EndDate = exisitingAwaitingTraining.EndDate;
                     training.Note = "";
                     training.Description = "";
+                    training.Name = exisitingAwaitingTraining.Name;
 
                     _context.Trainings.Add(training);
                 }

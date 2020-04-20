@@ -11,6 +11,7 @@ namespace Fitodu.Service.Models.AwaitingTraining
         public int Id { get; set; }
         public string IdCoach { get; set; }
         public string IdClient { get; set; }
+        public string Name { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime StartDate { get; set; }
         [Column(TypeName = "datetime")]
