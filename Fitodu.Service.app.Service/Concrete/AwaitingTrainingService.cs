@@ -50,10 +50,10 @@ namespace Fitodu.Service.Concrete
                    })
                    .ToListAsync();
 
-                foreach(var x in _awaitingTrainings)
+                foreach (var x in _awaitingTrainings)
                 {
                     var user = await _context.Clients.Where(y => y.Id == x.IdClient).FirstOrDefaultAsync();
-                    if(user != null)
+                    if (user != null)
                     {
                         x.RequestedName = user.Name;
                         x.RequestedSurname = user.Surname;
@@ -77,7 +77,7 @@ namespace Fitodu.Service.Concrete
 
                 foreach (var x in _awaitingTrainings)
                 {
-                    var user =  await _context.Coaches.Where(y => y.Id == x.IdCoach).FirstOrDefaultAsync();
+                    var user = await _context.Coaches.Where(y => y.Id == x.IdCoach).FirstOrDefaultAsync();
                     if (user != null)
                     {
                         x.RequestedName = user.Name;
@@ -131,7 +131,7 @@ namespace Fitodu.Service.Concrete
                     result.ErrorMessage = "Client not found";
                     return result;
                 }
-                if(coachClient.AvailableTrainings <= 0)
+                if (coachClient.AvailableTrainings <= 0)
                 {
                     result.Error = ErrorType.NotFound;
                     result.ErrorMessage = "Client does not have any trainings left";
@@ -213,48 +213,55 @@ namespace Fitodu.Service.Concrete
                 result.ErrorMessage = "Incorrect date, start date is greater that end date or requester training does not start and end the same day";
             }
 
-            var workoutTimes = _context.WorkoutTimes.Where(x =>
-            x.DayPlan.WeekPlan.IdCoach == awaitingTraining.IdCoach &&
-            x.DayPlan.WeekPlan.StartDate.Value.Date <= awaitingTrainingInput.StartDate.Date &&
-            x.DayPlan.WeekPlan.StartDate.Value.Date.AddDays(7) > awaitingTrainingInput.EndDate.Date &&
-            x.StartTime.TimeOfDay <= awaitingTrainingInput.StartDate.TimeOfDay &&
-            x.EndTime.TimeOfDay >= awaitingTrainingInput.EndDate.TimeOfDay);
-
-            var defaultWeekplan = await _context.WeekPlans.Where(x => x.IsDefault == true && x.IdCoach == awaitingTraining.IdCoach).FirstOrDefaultAsync();
-
-            if(defaultWeekplan != null)
+            if (requesterRole == UserRole.Coach)
             {
-                var defaultWorkoutTimes = _context.WorkoutTimes.Where(x => x.DayPlan.WeekPlan.Id == defaultWeekplan.Id &&
-                            x.StartTime.TimeOfDay <= awaitingTrainingInput.StartDate.TimeOfDay &&
-                            x.EndTime.TimeOfDay >= awaitingTrainingInput.EndDate.TimeOfDay);
-
-                workoutTimes = workoutTimes.Concat(defaultWorkoutTimes);
+                awaitingTraining.EndDate = awaitingTrainingInput.EndDate;
+                awaitingTraining.StartDate = awaitingTrainingInput.StartDate;
             }
-
-
-            bool found = false;
-            foreach (WorkoutTime workoutTime in workoutTimes)
+            else
             {
-                if ((workoutTime.DayPlan.Day == Day.Monday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Monday) ||
-                    (workoutTime.DayPlan.Day == Day.Wednesday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Wednesday) ||
-                    (workoutTime.DayPlan.Day == Day.Tuesday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Tuesday) ||
-                    (workoutTime.DayPlan.Day == Day.Thursday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Thursday) ||
-                    (workoutTime.DayPlan.Day == Day.Saturday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Saturday) ||
-                    (workoutTime.DayPlan.Day == Day.Sunday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Sunday) ||
-                    (workoutTime.DayPlan.Day == Day.Friday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Friday))
+                var workoutTimes = _context.WorkoutTimes.Where(x =>
+                                                        x.DayPlan.WeekPlan.IdCoach == awaitingTraining.IdCoach &&
+                                                        x.DayPlan.WeekPlan.StartDate.Value.Date <= awaitingTrainingInput.StartDate.Date &&
+                                                        x.DayPlan.WeekPlan.StartDate.Value.Date.AddDays(7) > awaitingTrainingInput.EndDate.Date &&
+                                                        x.StartTime.TimeOfDay <= awaitingTrainingInput.StartDate.TimeOfDay &&
+                                                        x.EndTime.TimeOfDay >= awaitingTrainingInput.EndDate.TimeOfDay);
+
+                var defaultWeekplan = await _context.WeekPlans.Where(x => x.IsDefault == true && x.IdCoach == awaitingTraining.IdCoach).FirstOrDefaultAsync();
+
+                if (defaultWeekplan != null)
                 {
-                    found = true;
-                    awaitingTraining.StartDate = awaitingTrainingInput.StartDate;
-                    awaitingTraining.EndDate = awaitingTrainingInput.EndDate;
-                    break;
-                }
-            }
+                    var defaultWorkoutTimes = _context.WorkoutTimes.Where(x => x.DayPlan.WeekPlan.Id == defaultWeekplan.Id &&
+                                x.StartTime.TimeOfDay <= awaitingTrainingInput.StartDate.TimeOfDay &&
+                                x.EndTime.TimeOfDay >= awaitingTrainingInput.EndDate.TimeOfDay);
 
-            if (!found)
-            {
-                result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "no workoutTimes matching requirements";
-                return result;
+                    workoutTimes = workoutTimes.Concat(defaultWorkoutTimes);
+                }
+
+                bool found = false;
+                foreach (WorkoutTime workoutTime in workoutTimes)
+                {
+                    if ((workoutTime.DayPlan.Day == Day.Monday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Monday) ||
+                        (workoutTime.DayPlan.Day == Day.Wednesday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Wednesday) ||
+                        (workoutTime.DayPlan.Day == Day.Tuesday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Tuesday) ||
+                        (workoutTime.DayPlan.Day == Day.Thursday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Thursday) ||
+                        (workoutTime.DayPlan.Day == Day.Saturday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Saturday) ||
+                        (workoutTime.DayPlan.Day == Day.Sunday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Sunday) ||
+                        (workoutTime.DayPlan.Day == Day.Friday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Friday))
+                    {
+                        found = true;
+                        awaitingTraining.StartDate = awaitingTrainingInput.StartDate;
+                        awaitingTraining.EndDate = awaitingTrainingInput.EndDate;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "no workoutTimes matching requirements";
+                    return result;
+                }
             }
 
             _context.AwaitingTrainings.Add(awaitingTraining);
@@ -337,7 +344,7 @@ namespace Fitodu.Service.Concrete
                 if (accept == true)
                 {
                     //utworzenie treningu
-                    
+
                     training.IdClient = exisitingAwaitingTraining.IdClient;
                     training.IdCoach = exisitingAwaitingTraining.IdCoach;
                     training.StartDate = exisitingAwaitingTraining.StartDate;
@@ -411,7 +418,7 @@ namespace Fitodu.Service.Concrete
                         model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedClientSubject;
                         model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedClientBody;
                     }
-                    else if(accept == null)
+                    else if (accept == null)
                     {
                         model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnClientSubject;
                         model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnClientBody;
@@ -450,7 +457,7 @@ namespace Fitodu.Service.Concrete
                     result.Error = ErrorType.InternalServerError;
                     result.ErrorMessage = "Mail: mail not sent";
                 }
-                
+
             }
             return result;
         }
