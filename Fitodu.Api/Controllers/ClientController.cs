@@ -80,15 +80,13 @@ namespace Fitodu.Api.Controllers
 		/// <summary>
 		/// Used by Coach to send invitation to Client (to create user account).
 		/// </summary>
-		/// <param name="Authorization"></param>
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Coach)]
 		[HttpPost("clients/send-link")]
-		public async Task<IActionResult> SendCreationLinkToClient([FromHeader] string Authorization, [FromBody]CreateClientVerificationTokenInput model)
+		public async Task<IActionResult> SendCreationLinkToClient([FromBody]CreateClientVerificationTokenInput model)
 		{
-			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
-			var result = await _clientService.SendCreationLinkToClient(CoachId.Data, model);
+			var result = await _clientService.SendCreationLinkToClient(CurrentUser.Id, model);
 			return GetResult(result);
 		}
 
@@ -107,15 +105,13 @@ namespace Fitodu.Api.Controllers
 		/// <summary>
 		/// Used by Coach to send invitation to Client and by Client to create his User account by oneself.
 		/// </summary>
-		/// <param name="Authorization"></param>
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[AuthorizePolicy(UserRole.Coach)]
 		[HttpPost("clients/self-send-link")]
-		public async Task<IActionResult> SendSelfCreationLinkToClient([FromHeader] string Authorization, [FromBody]CreateSelfClientVerificationTokenInput model)
+		public async Task<IActionResult> SendSelfCreationLinkToClient([FromBody]CreateSelfClientVerificationTokenInput model)
 		{
-			var CoachId = await _tokenService.GetRequesterCoachId(Authorization);
-			var result = await _clientService.SendSelfCreationLinkToClient(CoachId.Data, model);
+			var result = await _clientService.SendSelfCreationLinkToClient(CurrentUser.Id, model);
 			return GetResult(result);
 		}
 

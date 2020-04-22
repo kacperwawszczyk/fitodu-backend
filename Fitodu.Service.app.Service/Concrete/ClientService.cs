@@ -75,6 +75,15 @@ namespace Fitodu.Service.Concrete
 
             client.IsRegistered = true;
 
+            var exisitingUser = await _context.Users.Where(x => x.NormalizedEmail == model.Email.ToUpper()).FirstOrDefaultAsync();
+
+            if(exisitingUser != null)
+            {
+                result.Error = ErrorType.InternalServerError;
+                result.ErrorMessage = "Cannot create User (User already exists)";
+                return result;
+            }
+
             var user = new User
             {
                 Role = UserRole.Client,
@@ -99,7 +108,7 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot create User";
+                    result.ErrorMessage = "Cannot create User (User already exists)";
                     return result;
                 }
 
@@ -317,6 +326,24 @@ namespace Fitodu.Service.Concrete
         {
             var result = new Result();
 
+            var coach = await _context.Users.Where(x => x.Id == CoachId).FirstOrDefaultAsync();
+
+            if(coach == null)
+            {
+                result.Error = ErrorType.BadRequest;
+
+                result.ErrorMessage = "Requesting coach does not exist.";
+
+                return result;
+            }
+
+            if(coach.Role != UserRole.Coach)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Requesting coach account role is not coach.";
+                return result;
+            }
+
             var client = await _context.Clients.Where(x => x.Id == model.Id).FirstOrDefaultAsync();
 
             if (client == null)
@@ -386,7 +413,7 @@ namespace Fitodu.Service.Concrete
             }
 
             var encodedToken = WebUtility.UrlEncode(jwtSecurityTokenHandler.WriteToken(jwtSecurityToken));
-            var url = $"{_configuration["Environment:ClientUrl"]}/auth/clientRegister?id={model.Id}&token={encodedToken}";
+            var url = $"{_configuration["Environment:ClientUrl"]}/auth/register?id={model.Id}&token={encodedToken}";
 
             var message = new EmailInput()
             {
@@ -459,7 +486,7 @@ namespace Fitodu.Service.Concrete
             }
 
             var encodedToken = WebUtility.UrlEncode(jwtSecurityTokenHandler.WriteToken(jwtSecurityToken));
-            var url = $"{_configuration["Environment:ClientUrl"]}/auth/clientSelfRegister?token={encodedToken}";
+            var url = $"{_configuration["Environment:ClientUrl"]}/auth/register?token={encodedToken}&coachId={CoachId}";
 
             var message = new EmailInput()
             {

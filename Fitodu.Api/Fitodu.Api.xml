@@ -57,11 +57,10 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.ClientController.SendCreationLinkToClient(System.String,Fitodu.Service.Models.CreateClientVerificationTokenInput)">
+        <member name="M:Fitodu.Api.Controllers.ClientController.SendCreationLinkToClient(Fitodu.Service.Models.CreateClientVerificationTokenInput)">
             <summary>
             Used by Coach to send invitation to Client (to create user account).
             </summary>
-            <param name="Authorization"></param>
             <param name="model"></param>
             <returns></returns>
         </member>
@@ -72,11 +71,10 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.ClientController.SendSelfCreationLinkToClient(System.String,Fitodu.Service.Models.CreateSelfClientVerificationTokenInput)">
+        <member name="M:Fitodu.Api.Controllers.ClientController.SendSelfCreationLinkToClient(Fitodu.Service.Models.CreateSelfClientVerificationTokenInput)">
             <summary>
             Used by Coach to send invitation to Client and by Client to create his User account by oneself.
             </summary>
-            <param name="Authorization"></param>
             <param name="model"></param>
             <returns></returns>
         </member>
