@@ -39,6 +39,7 @@ namespace Fitodu.Model.Entities
         public virtual ICollection<PrivateNote> PrivateNotes { get; set; }
         public virtual ICollection<PublicNote> PublicNotes { get; set; }
         public virtual ICollection<Training> Trainings { get; set; }
+        public virtual ICollection<Summary> Summaries { get; set; }
 
         public Client()
         {

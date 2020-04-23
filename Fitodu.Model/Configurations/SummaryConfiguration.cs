@@ -16,7 +16,7 @@ namespace Fitodu.Model.Configurations
                 o.Id
             });
 
-            builder.HasOne(x => x.Training).WithMany(y => y.Summaries).HasForeignKey(z => z.IdTraining);
+            builder.HasOne(x => x.Client).WithMany(y => y.Summaries).HasForeignKey(z => z.IdClient);
         }
     }
 }

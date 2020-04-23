@@ -27,6 +27,5 @@ namespace Fitodu.Model.Entities
         public string Note { get; set; }
         public virtual ICollection<TrainingExercise> TrainingExercises { get; set; }
         //public virtual ICollection<TrainingResult> TrainingResults { get; set; }
-        public virtual ICollection<Summary> Summaries { get; set; }
     }
 }
