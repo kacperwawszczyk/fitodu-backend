@@ -12,8 +12,6 @@ namespace Fitodu.Service.Models
         public TimeSpan? Time { get; set; }
         public int RepetitionsResult { get; set; }
         public TimeSpan? TimeResult { get; set; }
-        public string Description { get; set; }
-        public string Note { get; set; }
         public MaximumOutput Maximum { get; set; }
     }
 }
