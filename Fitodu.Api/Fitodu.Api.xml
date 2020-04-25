@@ -288,6 +288,43 @@
             <param name="client">Id of the client you wish to delete the public note of</param>
             <returns></returns>
         </member>
+        <member name="M:Fitodu.Api.Controllers.SummaryController.GetAllSummaries(System.String)">
+            <summary>
+            Used by coach to get a list of all summaries of selected client
+            </summary>
+            <param name="IdClient"> string type </param>
+            <returns> Returns ICollection of SummaryOutput </returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.SummaryController.GetClientSummary(System.String,System.Int32)">
+            <summary>
+            Used by coach to get concrete summary of selected client
+            </summary>
+            <param name="IdClient"> string type </param>
+            <param name="Id"> int type of summary entity key </param>
+            <returns> Returns SummaryOutput </returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.SummaryController.CreateSummary(Fitodu.Service.Models.SummaryInput)">
+            <summary>
+            Used by coach to create a new summary
+            </summary>
+            <param name="sum"> SummaryInput type </param>
+            <returns></returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.SummaryController.UpdateSummary(Fitodu.Service.Models.UpdateSummaryInput)">
+            <summary>
+            Used by coach to modify an existing summary
+            </summary>
+            <param name="sum"> UpdateSummaryInput type </param>
+            <returns></returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.SummaryController.DeleteSummary(System.String,System.Int32)">
+            <summary>
+            Used by coach to delete an existing summary
+            </summary>
+            <param name="IdClient"> string type </param>
+            <param name="Id"> int type of summary key </param>
+            <returns></returns>
+        </member>
         <member name="M:Fitodu.Api.Controllers.TrainingController.GetTraining(System.String)">
             <summary>
             Used to get a single training (with given id)

@@ -64,6 +64,7 @@ namespace Fitodu.Service
             services.AddScoped<ITrainingResultService, TrainingResultService>();
             services.AddScoped<IWeekPlanService, WeekPlanService>();
             services.AddScoped<IAwaitingTrainingService, AwaitingTrainingService>();
+            services.AddScoped<ISummaryService, SummaryService>();
         }
     }
 }
