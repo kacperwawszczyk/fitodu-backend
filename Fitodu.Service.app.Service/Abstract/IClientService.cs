@@ -6,11 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Fitodu.Service.Models.Client;
 using Fitodu.Core.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace Fitodu.Service.Abstract
 {
 	public interface IClientService
 	{
+		Task<Result> UpdateAvatar(string id, UserRole role, IFormFile file);
 		Task<Result<string>> DummyClientRegister(string CoachId, RegisterDummyClientInput model);
 		Task<Result> DummyClientUpdate(string CoachId, UserRole role, string ClientId, DummyClientUpdateInput model);
 		Task<Result> CreateClientAccount(RegisterClientInput model);
