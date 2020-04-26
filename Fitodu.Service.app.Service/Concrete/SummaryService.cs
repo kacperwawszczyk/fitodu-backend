@@ -160,7 +160,7 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result> UpdateSummary(string IdCoach, UpdateSummaryInput sum)
+        public async Task<Result> UpdateSummary(string IdCoach, SummaryInput sum)
         {
             var result = new Result();
 
