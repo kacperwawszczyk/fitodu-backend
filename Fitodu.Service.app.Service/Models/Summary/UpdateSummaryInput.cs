@@ -5,8 +5,9 @@ using System.Text;
 
 namespace Fitodu.Service.Models
 {
-    public class SummaryInput
+    public class UpdateSummaryInput
     {
+        public int Id { get; set; }
         public string IdClient { get; set; }
         public decimal? Weight { get; set; }
         public decimal? FatPercentage { get; set; }

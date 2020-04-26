@@ -107,9 +107,9 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result> CreateSummary(string IdCoach, SummaryInput sum)
+        public async Task<Result<int>> CreateSummary(string IdCoach, SummaryInput sum)
         {
-            var result = new Result();
+            var result = new Result<int>();
 
             if (sum == null)
             {
@@ -157,10 +157,11 @@ namespace Fitodu.Service.Concrete
                 transaction.Commit();
             }
 
+            result.Data = _sum.Id;
             return result;
         }
 
-        public async Task<Result> UpdateSummary(string IdCoach, SummaryInput sum)
+        public async Task<Result> UpdateSummary(string IdCoach, UpdateSummaryInput sum)
         {
             var result = new Result();
 

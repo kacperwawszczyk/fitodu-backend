@@ -57,7 +57,7 @@ namespace Fitodu.Api.Controllers
         /// Used by coach to create a new summary
         /// </summary>
         /// <param name="sum"> SummaryInput type </param>
-        /// <returns></returns>
+        /// <returns> returns summary id </returns>
         [HttpPost("summaries")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> CreateSummary([FromBody]SummaryInput sum)
@@ -69,11 +69,11 @@ namespace Fitodu.Api.Controllers
         /// <summary>
         /// Used by coach to modify an existing summary
         /// </summary>
-        /// <param name="sum"> SummaryInput type </param>
+        /// <param name="sum"> UpdateSummaryInput type </param>
         /// <returns></returns>
         [HttpPut("summaries")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> UpdateSummary([FromBody]SummaryInput sum)
+        public async Task<IActionResult> UpdateSummary([FromBody]UpdateSummaryInput sum)
         {
             var result = await _summaryService.UpdateSummary(CurrentUser.Id, sum);
             return GetResult(result);

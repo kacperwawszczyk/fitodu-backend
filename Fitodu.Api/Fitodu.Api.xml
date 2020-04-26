@@ -308,7 +308,7 @@
             Used by coach to create a new summary
             </summary>
             <param name="sum"> SummaryInput type </param>
-            <returns></returns>
+            <returns> returns summary id </returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.SummaryController.UpdateSummary(Fitodu.Service.Models.UpdateSummaryInput)">
             <summary>
