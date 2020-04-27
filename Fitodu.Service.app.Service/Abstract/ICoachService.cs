@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Fitodu.Core.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace Fitodu.Service.Abstract
 {
     public interface ICoachService
     {
+        Task<Result<string>> UpdateAvatar(string id, UserRole role, IFormFile file);
         Task<Result<ICollection<CoachOutput>>> GetAllCoaches();
         Task<Result<ICollection<ClientOutput>>> GetAllClients(string Id);
         Task<Result<CoachOutput>> GetCoach(string id);

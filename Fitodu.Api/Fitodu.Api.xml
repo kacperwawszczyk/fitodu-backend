@@ -137,6 +137,13 @@
             <param name="value">new value that will be set, it has be greater than or equal to 0</param>
             <returns></returns>
         </member>
+        <member name="M:Fitodu.Api.Controllers.CoachController.UpdateAvatar(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Used by coach to update his profile picture.
+            </summary>
+            <param name="file"></param>
+            <returns></returns>
+        </member>
         <member name="M:Fitodu.Api.Controllers.ExerciseController.GetExerciseById(System.Int32)">
             <summary>
             Used by coach to get exercise by id.

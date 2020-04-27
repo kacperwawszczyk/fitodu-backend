@@ -100,5 +100,17 @@ namespace Fitodu.Api.Controllers
             var result = await _coachService.SetClientsTrainingsAvailable(CurrentUser.Id, CurrentUser.Role, id, value);
             return GetResult(result);
         }
+        /// <summary>
+        /// Used by coach to update his profile picture.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        [HttpPut("coaches/update-avatar")]
+        [AuthorizePolicy(UserRole.Client)]
+        public async Task<IActionResult> UpdateAvatar(IFormFile file)
+        {
+            var result = await _coachService.UpdateAvatar(CurrentUser.Id, CurrentUser.Role, file);
+            return GetResult(result);
+        }
     }
 }

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fitodu.Service.Models.Client;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace Fitodu.Api.Controllers
 {
@@ -178,5 +179,12 @@ namespace Fitodu.Api.Controllers
 			return GetResult(result);
 		}
 
+		[HttpPut("clients/update-avatar")]
+		[AuthorizePolicy(UserRole.Client)]
+		public async Task<IActionResult> UpdateAvatar(IFormFile file)
+		{
+			var result = await _clientService.UpdateAvatar(CurrentUser.Id, CurrentUser.Role, file);
+			return GetResult(result);
+		}
 	}
 }

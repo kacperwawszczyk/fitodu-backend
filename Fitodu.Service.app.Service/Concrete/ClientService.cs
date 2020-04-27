@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -11,7 +10,6 @@ using Fitodu.Model.Extensions;
 using Fitodu.Service.Abstract;
 using Fitodu.Service.Models;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
@@ -23,6 +21,13 @@ using AutoMapper.QueryableExtensions;
 using Fitodu.Service.Models.PrivateNote;
 using AutoMapper;
 using Fitodu.Service.Models.PublicNote;
+using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Fitodu.Service.Attributes;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 
 namespace Fitodu.Service.Concrete
 {
@@ -34,6 +39,7 @@ namespace Fitodu.Service.Concrete
         private readonly IEmailService _emailService;
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
+        private string azureConnectionString;
 
         public ClientService(Context context, IDateTimeService dateTimeService, IConfiguration configuration, IEmailService emailService, UserManager<User> userManager, IMapper mapper)
         {
@@ -43,9 +49,11 @@ namespace Fitodu.Service.Concrete
             _emailService = emailService;
             _userManager = userManager;
             _mapper = mapper;
+            azureConnectionString = _configuration.GetConnectionString("StorageConnection");
         }
         public async Task<Result> CreateClientAccount(RegisterClientInput model)
         {
+
             var result = new Result();
 
             var exist = await _context.CreateClientTokens.Where(x => x.UserId == model.Id && x.Token == model.Token).FirstOrDefaultAsync();
@@ -77,7 +85,7 @@ namespace Fitodu.Service.Concrete
 
             var exisitingUser = await _context.Users.Where(x => x.NormalizedEmail == model.Email.ToUpper()).FirstOrDefaultAsync();
 
-            if(exisitingUser != null)
+            if (exisitingUser != null)
             {
                 result.Error = ErrorType.InternalServerError;
                 result.ErrorMessage = "Cannot create User (User already exists)";
@@ -99,6 +107,8 @@ namespace Fitodu.Service.Concrete
                 }
             };
 
+
+
             user.SetCredentials(model.Password);
 
             using (var transaction = _context.Database.BeginTransaction())
@@ -111,6 +121,11 @@ namespace Fitodu.Service.Concrete
                     result.ErrorMessage = "Cannot create User (User already exists)";
                     return result;
                 }
+
+                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(model.Id);
+                blobContainerClient = await blobServiceClient.CreateBlobContainerAsync(model.Id);
+                blobContainerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
 
                 var addToRoleResult = await _userManager.AddToRoleAsync(user, user.Role.GetName());
 
@@ -277,6 +292,11 @@ namespace Fitodu.Service.Concrete
                     return result;
                 }
 
+                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(newClient.Id);
+                blobContainerClient = await blobServiceClient.CreateBlobContainerAsync(newClient.Id);
+                blobContainerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+
                 var addToRoleResult = await _userManager.AddToRoleAsync(newUser, newUser.Role.GetName());
 
                 if (!addToRoleResult.Succeeded)
@@ -328,7 +348,7 @@ namespace Fitodu.Service.Concrete
 
             var coach = await _context.Users.Where(x => x.Id == CoachId).FirstOrDefaultAsync();
 
-            if(coach == null)
+            if (coach == null)
             {
                 result.Error = ErrorType.BadRequest;
 
@@ -337,7 +357,7 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            if(coach.Role != UserRole.Coach)
+            if (coach.Role != UserRole.Coach)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Requesting coach account role is not coach.";
@@ -542,6 +562,24 @@ namespace Fitodu.Service.Concrete
             }
             else
             {
+                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
+                if (await blobContainerClient.ExistsAsync() == false)
+                {
+                    client.Avatar = null;
+                }
+                else
+                {
+                    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                    if (await blobClient.ExistsAsync() == false)
+                    {
+                        client.Avatar = null;
+                    }
+                    else
+                    {
+                        client.Avatar = blobClient.Uri.AbsoluteUri;
+                    }
+                }
                 User clientAcc = await _context.Users.Where(x => x.Id == Id).FirstOrDefaultAsync();
                 if (clientAcc != null)
                 {
@@ -549,7 +587,7 @@ namespace Fitodu.Service.Concrete
                     client.Email = clientAcc.Email;
                 }
                 CoachClient clientTrain = await _context.CoachClients.Where(x => x.IdClient == Id).FirstOrDefaultAsync();
-                if(clientTrain != null)
+                if (clientTrain != null)
                 {
                     client.AvailableTrainings = clientTrain.AvailableTrainings;
                 }
@@ -584,7 +622,7 @@ namespace Fitodu.Service.Concrete
                 client.UpdatedOn = DateTime.UtcNow;
 
                 User clientAcc = await _context.Users.Where(x => x.Id == Id).FirstOrDefaultAsync();
-                if(clientAcc != null)
+                if (clientAcc != null)
                 {
                     clientAcc.PhoneNumber = model.PhoneNumber;
                 }
@@ -648,13 +686,6 @@ namespace Fitodu.Service.Concrete
                             CancelTimeMinutes = nc.CancelTimeMinutes
                         })
                         .FirstOrDefaultAsync();
-
-                    User coachAcc = await _context.Users.Where(x => x.Id == coach.Id).FirstOrDefaultAsync();
-                    if(coachAcc != null)
-                    {
-                        coach.PhoneNumber = coachAcc.PhoneNumber;
-                    }
-
                     if (coach == null)
                     {
                         result.Error = ErrorType.NotFound;
@@ -662,6 +693,29 @@ namespace Fitodu.Service.Concrete
                     }
                     else
                     {
+                        BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                        BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(coach.Id);
+                        if (await blobContainerClient.ExistsAsync() == false)
+                        {
+                            coach.Avatar = null;
+                        }
+                        else
+                        {
+                            BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                            if (await blobClient.ExistsAsync() == false)
+                            {
+                                coach.Avatar = null;
+                            }
+                            else
+                            {
+                                coach.Avatar = blobClient.Uri.AbsoluteUri;
+                            }
+                        }
+                        User coachAcc = await _context.Users.Where(x => x.Id == coach.Id).FirstOrDefaultAsync();
+                        if (coachAcc != null)
+                        {
+                            coach.PhoneNumber = coachAcc.PhoneNumber;
+                        }
                         result.Data = coach;
                     }
                     return result;
@@ -673,7 +727,7 @@ namespace Fitodu.Service.Concrete
         {
             Coach coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == coachId);
             var result = new Result<ClientOutput>();
-            if(coach == null)
+            if (coach == null)
             {
                 result.Error = ErrorType.NotFound;
                 result.ErrorMessage = "Coach does not exist";
@@ -682,7 +736,7 @@ namespace Fitodu.Service.Concrete
             else
             {
                 CoachClient coachClient = await _context.CoachClients.FirstOrDefaultAsync(x => (x.IdClient == clientId) && (x.IdCoach == coachId));
-                if(coachClient == null)
+                if (coachClient == null)
                 {
                     result.Error = ErrorType.NotFound;
                     result.ErrorMessage = "User is not a client of selected coach";
@@ -717,6 +771,24 @@ namespace Fitodu.Service.Concrete
                     }
                     else
                     {
+                        BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                        BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
+                        if (await blobContainerClient.ExistsAsync() == false)
+                        {
+                            client.Avatar = null;
+                        }
+                        else
+                        {
+                            BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                            if (await blobClient.ExistsAsync() == false)
+                            {
+                                client.Avatar = null;
+                            }
+                            else
+                            {
+                                client.Avatar = blobClient.Uri.AbsoluteUri;
+                            }
+                        }
                         User clientAcc = await _context.Users.Where(x => x.Id == clientId).FirstOrDefaultAsync();
                         if (clientAcc != null)
                         {
@@ -749,7 +821,7 @@ namespace Fitodu.Service.Concrete
             }
             else if (role == UserRole.Client)
             {
-                if(requesterId != clientId)
+                if (requesterId != clientId)
                 {
                     result.Error = ErrorType.BadRequest;
                     result.ErrorMessage = "Cannot get notes of another client.";
@@ -771,7 +843,7 @@ namespace Fitodu.Service.Concrete
         public async Task<Result> DummyClientDelete(string requesterId, UserRole requesterRole, string clientId)
         {
             Result result = new Result();
-            if(requesterRole != UserRole.Coach)
+            if (requesterRole != UserRole.Coach)
             {
                 result.Error = ErrorType.Forbidden;
                 result.ErrorMessage = "This user is not a coach";
@@ -780,7 +852,7 @@ namespace Fitodu.Service.Concrete
 
             var coachClient = await _context.CoachClients.Where(x => x.IdCoach == requesterId && x.IdClient == clientId).FirstOrDefaultAsync();
 
-            if(coachClient == null)
+            if (coachClient == null)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Selected user is not a client of this coach.";
@@ -789,7 +861,7 @@ namespace Fitodu.Service.Concrete
 
             var client = await _context.Clients.Where(x => x.Id == clientId).FirstOrDefaultAsync();
 
-            if(client == null)
+            if (client == null)
             {
                 result.Error = ErrorType.NotFound;
                 result.ErrorMessage = "This client does not exist.";
@@ -798,14 +870,14 @@ namespace Fitodu.Service.Concrete
 
             var clientAcc = await _context.Users.Where(x => x.Id == client.Id).FirstOrDefaultAsync();
 
-            if(clientAcc != null)
+            if (clientAcc != null)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "This client is not a dummy client.";
                 return result;
             }
 
-            using(var transaction = _context.Database.BeginTransaction())
+            using (var transaction = _context.Database.BeginTransaction())
             {
                 _context.CoachClients.Remove(coachClient);
                 _context.Clients.Remove(client);
@@ -892,6 +964,105 @@ namespace Fitodu.Service.Concrete
                 }
             }
             return result;
+        }
+
+        public async Task<Result<string>> UpdateAvatar(string id, UserRole role, IFormFile file)
+        {
+            var result = new Result<string>();
+
+            if (role != UserRole.Client)
+            {
+                result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "User is not a client";
+                return result;
+            }
+            else
+            {
+                var client = _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
+
+                if (client == null)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "Not a valid user (maybe 'dummy' client?)";
+                    return result;
+                }
+
+                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(id);
+
+                if (await blobContainerClient.ExistsAsync() == false)
+                {
+                    blobContainerClient = await blobServiceClient.CreateBlobContainerAsync(id);
+                    blobContainerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+                }
+
+                if (CheckIfImageFile(file))
+                {
+                    Image image = Image.FromStream(file.OpenReadStream(), true, true);
+                    //if (image.Width < 128 || image.Width > 1024 || image.Height < 128 || image.Height > 1024)
+                    //{
+                    //    result.Error = ErrorType.Forbidden;
+                    //    result.ErrorMessage = "Image have to be between 128x128 and 1024x1024";
+                    //    return result;
+                    //}
+                    Bitmap newImage = ResizeImage(image, 150, 150);
+                    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                    MemoryStream msImage = new MemoryStream();
+                    newImage.Save(msImage, ImageFormat.Jpeg);
+                    msImage.Position = 0;
+                    using (var ms = msImage)
+                    {
+                        await blobClient.UploadAsync(ms, true);
+                    }
+                    result.Data = blobClient.Uri.AbsoluteUri;
+                    //await blobClient.UploadAsync(file.OpenReadStream());
+                }
+                else
+                {
+                    result.Error = ErrorType.Forbidden;
+                    result.ErrorMessage = "Image format is not jpeg";
+                    return result;
+                }
+            }
+
+            return result;
+        }
+
+        private bool CheckIfImageFile(IFormFile file)
+        {
+            byte[] fileBytes;
+            using (var ms = new MemoryStream())
+            {
+                file.CopyTo(ms);
+                fileBytes = ms.ToArray();
+            }
+
+            return WriterHelper.GetImageFormat(fileBytes) == WriterHelper.ImageFormat.jpeg;
+        }
+
+        public static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
         }
     }
 }
