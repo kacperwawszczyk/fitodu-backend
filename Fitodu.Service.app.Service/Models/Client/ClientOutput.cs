@@ -24,6 +24,7 @@ namespace Fitodu.Service.Models
         public string AddressCity { get; set; }
         public string AddressState { get; set; }
         public string AddressCountry { get; set; }
+        public string Avatar { get; set; }
 
 
         //public static ClientOutput Convert(Client client)

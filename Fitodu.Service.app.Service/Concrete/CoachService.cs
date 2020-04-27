@@ -16,6 +16,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Http;
+using System.Drawing;
+using System.IO;
+using System.Drawing.Imaging;
+using Fitodu.Service.Attributes;
+using System.Drawing.Drawing2D;
 
 namespace Fitodu.Service.Concrete
 {
@@ -28,6 +35,7 @@ namespace Fitodu.Service.Concrete
         private readonly Context _context;
         private readonly IMapper _mapper;
         private readonly IEmailMarketingService _emailMarketingService;
+        private string azureConnectionString;
         //private readonly IEmailService _emailService;
         //private readonly SignInManager<User> _signInManager;
         //private readonly IBillingService _billingService;
@@ -48,6 +56,7 @@ namespace Fitodu.Service.Concrete
             _context = context;
             _mapper = mapper;
             _emailMarketingService = emailMarketingService;
+            azureConnectionString = _configuration.GetConnectionString("StorageConnection");
         }
 
         public async Task<Result> CoachRegister(RegisterCoachInput model)
@@ -100,6 +109,11 @@ namespace Fitodu.Service.Concrete
                     result.Error = ErrorType.InternalServerError;
                     return result;
                 }
+
+                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(coach.Id);
+                blobContainerClient = await blobServiceClient.CreateBlobContainerAsync(coach.Id);
+                blobContainerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
 
                 //var subscribeResult = await _emailMarketingService.Subscribe(user);
                 //if (subscribeResult.Success)
@@ -199,6 +213,24 @@ namespace Fitodu.Service.Concrete
             }
             else
             {
+                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(coach.Id);
+                if (await blobContainerClient.ExistsAsync() == false)
+                {
+                    coach.Avatar = null;
+                }
+                else
+                {
+                    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                    if (await blobClient.ExistsAsync() == false)
+                    {
+                        coach.Avatar = null;
+                    }
+                    else
+                    {
+                        coach.Avatar = blobClient.Uri.AbsoluteUri;
+                    }
+                }
                 result.Data = coach;
                 return result;
             }
@@ -292,6 +324,24 @@ namespace Fitodu.Service.Concrete
                     PhoneNumber = x.PhoneNumber
                 })
                 .FirstOrDefaultAsync();
+                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
+                if (await blobContainerClient.ExistsAsync() == false)
+                {
+                    client.Avatar = null;
+                }
+                else
+                {
+                    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                    if (await blobClient.ExistsAsync() == false)
+                    {
+                        client.Avatar = null;
+                    }
+                    else
+                    {
+                        client.Avatar = blobClient.Uri.AbsoluteUri;
+                    }
+                }
                 User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == client.Id);
                 if (clientAcc != null)
                 {
@@ -331,6 +381,106 @@ namespace Fitodu.Service.Concrete
                 transcation.Commit();
             }
             return result;
+        }
+
+        public async Task<Result<string>> UpdateAvatar(string id, UserRole role, IFormFile file)
+        {
+            var result = new Result<string>();
+
+            if (role != UserRole.Coach)
+            {
+                result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "User is not a coach";
+                return result;
+            }
+            else
+            {
+                var client = _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
+
+                if (client == null)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "User does not exist";
+                    return result;
+                }
+
+                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(id);
+
+                if (await blobContainerClient.ExistsAsync() == false)
+                {
+                    blobContainerClient = await blobServiceClient.CreateBlobContainerAsync(id);
+                    blobContainerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+                }
+
+                if (CheckIfImageFile(file))
+                {
+                    Image image = Image.FromStream(file.OpenReadStream(), true, true);
+                    //if (image.Width < 128 || image.Width > 1024 || image.Height < 128 || image.Height > 1024)
+                    //{
+                    //    result.Error = ErrorType.Forbidden;
+                    //    result.ErrorMessage = "Image has to be between 128x128 and 1024x1024";
+                    //    return result;
+                    //}
+
+                    Bitmap newImage = ResizeImage(image, 150, 150);
+                    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                    MemoryStream msImage = new MemoryStream();
+                    newImage.Save(msImage, ImageFormat.Jpeg);
+                    msImage.Position = 0;
+                    using (var ms = msImage)
+                    {
+                        await blobClient.UploadAsync(ms, true);
+                    }
+                    result.Data = blobClient.Uri.AbsoluteUri;
+                    //await blobClient.UploadAsync(file.OpenReadStream());
+                }
+                else
+                {
+                    result.Error = ErrorType.Forbidden;
+                    result.ErrorMessage = "Image format is not jpeg";
+                    return result;
+                }
+            }
+
+            return result;
+        }
+
+        private bool CheckIfImageFile(IFormFile file)
+        {
+            byte[] fileBytes;
+            using (var ms = new MemoryStream())
+            {
+                file.CopyTo(ms);
+                fileBytes = ms.ToArray();
+            }
+
+            return WriterHelper.GetImageFormat(fileBytes) == WriterHelper.ImageFormat.jpeg;
+        }
+
+        public static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
         }
     }
 }

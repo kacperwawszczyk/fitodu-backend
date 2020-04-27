@@ -12,7 +12,7 @@ namespace Fitodu.Service.Abstract
 {
 	public interface IClientService
 	{
-		Task<Result> UpdateAvatar(string id, UserRole role, IFormFile file);
+		Task<Result<string>> UpdateAvatar(string id, UserRole role, IFormFile file);
 		Task<Result<string>> DummyClientRegister(string CoachId, RegisterDummyClientInput model);
 		Task<Result> DummyClientUpdate(string CoachId, UserRole role, string ClientId, DummyClientUpdateInput model);
 		Task<Result> CreateClientAccount(RegisterClientInput model);

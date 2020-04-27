@@ -21,6 +21,7 @@ namespace Fitodu.Service.Models
         public string AddressCountry { get; set; }
         public uint? CancelTimeHours { get; set; }
         public uint? CancelTimeMinutes { get; set; }
+        public string Avatar { get; set; }
 
         //public static CoachOutput GetCoachOutput(Coach coach)
         //{
