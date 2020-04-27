@@ -82,14 +82,13 @@ namespace Fitodu.Api.Controllers
         /// <summary>
         /// Used by coach to delete an existing summary
         /// </summary>
-        /// <param name="IdClient"> string type </param>
         /// <param name="Id"> int type of summary key </param>
         /// <returns></returns>
         [HttpDelete("summaries")]
         [AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteSummary(string IdClient, int Id)
+        public async Task<IActionResult> DeleteSummary(int Id)
         {
-            var result = await _summaryService.DeleteSummary(CurrentUser.Id, IdClient, Id);
+            var result = await _summaryService.DeleteSummary(CurrentUser.Id, Id);
             return GetResult(result);
         }
     }

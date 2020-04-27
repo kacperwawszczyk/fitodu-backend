@@ -227,12 +227,12 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result> DeleteSummary(string IdCoach, string IdClient, int Id)
+        public async Task<Result> DeleteSummary(string IdCoach, int Id)
         {
             var result = new Result();
 
             Summary sum = await _context.Summaries
-                .Where(x => x.IdClient == IdClient && x.Id == Id)
+                .Where(x => x.Id == Id)
                 .FirstOrDefaultAsync();
 
             if (sum == null)

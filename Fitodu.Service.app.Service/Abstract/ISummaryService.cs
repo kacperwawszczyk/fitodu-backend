@@ -12,6 +12,6 @@ namespace Fitodu.Service.Abstract
         Task<Result<SummaryOutput>> GetClientSummary (string IdCoach, string IdClient, int Id);
         Task<Result<int>> CreateSummary (string IdCoach, SummaryInput sum);
         Task<Result> UpdateSummary (string IdCoach, UpdateSummaryInput sum);
-        Task<Result> DeleteSummary (string IdCoach, string IdClient, int Id);
+        Task<Result> DeleteSummary (string IdCoach, int Id);
     }
 }
