@@ -31,188 +31,185 @@ namespace Fitodu.Service.Concrete
             _emailService = emailService;
         }
 
-        public async Task<Result<ICollection<AwaitingTrainingOutput>>> GetAwaitingTraining(string requesterId, UserRole requesterRole, string requestParam)
+        public async Task<Result<ICollection<AwaitingTrainingOutput>>> GetAwaitingTraining(string requesterId, UserRole requesterRole, bool? sent, bool? received)
         {
             var result = new Result<ICollection<AwaitingTrainingOutput>>();
 
             var awaitingTrainings = new List<AwaitingTrainingOutput>();
 
-            requestParam = requestParam.ToLower();
-
-            switch (requestParam)
+            if (sent == true && (received == false || received == null))
             {
-                case "sent":
-                    if (requesterRole == UserRole.Coach)
+                if (requesterRole == UserRole.Coach)
+                {
+                    var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdCoach == requesterId && x.Sender == UserRole.Coach)
+                       .Select(x => new AwaitingTrainingOutput
+                       {
+                           Id = x.Id,
+                           EndDate = x.EndDate,
+                           StartDate = x.StartDate,
+                           IdCoach = x.IdCoach,
+                           IdClient = x.IdClient,
+                           Name = x.Name,
+                           SenderRole = x.Sender,
+                           ReceiverRole = x.Receiver
+                       })
+                       .ToListAsync();
+
+                    foreach (var x in _awaitingTrainings)
                     {
-                        var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdCoach == requesterId && x.Sender == UserRole.Coach)
-                           .Select(x => new AwaitingTrainingOutput
-                           {
-                               Id = x.Id,
-                               EndDate = x.EndDate,
-                               StartDate = x.StartDate,
-                               IdCoach = x.IdCoach,
-                               IdClient = x.IdClient,
-                               Name = x.Name,
-                               SenderRole = x.Sender,
-                               ReceiverRole = x.Receiver
-                           })
-                           .ToListAsync();
-
-                        foreach (var x in _awaitingTrainings)
+                        var user = await _context.Clients.Where(y => y.Id == x.IdClient).FirstOrDefaultAsync();
+                        if (user != null)
                         {
-                            var user = await _context.Clients.Where(y => y.Id == x.IdClient).FirstOrDefaultAsync();
-                            if (user != null)
-                            {
-                                x.RequestedName = user.Name;
-                                x.RequestedSurname = user.Surname;
-                            }
+                            x.RequestedName = user.Name;
+                            x.RequestedSurname = user.Surname;
                         }
-
-                        awaitingTrainings = _awaitingTrainings;
                     }
-                    else if (requesterRole == UserRole.Client)
+
+                    awaitingTrainings = _awaitingTrainings;
+                }
+                else if (requesterRole == UserRole.Client)
+                {
+                    var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdClient == requesterId && x.Sender == UserRole.Client)
+                    .Select(x => new AwaitingTrainingOutput
                     {
-                        var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdClient == requesterId && x.Sender == UserRole.Client)
-                        .Select(x => new AwaitingTrainingOutput
-                        {
-                            Id = x.Id,
-                            EndDate = x.EndDate,
-                            StartDate = x.StartDate,
-                            IdCoach = x.IdCoach,
-                            IdClient = x.IdClient,
-                            Name = x.Name,
-                            SenderRole = x.Sender,
-                            ReceiverRole = x.Receiver
-                        })
-                        .ToListAsync();
+                        Id = x.Id,
+                        EndDate = x.EndDate,
+                        StartDate = x.StartDate,
+                        IdCoach = x.IdCoach,
+                        IdClient = x.IdClient,
+                        Name = x.Name,
+                        SenderRole = x.Sender,
+                        ReceiverRole = x.Receiver
+                    })
+                    .ToListAsync();
 
-                        foreach (var x in _awaitingTrainings)
-                        {
-                            var user = await _context.Coaches.Where(y => y.Id == x.IdCoach).FirstOrDefaultAsync();
-                            if (user != null)
-                            {
-                                x.RequestedName = user.Name;
-                                x.RequestedSurname = user.Surname;
-                            }
-                        }
-                        awaitingTrainings = _awaitingTrainings;
-                    }
-                    break;
-
-                case "received":
-                    if (requesterRole == UserRole.Coach)
+                    foreach (var x in _awaitingTrainings)
                     {
-                        var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdCoach == requesterId && x.Receiver == UserRole.Coach)
-                           .Select(x => new AwaitingTrainingOutput
-                           {
-                               Id = x.Id,
-                               EndDate = x.EndDate,
-                               StartDate = x.StartDate,
-                               IdCoach = x.IdCoach,
-                               IdClient = x.IdClient,
-                               Name = x.Name,
-                               SenderRole = x.Sender,
-                               ReceiverRole = x.Receiver
-                           })
-                           .ToListAsync();
-
-                        foreach (var x in _awaitingTrainings)
+                        var user = await _context.Coaches.Where(y => y.Id == x.IdCoach).FirstOrDefaultAsync();
+                        if (user != null)
                         {
-                            var user = await _context.Clients.Where(y => y.Id == x.IdClient).FirstOrDefaultAsync();
-                            if (user != null)
-                            {
-                                x.RequestedName = user.Name;
-                                x.RequestedSurname = user.Surname;
-                            }
+                            x.RequestedName = user.Name;
+                            x.RequestedSurname = user.Surname;
                         }
-
-                        awaitingTrainings = _awaitingTrainings;
                     }
-                    else if (requesterRole == UserRole.Client)
+                    awaitingTrainings = _awaitingTrainings;
+                }
+            }
+            else if (received == true && (sent == false || sent == null))
+            {
+                if (requesterRole == UserRole.Coach)
+                {
+                    var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdCoach == requesterId && x.Receiver == UserRole.Coach)
+                       .Select(x => new AwaitingTrainingOutput
+                       {
+                           Id = x.Id,
+                           EndDate = x.EndDate,
+                           StartDate = x.StartDate,
+                           IdCoach = x.IdCoach,
+                           IdClient = x.IdClient,
+                           Name = x.Name,
+                           SenderRole = x.Sender,
+                           ReceiverRole = x.Receiver
+                       })
+                       .ToListAsync();
+
+                    foreach (var x in _awaitingTrainings)
                     {
-                        var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdClient == requesterId && x.Receiver == UserRole.Client)
-                        .Select(x => new AwaitingTrainingOutput
+                        var user = await _context.Clients.Where(y => y.Id == x.IdClient).FirstOrDefaultAsync();
+                        if (user != null)
                         {
-                            Id = x.Id,
-                            EndDate = x.EndDate,
-                            StartDate = x.StartDate,
-                            IdCoach = x.IdCoach,
-                            IdClient = x.IdClient,
-                            Name = x.Name,
-                            SenderRole = x.Sender,
-                            ReceiverRole = x.Receiver
-                        })
-                        .ToListAsync();
-
-                        foreach (var x in _awaitingTrainings)
-                        {
-                            var user = await _context.Coaches.Where(y => y.Id == x.IdCoach).FirstOrDefaultAsync();
-                            if (user != null)
-                            {
-                                x.RequestedName = user.Name;
-                                x.RequestedSurname = user.Surname;
-                            }
+                            x.RequestedName = user.Name;
+                            x.RequestedSurname = user.Surname;
                         }
-                        awaitingTrainings = _awaitingTrainings;
                     }
-                    break;
-                default:
-                    if (requesterRole == UserRole.Coach)
+
+                    awaitingTrainings = _awaitingTrainings;
+                }
+                else if (requesterRole == UserRole.Client)
+                {
+                    var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdClient == requesterId && x.Receiver == UserRole.Client)
+                    .Select(x => new AwaitingTrainingOutput
                     {
-                        var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdCoach == requesterId)
-                           .Select(x => new AwaitingTrainingOutput
-                           {
-                               Id = x.Id,
-                               EndDate = x.EndDate,
-                               StartDate = x.StartDate,
-                               IdCoach = x.IdCoach,
-                               IdClient = x.IdClient,
-                               Name = x.Name,
-                               SenderRole = x.Sender,
-                               ReceiverRole = x.Receiver
-                           })
-                           .ToListAsync();
+                        Id = x.Id,
+                        EndDate = x.EndDate,
+                        StartDate = x.StartDate,
+                        IdCoach = x.IdCoach,
+                        IdClient = x.IdClient,
+                        Name = x.Name,
+                        SenderRole = x.Sender,
+                        ReceiverRole = x.Receiver
+                    })
+                    .ToListAsync();
 
-                        foreach (var x in _awaitingTrainings)
-                        {
-                            var user = await _context.Clients.Where(y => y.Id == x.IdClient).FirstOrDefaultAsync();
-                            if (user != null)
-                            {
-                                x.RequestedName = user.Name;
-                                x.RequestedSurname = user.Surname;
-                            }
-                        }
-
-                        awaitingTrainings = _awaitingTrainings;
-                    }
-                    else if (requesterRole == UserRole.Client)
+                    foreach (var x in _awaitingTrainings)
                     {
-                        var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdClient == requesterId)
-                        .Select(x => new AwaitingTrainingOutput
+                        var user = await _context.Coaches.Where(y => y.Id == x.IdCoach).FirstOrDefaultAsync();
+                        if (user != null)
                         {
-                            Id = x.Id,
-                            EndDate = x.EndDate,
-                            StartDate = x.StartDate,
-                            IdCoach = x.IdCoach,
-                            IdClient = x.IdClient,
-                            Name = x.Name,
-                            SenderRole = x.Sender,
-                            ReceiverRole = x.Receiver
-                        })
-                        .ToListAsync();
-
-                        foreach (var x in _awaitingTrainings)
-                        {
-                            var user = await _context.Coaches.Where(y => y.Id == x.IdCoach).FirstOrDefaultAsync();
-                            if (user != null)
-                            {
-                                x.RequestedName = user.Name;
-                                x.RequestedSurname = user.Surname;
-                            }
+                            x.RequestedName = user.Name;
+                            x.RequestedSurname = user.Surname;
                         }
-                        awaitingTrainings = _awaitingTrainings;
                     }
-                    break;
+                    awaitingTrainings = _awaitingTrainings;
+                }
+            }
+            else
+            {
+                if (requesterRole == UserRole.Coach)
+                {
+                    var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdCoach == requesterId)
+                       .Select(x => new AwaitingTrainingOutput
+                       {
+                           Id = x.Id,
+                           EndDate = x.EndDate,
+                           StartDate = x.StartDate,
+                           IdCoach = x.IdCoach,
+                           IdClient = x.IdClient,
+                           Name = x.Name,
+                           SenderRole = x.Sender,
+                           ReceiverRole = x.Receiver
+                       })
+                       .ToListAsync();
+
+                    foreach (var x in _awaitingTrainings)
+                    {
+                        var user = await _context.Clients.Where(y => y.Id == x.IdClient).FirstOrDefaultAsync();
+                        if (user != null)
+                        {
+                            x.RequestedName = user.Name;
+                            x.RequestedSurname = user.Surname;
+                        }
+                    }
+
+                    awaitingTrainings = _awaitingTrainings;
+                }
+                else if (requesterRole == UserRole.Client)
+                {
+                    var _awaitingTrainings = await _context.AwaitingTrainings.Where(x => x.IdClient == requesterId)
+                    .Select(x => new AwaitingTrainingOutput
+                    {
+                        Id = x.Id,
+                        EndDate = x.EndDate,
+                        StartDate = x.StartDate,
+                        IdCoach = x.IdCoach,
+                        IdClient = x.IdClient,
+                        Name = x.Name,
+                        SenderRole = x.Sender,
+                        ReceiverRole = x.Receiver
+                    })
+                    .ToListAsync();
+
+                    foreach (var x in _awaitingTrainings)
+                    {
+                        var user = await _context.Coaches.Where(y => y.Id == x.IdCoach).FirstOrDefaultAsync();
+                        if (user != null)
+                        {
+                            x.RequestedName = user.Name;
+                            x.RequestedSurname = user.Surname;
+                        }
+                    }
+                    awaitingTrainings = _awaitingTrainings;
+                }
             }
 
             if (awaitingTrainings == null)

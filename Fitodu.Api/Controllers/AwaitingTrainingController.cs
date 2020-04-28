@@ -24,14 +24,15 @@ namespace Fitodu.Api.Controllers
         /// <summary>
         /// Used to display awaiting trainings. If type equals "sent" it displays sent training requests, else if type equals "received" it displays received training request, if left empty or something else is type it displays both recieved and sent training requests.
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="sent"></param>
+        /// <param name="received"></param>
         /// <returns></returns>
         [HttpGet("awaiting-trainings")]
         [Authorize]
         [ProducesResponseType(typeof(ICollection<AwaitingTrainingOutput>), 200)]
-        public async Task<IActionResult> GetAwaitingTrainings([FromQuery] string type)
+        public async Task<IActionResult> GetAwaitingTrainings([FromQuery] bool? sent, [FromQuery] bool? received)
         {
-            var result = await _awaitingTraningService.GetAwaitingTraining(CurrentUser.Id, CurrentUser.Role, type);
+            var result = await _awaitingTraningService.GetAwaitingTraining(CurrentUser.Id, CurrentUser.Role, sent, received);
             return GetResult(result);
         }
 
