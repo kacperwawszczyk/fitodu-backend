@@ -324,11 +324,10 @@
             <param name="sum"> UpdateSummaryInput type </param>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.SummaryController.DeleteSummary(System.String,System.Int32)">
+        <member name="M:Fitodu.Api.Controllers.SummaryController.DeleteSummary(System.Int32)">
             <summary>
             Used by coach to delete an existing summary
             </summary>
-            <param name="IdClient"> string type </param>
             <param name="Id"> int type of summary key </param>
             <returns></returns>
         </member>

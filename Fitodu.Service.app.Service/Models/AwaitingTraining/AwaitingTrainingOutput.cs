@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fitodu.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,7 +17,9 @@ namespace Fitodu.Service.Models.AwaitingTraining
         public DateTime StartDate { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime EndDate { get; set; }
-        public string  RequestedName {get; set;} 
-        public string  RequestedSurname {get; set;} 
+        public string RequestedName {get; set;} 
+        public string RequestedSurname {get; set;} 
+        public UserRole SenderRole { get; set; }
+        public UserRole ReceiverRole { get; set; }
     }
 }
