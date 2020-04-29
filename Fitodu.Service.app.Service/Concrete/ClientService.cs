@@ -81,6 +81,24 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
+            var coachClient = await _context.CoachClients.Where(x => x.IdClient == client.Id).FirstOrDefaultAsync();
+            var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == client.Id).ToListAsync();
+            if(publicNotes == null)
+            {
+                PublicNote publicNote = new PublicNote();
+                publicNote.IdClient = client.Id;
+                publicNote.IdCoach = coachClient.IdCoach;
+                client.PublicNote = publicNote;
+            }
+            var privateNotes = await _context.PrivateNotes.Where(x => x.IdClient == client.Id).ToListAsync();
+            if(privateNotes == null)
+            {
+                PrivateNote privateNote = new PrivateNote();
+                privateNote.IdClient = client.Id;
+                privateNote.IdCoach = coachClient.IdCoach;
+                client.PrivateNote = privateNote;
+            }
+
             client.IsRegistered = true;
 
             var exisitingUser = await _context.Users.Where(x => x.NormalizedEmail == model.Email.ToUpper()).FirstOrDefaultAsync();
@@ -182,6 +200,23 @@ namespace Fitodu.Service.Concrete
                 IsRegistered = false
             };
 
+            var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
+            if (publicNotes == null)
+            {
+                PublicNote publicNote = new PublicNote();
+                publicNote.IdClient = newClient.Id;
+                publicNote.IdCoach = CoachId;
+                newClient.PublicNote = publicNote;
+            }
+            var privateNotes = await _context.PrivateNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
+            if (privateNotes == null)
+            {
+                PrivateNote privateNote = new PrivateNote();
+                privateNote.IdClient = newClient.Id;
+                privateNote.IdCoach = CoachId;
+                newClient.PrivateNote = privateNote;
+            }
+
             using (var transaction = _context.Database.BeginTransaction())
             {
                 var addClientResult = await _context.Clients.AddAsync(newClient);
@@ -272,6 +307,23 @@ namespace Fitodu.Service.Concrete
                     PlanExpiredOn = _dateTimeService.Now().AddDays(30)
                 }
             };
+
+            var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
+            if (publicNotes == null)
+            {
+                PublicNote publicNote = new PublicNote();
+                publicNote.IdClient = newClient.Id;
+                publicNote.IdCoach = model.IdCoach;
+                newClient.PublicNote = publicNote;
+            }
+            var privateNotes = await _context.PrivateNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
+            if (privateNotes == null)
+            {
+                PrivateNote privateNote = new PrivateNote();
+                privateNote.IdClient = newClient.Id;
+                privateNote.IdCoach = model.IdCoach;
+                newClient.PrivateNote = privateNote;
+            }
 
             newUser.SetCredentials(model.Password);
 

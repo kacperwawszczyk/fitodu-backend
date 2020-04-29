@@ -18,8 +18,8 @@ namespace Fitodu.Model.Configurations
             });
 
             builder.HasMany(x => x.Maximums).WithOne(y => y.Client).HasForeignKey(z => z.IdClient).OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(x => x.PrivateNotes).WithOne(y => y.Client).HasForeignKey(z => z.IdClient).IsRequired().OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(x => x.PublicNotes).WithOne(y => y.Client).HasForeignKey(z => z.IdClient).IsRequired().OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(x => x.PrivateNote).WithOne(y => y.Client).HasForeignKey<PrivateNote>(z => z.IdClient).IsRequired().OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(x => x.PublicNote).WithOne(y => y.Client).HasForeignKey<PublicNote>(z => z.IdClient).IsRequired().OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(x => x.Trainings).WithOne(y => y.Client).HasForeignKey(z => z.IdClient).OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(x => x.AwaitingTrainings).WithOne(y => y.Client).HasForeignKey(z => z.IdClient).IsRequired().OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(x => x.ClientCoaches).WithOne(y => y.Client).HasForeignKey(z => z.IdClient).IsRequired().OnDelete(DeleteBehavior.Cascade);

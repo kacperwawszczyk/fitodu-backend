@@ -36,8 +36,8 @@ namespace Fitodu.Model.Entities
         public virtual ICollection<CoachClient> ClientCoaches { get; set; }
         public virtual ICollection<Maximum> Maximums { get; set; }
         public virtual ICollection<AwaitingTraining> AwaitingTrainings { get; set; }
-        public virtual ICollection<PrivateNote> PrivateNotes { get; set; }
-        public virtual ICollection<PublicNote> PublicNotes { get; set; }
+        public virtual PrivateNote PrivateNote { get; set; }
+        public virtual PublicNote PublicNote { get; set; }
         public virtual ICollection<Training> Trainings { get; set; }
         public virtual ICollection<Summary> Summaries { get; set; }
 

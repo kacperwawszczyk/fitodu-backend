@@ -18,7 +18,7 @@ namespace Fitodu.Model.Configurations
             });
 
             builder.HasOne(x => x.Coach).WithMany(y => y.PrivateNotes).HasForeignKey(z => z.IdCoach).IsRequired();
-            builder.HasOne(x => x.Client).WithMany(y => y.PrivateNotes).HasForeignKey(z => z.IdClient).IsRequired();
+            builder.HasOne(x => x.Client).WithOne(y => y.PrivateNote).HasForeignKey<PrivateNote>(z => z.IdClient).IsRequired();
         }
     }
 }
