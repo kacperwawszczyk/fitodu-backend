@@ -4,10 +4,12 @@
         <name>Fitodu.Api</name>
     </assembly>
     <members>
-        <member name="M:Fitodu.Api.Controllers.AwaitingTrainingController.GetAwaitingTrainings">
+        <member name="M:Fitodu.Api.Controllers.AwaitingTrainingController.GetAwaitingTrainings(System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
             <summary>
-            Used to get all awaiting trainings of a requesting coach or a client.
+            Used to display awaiting trainings. If type equals "sent" it displays sent training requests, else if type equals "received" it displays received training request, if left empty or something else is type it displays both recieved and sent training requests.
             </summary>
+            <param name="sent"></param>
+            <param name="received"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.AwaitingTrainingController.CreateAwaitingTraining(Fitodu.Service.Models.AwaitingTraining.AwaitingTrainingInput)">
