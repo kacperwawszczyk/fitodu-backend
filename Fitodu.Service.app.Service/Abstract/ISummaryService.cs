@@ -1,4 +1,5 @@
-﻿using Fitodu.Service.Models;
+﻿using Fitodu.Core.Enums;
+using Fitodu.Service.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +9,7 @@ namespace Fitodu.Service.Abstract
 {
     public interface ISummaryService
     {
-        Task<Result<ICollection<SummaryOutput>>> GetAllSummaries (string IdCoach, string IdClient);
+        Task<Result<ICollection<SummaryOutput>>> GetAllSummaries (string requesterId, UserRole requesterRole, string IdClient);
         Task<Result<SummaryOutput>> GetClientSummary (string IdCoach, string IdClient, int Id);
         Task<Result<int>> CreateSummary (string IdCoach, SummaryInput sum);
         Task<Result> UpdateSummary (string IdCoach, UpdateSummaryInput sum);

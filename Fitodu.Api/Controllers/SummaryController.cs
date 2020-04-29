@@ -6,6 +6,7 @@ using Fitodu.Core.Enums;
 using Fitodu.Service.Abstract;
 using Fitodu.Service.Infrastructure.Attributes;
 using Fitodu.Service.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,11 +31,11 @@ namespace Fitodu.Api.Controllers
         /// <param name="IdClient"> string type </param>
         /// <returns> Returns ICollection of SummaryOutput </returns>
         [HttpGet("summaries/client")]
-        [AuthorizePolicy(UserRole.Coach)]
+        [Authorize]
         [ProducesResponseType(typeof(ICollection<SummaryOutput>), 200)]
         public async Task<IActionResult> GetAllSummaries(string IdClient)
         {
-            var result = await _summaryService.GetAllSummaries(CurrentUser.Id, IdClient);
+            var result = await _summaryService.GetAllSummaries(CurrentUser.Id, CurrentUser.Role, IdClient);
             return GetResult(result);
         }
 

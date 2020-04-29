@@ -18,36 +18,59 @@ namespace Fitodu.Service.Concrete
     {
         private readonly IMapper _mapper;
         private readonly Context _context;
+        private readonly IClientService _clientService;
 
-        public SummaryService(Context context, IMapper mapper)
+        public SummaryService(Context context, IMapper mapper, IClientService clientService)
         {
             _context = context;
             _mapper = mapper;
+            _clientService = clientService;
         }
 
-        public async Task<Result<ICollection<SummaryOutput>>> GetAllSummaries(string IdCoach, string IdClient)
+        public async Task<Result<ICollection<SummaryOutput>>> GetAllSummaries(string requesterId, UserRole requesterRole, string IdClient)
         {
             var result = new Result<ICollection<SummaryOutput>>();
 
-            if (IdCoach == null)
+            if (requesterId == null)
             {
                 result.Error = ErrorType.BadRequest;
-                return result;
-            }
-
-            CoachClient coachClient = await _context.CoachClients
-                .Where(x => x.IdCoach == IdCoach && x.IdClient == IdClient)
-                .FirstOrDefaultAsync();
-
-            if (coachClient == null)
-            {
-                result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "This client doesn't belong to the current coach";
                 return result;
             }
 
             IQueryable sum = null;
-            sum = _context.Summaries.Where(x => x.IdClient == IdClient);
+
+            if (requesterRole == UserRole.Coach)
+            {
+                CoachClient coachClient = await _context.CoachClients
+                    .Where(x => x.IdCoach == requesterId && x.IdClient == IdClient)
+                    .FirstOrDefaultAsync();
+
+                if (coachClient == null)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "This client doesn't belong to the current coach";
+                    return result;
+                }
+
+                sum = _context.Summaries.Where(x => x.IdClient == IdClient);
+            }
+            else if (requesterRole == UserRole.Client)
+            {
+                var clientsCoach = await _clientService.GetClientCoach(requesterId);
+
+                CoachClient coachClient = await _context.CoachClients
+                    .Where(x => x.IdCoach == clientsCoach.Data.Id && x.IdClient == requesterId)
+                    .FirstOrDefaultAsync();
+
+                if (coachClient == null)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "Current client doesn't have coach";
+                    return result;
+                }
+
+                sum = _context.Summaries.Where(x => x.IdClient == requesterId);
+            }
 
             result.Data = await sum
                 .ProjectTo<SummaryOutput>(_mapper.ConfigurationProvider)
