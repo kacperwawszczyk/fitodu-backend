@@ -715,6 +715,7 @@ namespace Fitodu.Service.Concrete
                         if (coachAcc != null)
                         {
                             coach.PhoneNumber = coachAcc.PhoneNumber;
+                            coach.Email = coachAcc.Email;
                         }
                         result.Data = coach;
                     }

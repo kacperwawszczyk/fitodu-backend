@@ -204,6 +204,7 @@ namespace Fitodu.Service.Concrete
 
             User coachAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
             coach.PhoneNumber = coachAcc.PhoneNumber;
+            coach.Email = coachAcc.Email;
 
             if (coach == null)
             {

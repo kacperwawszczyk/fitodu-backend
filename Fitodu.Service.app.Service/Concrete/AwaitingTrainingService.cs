@@ -382,6 +382,18 @@ namespace Fitodu.Service.Concrete
                     }
                 }
 
+                if(!found)
+                {
+                    var weekPlans = _context.WeekPlans.Where(x => x.IdCoach == awaitingTraining.IdCoach);
+
+                    if(defaultWeekplan.DayPlans == null || weekPlans == null)
+                    {
+                        found = true;
+                        awaitingTraining.StartDate = awaitingTrainingInput.StartDate;
+                        awaitingTraining.EndDate = awaitingTrainingInput.EndDate;
+                    }
+                }
+
                 if (!found)
                 {
                     result.Error = ErrorType.BadRequest;
