@@ -336,6 +336,7 @@ namespace Fitodu.Service.Concrete
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Incorrect date, start date is greater that end date or requester training does not start and end the same day";
+                return result;
             }
 
             if (requesterRole == UserRole.Coach)
