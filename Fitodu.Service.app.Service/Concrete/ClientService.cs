@@ -82,22 +82,6 @@ namespace Fitodu.Service.Concrete
             }
 
             var coachClient = await _context.CoachClients.Where(x => x.IdClient == client.Id).FirstOrDefaultAsync();
-            var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == client.Id).ToListAsync();
-            if(publicNotes == null)
-            {
-                PublicNote publicNote = new PublicNote();
-                publicNote.IdClient = client.Id;
-                publicNote.IdCoach = coachClient.IdCoach;
-                client.PublicNote = publicNote;
-            }
-            var privateNotes = await _context.PrivateNotes.Where(x => x.IdClient == client.Id).ToListAsync();
-            if(privateNotes == null)
-            {
-                PrivateNote privateNote = new PrivateNote();
-                privateNote.IdClient = client.Id;
-                privateNote.IdCoach = coachClient.IdCoach;
-                client.PrivateNote = privateNote;
-            }
 
             client.IsRegistered = true;
 
@@ -125,8 +109,6 @@ namespace Fitodu.Service.Concrete
                 }
             };
 
-
-
             user.SetCredentials(model.Password);
 
             using (var transaction = _context.Database.BeginTransaction())
@@ -138,6 +120,39 @@ namespace Fitodu.Service.Concrete
                     result.Error = ErrorType.InternalServerError;
                     result.ErrorMessage = "Cannot create User (User already exists)";
                     return result;
+                }
+
+                var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == client.Id).ToListAsync();
+                if (publicNotes.Count == 0)
+                {
+                    PublicNote publicNote = new PublicNote();
+                    publicNote.IdClient = client.Id;
+                    publicNote.IdCoach = coachClient.IdCoach;
+                    var notesResult = await _context.PublicNotes.AddAsync(publicNote);
+                    if (notesResult.State != EntityState.Added)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Cannot create public note";
+                        return result;
+                    }
+                    client.PublicNote = publicNote;
+                }
+                var privateNotes = await _context.PrivateNotes.Where(x => x.IdClient == client.Id).ToListAsync();
+                if (privateNotes.Count == 0)
+                {
+                    PrivateNote privateNote = new PrivateNote();
+                    privateNote.IdClient = client.Id;
+                    privateNote.IdCoach = coachClient.IdCoach;
+                    var notesResult = await _context.PrivateNotes.AddAsync(privateNote);
+                    if (notesResult.State != EntityState.Added)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Cannot create private note";
+                        return result;
+                    }
+                    client.PrivateNote = privateNote;
                 }
 
                 BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
@@ -200,25 +215,42 @@ namespace Fitodu.Service.Concrete
                 IsRegistered = false
             };
 
-            var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
-            if (publicNotes == null)
-            {
-                PublicNote publicNote = new PublicNote();
-                publicNote.IdClient = newClient.Id;
-                publicNote.IdCoach = CoachId;
-                newClient.PublicNote = publicNote;
-            }
-            var privateNotes = await _context.PrivateNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
-            if (privateNotes == null)
-            {
-                PrivateNote privateNote = new PrivateNote();
-                privateNote.IdClient = newClient.Id;
-                privateNote.IdCoach = CoachId;
-                newClient.PrivateNote = privateNote;
-            }
-
             using (var transaction = _context.Database.BeginTransaction())
             {
+                var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
+                if (publicNotes.Count == 0)
+                {
+                    PublicNote publicNote = new PublicNote();
+                    publicNote.IdClient = newClient.Id;
+                    publicNote.IdCoach = CoachId;
+                    var notesResult = await _context.PublicNotes.AddAsync(publicNote);
+                    if (notesResult.State != EntityState.Added)
+                    {
+                        transaction.Rollback();
+
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Cannot create public note";
+                        return result;
+                    }
+                    newClient.PublicNote = publicNote;
+                }
+
+                var privateNotes = await _context.PrivateNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
+                if (privateNotes.Count == 0)
+                {
+                    PrivateNote privateNote = new PrivateNote();
+                    privateNote.IdClient = newClient.Id;
+                    privateNote.IdCoach = CoachId;
+                    var notesResult = await _context.PrivateNotes.AddAsync(privateNote);
+                    if (notesResult.State != EntityState.Added)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Cannot create private note";
+                        return result;
+                    }
+                    newClient.PrivateNote = privateNote;
+                }
                 var addClientResult = await _context.Clients.AddAsync(newClient);
 
                 if (addClientResult.State != EntityState.Added)
@@ -308,23 +340,6 @@ namespace Fitodu.Service.Concrete
                 }
             };
 
-            var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
-            if (publicNotes == null)
-            {
-                PublicNote publicNote = new PublicNote();
-                publicNote.IdClient = newClient.Id;
-                publicNote.IdCoach = model.IdCoach;
-                newClient.PublicNote = publicNote;
-            }
-            var privateNotes = await _context.PrivateNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
-            if (privateNotes == null)
-            {
-                PrivateNote privateNote = new PrivateNote();
-                privateNote.IdClient = newClient.Id;
-                privateNote.IdCoach = model.IdCoach;
-                newClient.PrivateNote = privateNote;
-            }
-
             newUser.SetCredentials(model.Password);
 
             var coachClient = new CoachClient
@@ -335,6 +350,38 @@ namespace Fitodu.Service.Concrete
 
             using (var transaction = _context.Database.BeginTransaction())
             {
+                var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
+                if (publicNotes.Count == 0)
+                {
+                    PublicNote publicNote = new PublicNote();
+                    publicNote.IdClient = newClient.Id;
+                    publicNote.IdCoach = model.IdCoach;
+                    var notesResult = await _context.PublicNotes.AddAsync(publicNote);
+                    if (notesResult.State != EntityState.Added)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Cannot create public note";
+                        return result;
+                    }
+                    newClient.PublicNote = publicNote;
+                }
+                var privateNotes = await _context.PrivateNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
+                if (privateNotes.Count == 0)
+                {
+                    PrivateNote privateNote = new PrivateNote();
+                    privateNote.IdClient = newClient.Id;
+                    privateNote.IdCoach = model.IdCoach;
+                    var notesResult = await _context.PrivateNotes.AddAsync(privateNote);
+                    if (notesResult.State != EntityState.Added)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Cannot create private note";
+                        return result;
+                    }
+                    newClient.PrivateNote = privateNote;
+                }
                 var createResult = await _userManager.CreateAsync(newUser);
                 if (!createResult.Succeeded)
                 {
