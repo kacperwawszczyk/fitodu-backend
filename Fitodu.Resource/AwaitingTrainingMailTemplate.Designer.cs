@@ -151,7 +151,7 @@ namespace Fitodu.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hi -coachName-! &lt;br&gt;&lt;br&gt; Workout with -clientName- awaiting your confirmation starting at -date-, has just been withdrawn by the client. Head to &lt;a href=&quot;-url-&quot;&gt;FITODU&lt;/a&gt; if you want to suggest a new workout date to your client!.
+        ///   Looks up a localized string similar to Hi -coachName-! &lt;br&gt;&lt;br&gt; Workout with -clientName- awaiting your confirmation starting at -date-, has just been withdrawn by your client. Head to &lt;a href=&quot;-url-&quot;&gt;FITODU&lt;/a&gt; if you want to suggest a new workout date to your client!.
         /// </summary>
         public static string AwaitingTrainingWithdrawnCoachBody {
             get {
@@ -169,7 +169,7 @@ namespace Fitodu.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hi -fullName-!&lt;br&gt;&lt;br&gt;You have a new training request from -coachName-!&lt;br&gt;&lt;br&gt;To approve or reject it go to  our website: &lt;a href=&quot;-url-&quot;&gt;HERE&lt;/a&gt;. .
+        ///   Looks up a localized string similar to Hi -fullName-!&lt;br&gt;&lt;br&gt;You have a new training request from -coachName-!&lt;br&gt;&lt;br&gt;To approve or reject it go to our website: &lt;a href=&quot;-url-&quot;&gt;HERE&lt;/a&gt;. .
         /// </summary>
         public static string NewAwaitingTrainingClientBody {
             get {
@@ -187,7 +187,7 @@ namespace Fitodu.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hi -fullName-!&lt;br&gt;&lt;br&gt;You have a new training request from -clientName-!&lt;br&gt;&lt;br&gt;To approve or reject it go to  our website: &lt;a href=&quot;-url-&quot;&gt;HERE&lt;/a&gt;..
+        ///   Looks up a localized string similar to Hi -fullName-!&lt;br&gt;&lt;br&gt;You have a new training request from -clientName-!&lt;br&gt;&lt;br&gt;To approve or reject it go to our website: &lt;a href=&quot;-url-&quot;&gt;HERE&lt;/a&gt;..
         /// </summary>
         public static string NewAwaitingTrainingCoachBody {
             get {

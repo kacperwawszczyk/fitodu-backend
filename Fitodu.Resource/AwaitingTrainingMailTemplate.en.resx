@@ -154,7 +154,7 @@
     <value>Fitodu - one of your awaiting workouts had been withdrawn</value>
   </data>
   <data name="NewAwaitingTrainingClientBody" xml:space="preserve">
-    <value>Hi -fullName-!&lt;br&gt;&lt;br&gt;You have a new training request from -coachName-!&lt;br&gt;&lt;br&gt;To approve or reject it go to our website: &lt;a href="-url-"&gt;HERE&lt;/a&gt;. </value>
+    <value>Hi -fullName-!&lt;br&gt;&lt;br&gt;You have a new training request from -coachName-!&lt;br&gt;&lt;br&gt;To approve or reject it go to our website: &lt;a href="-url-"&gt;HERE&lt;/a&gt;.</value>
   </data>
   <data name="NewAwaitingTrainingClientSubject" xml:space="preserve">
     <value>Fitodu - you have a new training request!</value>

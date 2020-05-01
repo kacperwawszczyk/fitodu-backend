@@ -118,51 +118,51 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AwaitingTrainingAcceptedClientBody" xml:space="preserve">
-    <value>Hi -clientName-! &lt;br&gt;&lt;br&gt; Your workout starting at -date-, has just been accepted by your coach! Head to &lt;a href="-url-"&gt;FITODU&lt;/a&gt; to take a look!</value>
+    <value>Cześć -clientName-! &lt;br&gt;&lt;br&gt; Twój trening zaczynający się o -date-, właśnie został zaakceptowany przez Twojego trenera! Przejdź do &lt;a href="-url-"&gt;FITODU&lt;/a&gt; aby zobaczyć!</value>
   </data>
   <data name="AwaitingTrainingAcceptedClientSubject" xml:space="preserve">
-    <value>Fitodu - you have a new workout planned!</value>
+    <value>Fitodu - masz nowy zaplanowany trening!</value>
   </data>
   <data name="AwaitingTrainingAcceptedCoachBody" xml:space="preserve">
-    <value>Hi -coachName-! &lt;br&gt;&lt;br&gt; Your workout with -clientName-, starting at -date-, has just been accepted by your client! Head to &lt;a href="-url-"&gt;FITODU&lt;/a&gt; to take a look!</value>
+    <value>Cześć -coachName-! &lt;br&gt;&lt;br&gt; Twój trening z -clientName-, zaczynający się o -date-, właśnie został zaakceptowany przez Twojego klienta! Przejdź do &lt;a href="-url-"&gt;FITODU&lt;/a&gt; aby zobaczyć!</value>
   </data>
   <data name="AwaitingTrainingAcceptedCoachSubject" xml:space="preserve">
-    <value>Fitodu - you have a new workout planned!</value>
+    <value>Fitodu - masz nowy zaplanowany trening!</value>
   </data>
   <data name="AwaitingTrainingRejectedClientBody" xml:space="preserve">
-    <value>Hi -clientName-! &lt;br&gt;&lt;br&gt; Your workout starting at -date-, has just been rejected by your coach. Head to &lt;a href="-url-"&gt;FITODU&lt;/a&gt; to plan your workout at a different date!</value>
+    <value>Cześć -clientName-! &lt;br&gt;&lt;br&gt; Twój trening zaczynający się o -date-, właśnie został odrzucony przez Twojego trenera. Przejdź do &lt;a href="-url-"&gt;FITODU&lt;/a&gt; aby zaplanować Twój trening w innym terminie!</value>
   </data>
   <data name="AwaitingTrainingRejectedClientSubject" xml:space="preserve">
-    <value>Fitodu - your workout has been rejected</value>
+    <value>Fitodu - Twój trening został odrzucony</value>
   </data>
   <data name="AwaitingTrainingRejectedCoachBody" xml:space="preserve">
-    <value>Hi -coachName-! &lt;br&gt;&lt;br&gt; Your workout with -clientName-, starting at -date-, has just been rejected by your client. Head to &lt;a href="-url-"&gt;FITODU&lt;/a&gt; to plan your workout at a different date!</value>
+    <value>Cześć -coachName-! &lt;br&gt;&lt;br&gt; Twój trening z -clientName-, zaczynający się o -date-, właśnie został odrzucony przez Twojego klienta. Przejdź do &lt;a href="-url-"&gt;FITODU&lt;/a&gt; aby zaplanować Twój trening w innym terminie!</value>
   </data>
   <data name="AwaitingTrainingRejectedCoachSubject" xml:space="preserve">
-    <value>Fitodu - your workout has been rejected</value>
+    <value>Fitodu - Twój trening został odrzucony</value>
   </data>
   <data name="AwaitingTrainingWithdrawnClientBody" xml:space="preserve">
-    <value>Hi -clientName-! &lt;br&gt;&lt;br&gt; Your workout awaiting your confirmation starting at -date-, has just been withdrawn by your coach. Head to &lt;a href="-url-"&gt;FITODU&lt;/a&gt; if you want to suggest a new workout date to your coach!</value>
+    <value>Cześć -clientName-! &lt;br&gt;&lt;br&gt; Twój trening, czekający na Twoje potwierdzenie, zaczynający się o -date-, właśnie został wycofany przez Twojego trenera. Przejdź do &lt;a href="-url-"&gt;FITODU&lt;/a&gt; jeśli chcesz zaproponować nowy termin treningu Twojemu trenerowi!</value>
   </data>
   <data name="AwaitingTrainingWithdrawnClientSubject" xml:space="preserve">
-    <value>Fitodu - one of your awaiting workouts had been withdrawn</value>
+    <value>Fitodu - jeden z Twoich oczekujących treningów został wycofany</value>
   </data>
   <data name="AwaitingTrainingWithdrawnCoachBody" xml:space="preserve">
-    <value>Hi -coachName-! &lt;br&gt;&lt;br&gt; Workout with -clientName- awaiting your confirmation starting at -date-, has just been withdrawn by your client. Head to &lt;a href="-url-"&gt;FITODU&lt;/a&gt; if you want to suggest a new workout date to your client!</value>
+    <value>Cześć -coachName-! &lt;br&gt;&lt;br&gt; Trening z -clientName-, czekający na Twoje potwierdzenie, zaczynający się o -date-, właśnie został wycofany przez Twojego klienta. Przejdź do &lt;a href="-url-"&gt;FITODU&lt;/a&gt; jeśli chcesz zaproponować nowy termin treningu Twojemu klientowi!</value>
   </data>
   <data name="AwaitingTrainingWithdrawnCoachSubject" xml:space="preserve">
-    <value>Fitodu - one of your awaiting workouts had been withdrawn</value>
+    <value>Fitodu - jeden z Twoich oczekujących treningów został wycofany</value>
   </data>
   <data name="NewAwaitingTrainingClientBody" xml:space="preserve">
-    <value>Hi -fullName-!&lt;br&gt;&lt;br&gt;You have a new training request from -coachName-!&lt;br&gt;&lt;br&gt;To approve or reject it go to our website: &lt;a href="-url-"&gt;HERE&lt;/a&gt;. </value>
+    <value>Cześć -fullName-!&lt;br&gt;&lt;br&gt;Masz nową prośbę treningu od -coachName-!&lt;br&gt;&lt;br&gt;Aby ją zatwierdzić lub odrzucić, udaj się na naszą stronę: &lt;a href="-url-"&gt;TUTAJ&lt;/a&gt;.</value>
   </data>
   <data name="NewAwaitingTrainingClientSubject" xml:space="preserve">
-    <value>Fitodu - you have a new training request!</value>
+    <value>Fitodu - masz nową prośbę treningu!</value>
   </data>
   <data name="NewAwaitingTrainingCoachBody" xml:space="preserve">
-    <value>Hi -fullName-!&lt;br&gt;&lt;br&gt;You have a new training request from -clientName-!&lt;br&gt;&lt;br&gt;To approve or reject it go to our website: &lt;a href="-url-"&gt;HERE&lt;/a&gt;.</value>
+    <value>Cześć -fullName-!&lt;br&gt;&lt;br&gt;Masz nową prośbę treningu od -clientName-!&lt;br&gt;&lt;br&gt;Aby ją zatwierdzić lub odrzucić, udaj się na naszą stronę: &lt;a href="-url-"&gt;TUTAJ&lt;/a&gt;.</value>
   </data>
   <data name="NewAwaitingTrainingCoachSubject" xml:space="preserve">
-    <value>Fitodu - you have a new training request!</value>
+    <value>Fitodu - masz nową prośbę treningu!</value>
   </data>
 </root>
