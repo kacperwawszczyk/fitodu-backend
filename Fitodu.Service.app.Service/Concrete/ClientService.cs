@@ -122,6 +122,32 @@ namespace Fitodu.Service.Concrete
                     return result;
                 }
 
+
+                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(model.Id);
+                blobContainerClient = await blobServiceClient.CreateBlobContainerAsync(model.Id);
+                blobContainerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+
+                var addToRoleResult = await _userManager.AddToRoleAsync(user, user.Role.GetName());
+
+                if (!addToRoleResult.Succeeded)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot add User to role.";
+                    return result;
+                }
+
+                var updateRegisteredStatus = _context.Clients.Update(client);
+
+                if (updateRegisteredStatus.State != EntityState.Modified)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot update Client register state";
+                    return result;
+                }
+
                 var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == client.Id).ToListAsync();
                 if (publicNotes.Count == 0)
                 {
@@ -153,31 +179,6 @@ namespace Fitodu.Service.Concrete
                         return result;
                     }
                     client.PrivateNote = privateNote;
-                }
-
-                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
-                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(model.Id);
-                blobContainerClient = await blobServiceClient.CreateBlobContainerAsync(model.Id);
-                blobContainerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
-
-                var addToRoleResult = await _userManager.AddToRoleAsync(user, user.Role.GetName());
-
-                if (!addToRoleResult.Succeeded)
-                {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot add User to role.";
-                    return result;
-                }
-
-                var updateRegisteredStatus = _context.Clients.Update(client);
-
-                if (updateRegisteredStatus.State != EntityState.Modified)
-                {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot update Client register state";
-                    return result;
                 }
 
                 if (await _context.SaveChangesAsync() <= 0)
@@ -217,6 +218,35 @@ namespace Fitodu.Service.Concrete
 
             using (var transaction = _context.Database.BeginTransaction())
             {
+
+                var addClientResult = await _context.Clients.AddAsync(newClient);
+
+                if (addClientResult.State != EntityState.Added)
+                {
+                    transaction.Rollback();
+
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot create client";
+                    return result;
+                }
+
+                var coachClient = new CoachClient
+                {
+                    IdCoach = CoachId,
+                    IdClient = newClient.Id
+                };
+
+                var addCoachClientResult = await _context.CoachClients.AddAsync(coachClient);
+
+                if (addCoachClientResult.State != EntityState.Added)
+                {
+                    transaction.Rollback();
+
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Cannot add Client to Coach";
+                    return result;
+                }
+
                 var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
                 if (publicNotes.Count == 0)
                 {
@@ -251,35 +281,14 @@ namespace Fitodu.Service.Concrete
                     }
                     newClient.PrivateNote = privateNote;
                 }
-                var addClientResult = await _context.Clients.AddAsync(newClient);
 
-                if (addClientResult.State != EntityState.Added)
+                if (await _context.SaveChangesAsync() <= 0)
                 {
                     transaction.Rollback();
-
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot create client";
+                    result.ErrorMessage = "Cannot save changes";
                     return result;
                 }
-
-                var coachClient = new CoachClient
-                {
-                    IdCoach = CoachId,
-                    IdClient = newClient.Id
-                };
-
-                var addCoachClientResult = await _context.CoachClients.AddAsync(coachClient);
-
-                if (addCoachClientResult.State != EntityState.Added)
-                {
-                    transaction.Rollback();
-
-                    result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot add Client to Coach";
-                    return result;
-                }
-
-                _context.SaveChanges();
 
                 transaction.Commit();
 
@@ -301,7 +310,7 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            if (creationToken.ExpiresOn < DateTime.Now)
+            if (creationToken.ExpiresOn < DateTime.UtcNow)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Code expired";
@@ -350,38 +359,6 @@ namespace Fitodu.Service.Concrete
 
             using (var transaction = _context.Database.BeginTransaction())
             {
-                var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
-                if (publicNotes.Count == 0)
-                {
-                    PublicNote publicNote = new PublicNote();
-                    publicNote.IdClient = newClient.Id;
-                    publicNote.IdCoach = model.IdCoach;
-                    var notesResult = await _context.PublicNotes.AddAsync(publicNote);
-                    if (notesResult.State != EntityState.Added)
-                    {
-                        transaction.Rollback();
-                        result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Cannot create public note";
-                        return result;
-                    }
-                    newClient.PublicNote = publicNote;
-                }
-                var privateNotes = await _context.PrivateNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
-                if (privateNotes.Count == 0)
-                {
-                    PrivateNote privateNote = new PrivateNote();
-                    privateNote.IdClient = newClient.Id;
-                    privateNote.IdCoach = model.IdCoach;
-                    var notesResult = await _context.PrivateNotes.AddAsync(privateNote);
-                    if (notesResult.State != EntityState.Added)
-                    {
-                        transaction.Rollback();
-                        result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Cannot create private note";
-                        return result;
-                    }
-                    newClient.PrivateNote = privateNote;
-                }
                 var createResult = await _userManager.CreateAsync(newUser);
                 if (!createResult.Succeeded)
                 {
@@ -414,6 +391,39 @@ namespace Fitodu.Service.Concrete
                     result.Error = ErrorType.InternalServerError;
                     result.ErrorMessage = "Cannot create Client.";
                     return result;
+                }
+
+                var publicNotes = await _context.PublicNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
+                if (publicNotes.Count == 0)
+                {
+                    PublicNote publicNote = new PublicNote();
+                    publicNote.IdClient = newClient.Id;
+                    publicNote.IdCoach = model.IdCoach;
+                    var notesResult = await _context.PublicNotes.AddAsync(publicNote);
+                    if (notesResult.State != EntityState.Added)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Cannot create public note";
+                        return result;
+                    }
+                    newClient.PublicNote = publicNote;
+                }
+                var privateNotes = await _context.PrivateNotes.Where(x => x.IdClient == newClient.Id).ToListAsync();
+                if (privateNotes.Count == 0)
+                {
+                    PrivateNote privateNote = new PrivateNote();
+                    privateNote.IdClient = newClient.Id;
+                    privateNote.IdCoach = model.IdCoach;
+                    var notesResult = await _context.PrivateNotes.AddAsync(privateNote);
+                    if (notesResult.State != EntityState.Added)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Cannot create private note";
+                        return result;
+                    }
+                    newClient.PrivateNote = privateNote;
                 }
 
                 var addCoachClient = await _context.CoachClients.AddAsync(coachClient);
