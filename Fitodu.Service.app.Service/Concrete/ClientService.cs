@@ -532,7 +532,7 @@ namespace Fitodu.Service.Concrete
             }
 
             var encodedToken = WebUtility.UrlEncode(jwtSecurityTokenHandler.WriteToken(jwtSecurityToken));
-            var url = $"{_configuration["Environment:ClientUrl"]}/auth/register?id={model.Id}&token={encodedToken}";
+            var url = $"{_configuration["Environment:ClientUrl"]}/auth/register?id={model.Id}&token={encodedToken}&email={model.Email}";
 
             var message = new EmailInput()
             {
@@ -605,7 +605,7 @@ namespace Fitodu.Service.Concrete
             }
 
             var encodedToken = WebUtility.UrlEncode(jwtSecurityTokenHandler.WriteToken(jwtSecurityToken));
-            var url = $"{_configuration["Environment:ClientUrl"]}/auth/register?token={encodedToken}&coachId={CoachId}";
+            var url = $"{_configuration["Environment:ClientUrl"]}/auth/register?token={encodedToken}&coachId={CoachId}&email={model.Email}";
 
             var message = new EmailInput()
             {
