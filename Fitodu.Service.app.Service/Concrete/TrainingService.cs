@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Azure.Storage.Blobs;
 using AutoMapper.QueryableExtensions;
 
 namespace Fitodu.Service.Concrete
@@ -18,14 +20,18 @@ namespace Fitodu.Service.Concrete
     public class TrainingService : ITrainingService
     {
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
         private readonly Context _context;
         private readonly IClientService _clientService;
+        private string azureConnectionString;
             
-        public TrainingService(Context context, IMapper mapper, IClientService clientService)
+        public TrainingService(Context context, IMapper mapper, IClientService clientService, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
             _clientService = clientService;
+            _configuration = configuration;
+            azureConnectionString = _configuration.GetConnectionString("StorageConnection");
         }
 
         //TODO: Usunąć jak na pewno nie będzie potrzebne
@@ -401,6 +407,24 @@ namespace Fitodu.Service.Concrete
                     {
                         trainingOutput.ClientName = client.Name;
                         trainingOutput.ClientSurname = client.Surname;
+                        BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                        BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
+                        if (await blobContainerClient.ExistsAsync() == false)
+                        {
+                            trainingOutput.ClientAvatar = null;
+                        }
+                        else
+                        {
+                            BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                            if (await blobClient.ExistsAsync() == false)
+                            {
+                                trainingOutput.ClientAvatar = null;
+                            }
+                            else
+                            {
+                                trainingOutput.ClientAvatar = blobClient.Uri.AbsoluteUri;
+                            }
+                        }
                     }
                 }
                 result.Data = _trainings;
@@ -453,6 +477,24 @@ namespace Fitodu.Service.Concrete
                 {
                     result.Data.ClientName = client.Name;
                     result.Data.ClientSurname = client.Surname;
+                    BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                    BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
+                    if (await blobContainerClient.ExistsAsync() == false)
+                    {
+                        result.Data.ClientAvatar = null;
+                    }
+                    else
+                    {
+                        BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                        if (await blobClient.ExistsAsync() == false)
+                        {
+                            result.Data.ClientAvatar = null;
+                        }
+                        else
+                        {
+                            result.Data.ClientAvatar = blobClient.Uri.AbsoluteUri;
+                        }
+                    }
                 }
             }
             return result;

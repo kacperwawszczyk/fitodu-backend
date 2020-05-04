@@ -15,6 +15,7 @@ namespace Fitodu.Service.Models
         public string Note { get; set; }
         public string ClientName { get; set; }
         public string ClientSurname { get; set; }
+        public string ClientAvatar { get; set; }
         public ICollection<TrainingExerciseOutput> TrainingExercises { get; set; }
     }
 }
