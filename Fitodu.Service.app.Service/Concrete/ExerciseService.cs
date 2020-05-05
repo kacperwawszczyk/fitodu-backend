@@ -144,7 +144,18 @@ namespace Fitodu.Service.Concrete
                     return result;
                 }
 
-                _context.Exercises.Remove(existingExercise);
+                var trainings = await _context.TrainingExercises.Where(x => x.IdExercise == exerciseId).ToListAsync();
+
+                if(trainings.Count == 0)
+                {
+                    _context.Exercises.Remove(existingExercise);
+                }
+                else
+                {
+                    existingExercise.Archived = true;
+                    _context.Exercises.Update(existingExercise);
+                }
+                
                 if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();
