@@ -129,7 +129,7 @@ namespace Fitodu.Api.Controllers
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> DeleteTraining(int id)
         {
-            var result = await _trainingService.DeleteTraining(CurrentUser.Id, id);
+            var result = await _trainingService.DeleteTraining(CurrentUser.Id, CurrentUser.Role, id);
             return GetResult(result);
         }
     }

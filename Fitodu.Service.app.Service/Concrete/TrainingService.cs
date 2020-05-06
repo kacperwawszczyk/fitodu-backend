@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Azure.Storage.Blobs;
 using AutoMapper.QueryableExtensions;
+using System.Net;
 
 namespace Fitodu.Service.Concrete
 {
@@ -23,14 +24,16 @@ namespace Fitodu.Service.Concrete
         private readonly IConfiguration _configuration;
         private readonly Context _context;
         private readonly IClientService _clientService;
+        private readonly IEmailService _emailService;
         private string azureConnectionString;
-            
-        public TrainingService(Context context, IMapper mapper, IClientService clientService, IConfiguration configuration)
+
+        public TrainingService(Context context, IMapper mapper, IClientService clientService, IConfiguration configuration, IEmailService emailService)
         {
             _context = context;
             _mapper = mapper;
             _clientService = clientService;
             _configuration = configuration;
+            _emailService = emailService;
             azureConnectionString = _configuration.GetConnectionString("StorageConnection");
         }
 
@@ -101,7 +104,7 @@ namespace Fitodu.Service.Concrete
             var result = new Result<int>();
 
             var clientsCoach = await _clientService.GetClientCoach(trainingInput.IdClient);
-            if(clientsCoach.IsDataNull || clientsCoach.Data.Id != coachId)
+            if (clientsCoach.IsDataNull || clientsCoach.Data.Id != coachId)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "This coach does not work with this client";
@@ -117,14 +120,14 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            if(trainingInput.StartDate >= trainingInput.EndDate)
+            if (trainingInput.StartDate >= trainingInput.EndDate)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "End date is lesser than or equal to start date";
                 return result;
             }
 
-            if(trainingInput.StartDate.Value.Date != trainingInput.EndDate.Value.Date)
+            if (trainingInput.StartDate.Value.Date != trainingInput.EndDate.Value.Date)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "end date and start date are not on the same day";
@@ -230,38 +233,93 @@ namespace Fitodu.Service.Concrete
         }
 
 
-        public async Task<Result> DeleteTraining(string coachId, int trainingId)
+        public async Task<Result> DeleteTraining(string requesterId, UserRole requesterRole, int trainingId)
         {
             var result = new Result();
-            using (var transaction = _context.Database.BeginTransaction())
+
+            string clientName;
+            string coachName;
+            string date;
+            string email = "";
+            string url = "https://fitodu.azurewebsites.net";
+            var model = new EmailInput();
+
+            if (requesterRole == UserRole.Coach)
             {
-                var existingTraining = await _context.Trainings.Where(
-                x => x.Id == trainingId && x.IdCoach == coachId).FirstOrDefaultAsync();
-
-                if (existingTraining == null)
+                using (var transaction = _context.Database.BeginTransaction())
                 {
-                    result.Error = ErrorType.NotFound;
-                    result.ErrorMessage = "Training with this Id does not exist in the database";
-                    return result;
-                }
+                    var existingTraining = await _context.Trainings.Where(x => x.Id == trainingId && x.IdCoach == requesterId).FirstOrDefaultAsync();
 
-                _context.Trainings.Remove(existingTraining);
+                    if (existingTraining == null)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.NotFound;
+                        result.ErrorMessage = "Training with this Id does not exist in the database";
+                        return result;
+                    }
 
-                if (await _context.SaveChangesAsync() == 0)
-                {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Couldn't save changes to the database";
-                    return result;
-                }
+                    var coach = await _context.Coaches.Where(x => x.Id == requesterId).FirstOrDefaultAsync();
+                    var client = await _context.Clients.Where(x => x.Id == existingTraining.IdClient).FirstOrDefaultAsync();
+                    var clientcoach = await _context.CoachClients.Where(x => x.IdClient == existingTraining.IdClient).FirstOrDefaultAsync();
+                    
+                    if (clientcoach == null)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.BadRequest;
+                        result.ErrorMessage = "User is not client of that coach!";
+                        return result;
+                    }
+                    if (client == null)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.BadRequest;
+                        result.ErrorMessage = "Client with given id does not exist!";
+                        return result;
+                    }
+                    if (coach == null)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.BadRequest;
+                        result.ErrorMessage = "Coach with given id does not exist!";
+                        return result;
+                    }
+                    if (existingTraining.StartDate > DateTime.UtcNow)
+                    {
+                        if (client.IsRegistered)
+                        {
+                            var user = await _context.Users.Where(x => x.Id == client.Id).FirstOrDefaultAsync();
+                            if (user == null)
+                            {
+                                transaction.Rollback();
+                                result.Error = ErrorType.InternalServerError;
+                                result.ErrorMessage = "Client account does not exist (Internal error? Cause: client is registered)";
+                                return result;
+                            }
+                            clientName = client.Name + " " + client.Surname;
+                            //coachName = coach.Name + " " + coach.Surname;
+                            email = user.Email;
+                            if (email == "" || email == null)
+                            {
+                                transaction.Rollback();
+                                result.Error = ErrorType.InternalServerError;
+                                result.ErrorMessage = "Mail: receiver email not found, mail not sent";
+                                return result;
+                            }
+                            date = existingTraining.StartDate.Value.Day.ToString() + "." + existingTraining.StartDate.Value.Month.ToString() + "." + existingTraining.StartDate.Value.Year.ToString() + " " + existingTraining.StartDate.Value.Hour.ToString() + ":" + existingTraining.StartDate.Value.Minute.ToString();
 
-                var trainingsExercises = await _context.TrainingExercises.Where
-                (x => x.IdTraining == trainingId).ToListAsync();
+                            model.To = email;
+                            model.Subject = Resource.TrainingMailTemplate.TrainingCoachWithdrawalSubject;
+                            model.HtmlBody = Resource.TrainingMailTemplate.TrainingCoachWithdrawalSubject;
+                            model.HtmlBody = model.HtmlBody.Replace("-url-", url);
+                            model.HtmlBody = model.HtmlBody.Replace("-clientName-", clientName);
+                            model.HtmlBody = model.HtmlBody.Replace("-date-", date);
+                        }
+                        clientcoach.PurchasedTrainings++;
+                        _context.CoachClients.Update(clientcoach);
+                    }
 
+                    _context.Trainings.Remove(existingTraining);
 
-                if (trainingsExercises.Count != 0)
-                {
-                    _context.TrainingExercises.RemoveRange(trainingsExercises);
                     if (await _context.SaveChangesAsync() == 0)
                     {
                         transaction.Rollback();
@@ -269,8 +327,144 @@ namespace Fitodu.Service.Concrete
                         result.ErrorMessage = "Couldn't save changes to the database";
                         return result;
                     }
+
+                    var trainingsExercises = await _context.TrainingExercises.Where
+                    (x => x.IdTraining == trainingId).ToListAsync();
+
+                    if (trainingsExercises.Count != 0)
+                    {
+                        _context.TrainingExercises.RemoveRange(trainingsExercises);
+                        if (await _context.SaveChangesAsync() == 0)
+                        {
+                            transaction.Rollback();
+                            result.Error = ErrorType.InternalServerError;
+                            result.ErrorMessage = "Couldn't save changes to the database";
+                            return result;
+                        }
+                    }
+                    transaction.Commit();
+
+                    if (existingTraining.StartDate > DateTime.UtcNow)
+                    {
+                        var response = await _emailService.Send(model);
+
+                        if (response.Code != HttpStatusCode.Accepted && response.Code != HttpStatusCode.OK)
+                        {
+                            result.Error = ErrorType.InternalServerError;
+                            result.ErrorMessage = "Mail: mail not sent but training was deleted";
+                            return result;
+                        }
+                    }
                 }
-                transaction.Commit();
+            }
+            else if (requesterRole == UserRole.Client)
+            {
+                using (var transaction = _context.Database.BeginTransaction())
+                {
+                    var existingTraining = await _context.Trainings.Where(
+                    x => x.Id == trainingId && x.IdClient == requesterId).FirstOrDefaultAsync();
+
+                    if (existingTraining == null)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.NotFound;
+                        result.ErrorMessage = "Training with this Id does not exist in the database";
+                        return result;
+                    }
+
+                    var coach = await _context.Coaches.Where(x => x.Id == requesterId).FirstOrDefaultAsync();
+                    var client = await _context.Clients.Where(x => x.Id == existingTraining.IdClient).FirstOrDefaultAsync();
+                    var clientcoach = await _context.CoachClients.Where(x => x.IdClient == existingTraining.IdClient).FirstOrDefaultAsync();
+                    
+                    if (clientcoach == null)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.BadRequest;
+                        result.ErrorMessage = "User is not client of that coach!";
+                        return result;
+                    }
+                    if (client == null)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.BadRequest;
+                        result.ErrorMessage = "Client with given id does not exist!";
+                        return result;
+                    }
+                    if (coach == null)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.BadRequest;
+                        result.ErrorMessage = "Coach with given id does not exist!";
+                        return result;
+                    }
+
+                    if (existingTraining.StartDate > DateTime.UtcNow.AddHours(Convert.ToDouble(coach.CancelTimeHours)).AddMinutes(Convert.ToDouble(coach.CancelTimeMinutes)))
+                    {
+                        clientcoach.PurchasedTrainings++;
+                        _context.CoachClients.Update(clientcoach);
+
+                        var coachAcc = await _context.Users.Where(x => x.Id == coach.Id).FirstOrDefaultAsync();
+                        if (coachAcc == null)
+                        {
+                            transaction.Rollback();
+                            result.Error = ErrorType.InternalServerError;
+                            result.ErrorMessage = "Client account does not exist (Internal error?)";
+                            return result;
+                        }
+                        clientName = client.Name + " " + client.Surname;
+                        coachName = coach.Name + " " + coach.Surname;
+                        email = coachAcc.Email;
+                        if (email == "" || email == null)
+                        {
+                            transaction.Rollback();
+                            result.Error = ErrorType.InternalServerError;
+                            result.ErrorMessage = "Mail: receiver email not found, mail not sent";
+                            return result;
+                        }
+                        date = existingTraining.StartDate.Value.Day.ToString() + "." + existingTraining.StartDate.Value.Month.ToString() + "." + existingTraining.StartDate.Value.Year.ToString() + " " + existingTraining.StartDate.Value.Hour.ToString() + ":" + existingTraining.StartDate.Value.Minute.ToString();
+
+                        model.To = email;
+                        model.Subject = Resource.TrainingMailTemplate.TrainingClientWithdrawalSubject;
+                        model.HtmlBody = Resource.TrainingMailTemplate.TrainingClientWithdrawalSubject;
+                        model.HtmlBody = model.HtmlBody.Replace("-url-", url);
+                        model.HtmlBody = model.HtmlBody.Replace("-clientName-", clientName);
+                        model.HtmlBody = model.HtmlBody.Replace("-coachName-", coachName);
+                        model.HtmlBody = model.HtmlBody.Replace("-date-", date);
+
+                        _context.Trainings.Remove(existingTraining);
+
+                        if (await _context.SaveChangesAsync() == 0)
+                        {
+                            transaction.Rollback();
+                            result.Error = ErrorType.InternalServerError;
+                            result.ErrorMessage = "Couldn't save changes to the database";
+                            return result;
+                        }
+
+                        var trainingsExercises = await _context.TrainingExercises.Where
+                        (x => x.IdTraining == trainingId).ToListAsync();
+
+                        if (trainingsExercises.Count != 0)
+                        {
+                            _context.TrainingExercises.RemoveRange(trainingsExercises);
+                            if (await _context.SaveChangesAsync() == 0)
+                            {
+                                transaction.Rollback();
+                                result.Error = ErrorType.InternalServerError;
+                                result.ErrorMessage = "Couldn't save changes to the database";
+                                return result;
+                            }
+                        }
+                        transaction.Commit();
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.BadRequest;
+                        result.ErrorMessage = "Cannot cancel workout because you exceeded coach's time limit";
+                        return result;
+                    }
+                }
             }
             return result;
         }
@@ -371,7 +565,7 @@ namespace Fitodu.Service.Concrete
                     }
                 }
             }
-            
+
             result.Data = await trainings.ProjectTo<TrainingOutput>(_mapper.ConfigurationProvider).ToListAsync();
 
             if (result.Data == null)
@@ -384,11 +578,11 @@ namespace Fitodu.Service.Concrete
                 var _trainings = result.Data;
                 foreach (TrainingOutput trainingOutput in _trainings)
                 {
-                    foreach(TrainingExerciseOutput trainingExerciseOutput in trainingOutput.TrainingExercises.ToList())
+                    foreach (TrainingExerciseOutput trainingExerciseOutput in trainingOutput.TrainingExercises.ToList())
                     {
                         if (trainingExerciseOutput != null)
                         {
-                            if(trainingExerciseOutput.Exercise != null)
+                            if (trainingExerciseOutput.Exercise != null)
                             {
                                 var max = await _context.Maximums.Where(x => x.IdExercise == trainingExerciseOutput.Exercise.Id && x.IdClient == trainingOutput.IdClient).FirstOrDefaultAsync();
                                 if (max != null)
@@ -397,7 +591,7 @@ namespace Fitodu.Service.Concrete
                                     maxi.Max = max.Max;
                                     trainingExerciseOutput.Maximum = maxi;
                                 }
-                                
+
                             }
 
                         }
@@ -425,6 +619,10 @@ namespace Fitodu.Service.Concrete
                                 trainingOutput.ClientAvatar = blobClient.Uri.AbsoluteUri;
                             }
                         }
+                    }
+                    if (role == UserRole.Client)
+                    {
+                        trainingOutput.Note = null;
                     }
                 }
                 result.Data = _trainings;

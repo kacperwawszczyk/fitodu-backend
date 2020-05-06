@@ -213,7 +213,9 @@ namespace Fitodu.Service.Concrete
                 Name = model.Name,
                 Surname = model.Surname,
                 Id = Guid.NewGuid().ToString(),
-                IsRegistered = false
+                IsRegistered = false,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber
             };
 
             using (var transaction = _context.Database.BeginTransaction())

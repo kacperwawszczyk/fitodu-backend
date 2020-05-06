@@ -15,6 +15,11 @@
        <DesignTime>True</DesignTime>
        <AutoGen>True</AutoGen>
      </Compile>
+     <Compile Update="TrainingMailTemplate.Designer.cs">
+       <DesignTime>True</DesignTime>
+       <AutoGen>True</AutoGen>
+       <DependentUpon>TrainingMailTemplate.resx</DependentUpon>
+     </Compile>
      <Compile Update="Validation.Designer.cs">
        <DesignTime>True</DesignTime>
        <AutoGen>True</AutoGen>
@@ -33,9 +38,22 @@
   </ItemGroup>
 
  <ItemGroup>
+    <EmbeddedResource Update="AwaitingTrainingMailTemplate.en.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="AwaitingTrainingMailTemplate.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>AwaitingTrainingMailTemplate.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="TrainingMailTemplate.en.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="TrainingMailTemplate.pl.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="TrainingMailTemplate.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>TrainingMailTemplate.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="VerifyClientTemplate.resx">
       <LastGenOutput>VerifyClientTemplate.Designer.cs</LastGenOutput>
