@@ -202,9 +202,13 @@ namespace Fitodu.Service.Concrete
                 .Where(x => x.Id == sum.Id && x.IdClient == sum.IdClient)
                 .FirstOrDefaultAsync();
 
+            Summary _tmpExisitingSummary = existingSummary;
+
             Client existingClient = await _context.Clients
                 .Where(x => x.Id == sum.IdClient)
                 .FirstOrDefaultAsync();
+
+            Client _tmpExisitingClient = existingClient;
 
             if (coachClient == null)
             {
@@ -235,18 +239,24 @@ namespace Fitodu.Service.Concrete
                 {
                     _context.Summaries.Update(existingSummary);
                     _context.Clients.Update(existingClient);
-
-                    if (await _context.SaveChangesAsync() == 0)
+                    if (existingSummary.Equals(_tmpExisitingSummary) && existingClient.Equals(_tmpExisitingClient))
+                    {
+                        transaction.Commit();
+                        return result;
+                    }
+                    else if (await _context.SaveChangesAsync() == 0)
                     {
                         transaction.Rollback();
                         result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Couldn't save changes to the database";
                         return result;
                     }
-
-                    transaction.Commit();
+                    else
+                    {
+                        transaction.Commit();
+                    }
                 }
             }
-
             return result;
         }
 

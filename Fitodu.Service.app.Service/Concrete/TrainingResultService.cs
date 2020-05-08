@@ -30,7 +30,7 @@ namespace Fitodu.Service.Concrete
         public async Task<Result<ICollection<TrainingResult>>> GetTrainingsResults(int idTraining, string userId, UserRole role)
         {
             var result = new Result<ICollection<TrainingResult>>();
-            if(role == UserRole.Coach)
+            if (role == UserRole.Coach)
             {
                 var trainingsCoachResult = await _trainingService.GetTrainingsCoach(idTraining);
 
@@ -42,7 +42,7 @@ namespace Fitodu.Service.Concrete
                     return result;
                 }
             }
-            else if(role == UserRole.Client)
+            else if (role == UserRole.Client)
             {
                 var trainingsCoachResult = await _trainingService.GetTrainingsClient(idTraining);
 
@@ -82,7 +82,7 @@ namespace Fitodu.Service.Concrete
                 result.ErrorMessage = "This coach doesn't belong to this training";
                 return result;
             }
-            
+
             using (var transaction = _context.Database.BeginTransaction())
             {
                 var existingResult = await _context.TrainingResults.Where(x => x.IdTrainingExercise == trainingResultInput.IdTrainingExercise).FirstOrDefaultAsync();
@@ -130,10 +130,10 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            using(var transaction = _context.Database.BeginTransaction())
+            using (var transaction = _context.Database.BeginTransaction())
             {
                 var existingResult = await _context.TrainingResults.Where(x => x.IdTrainingExercise == trainingResult.IdTrainingExercise).FirstOrDefaultAsync();
-
+                var _tmpExistingResult = existingResult;
                 if (existingResult == null)
                 {
                     result.Error = ErrorType.BadRequest;
@@ -145,18 +145,27 @@ namespace Fitodu.Service.Concrete
                 existingResult.Time = trainingResult.Time;
                 existingResult.Description = trainingResult.Description;
                 existingResult.Note = trainingResult.Note;
-                if (await _context.SaveChangesAsync() == 0)
+                if (existingResult.Equals(_tmpExistingResult))
+                {
+                    transaction.Commit();
+                    return result;
+                }
+                else if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database";
                     return result;
                 }
-                transaction.Commit();
+                else
+                {
+                    transaction.Commit();
+                }
             }
             return result;
         }
-           
-        
+
+
 
         public async Task<Result> DeleteTrainingResult(string coachId, int trainingResultId)
         {

@@ -143,6 +143,8 @@ namespace Fitodu.Service.Concrete
                 var existingTrainingExercise = await _context.TrainingExercises.Where
                 (x => x.Id == trainingExercise.Id).FirstOrDefaultAsync();
 
+                var _tmpExisitingTrainingExercise = existingTrainingExercise;
+
                 if (existingTrainingExercise == null)
                 {
                     result.Error = ErrorType.NotFound;
@@ -168,14 +170,22 @@ namespace Fitodu.Service.Concrete
                 existingTrainingExercise.RepetitionsResult = trainingExercise.RepetitionsResult;
                 existingTrainingExercise.TimeResult = trainingExercise.TimeResult;
 
-                if (await _context.SaveChangesAsync() == 0)
+                if (existingTrainingExercise.Equals(_tmpExisitingTrainingExercise))
+                {
+                    transaction.Commit();
+                    return result;
+                }
+                else if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
                     result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
-                transaction.Commit();
+                else
+                {
+                    transaction.Commit();
+                }
             }
             return result;
         }

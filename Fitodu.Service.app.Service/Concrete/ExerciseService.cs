@@ -59,16 +59,16 @@ namespace Fitodu.Service.Concrete
         {
             var result = new Result<int>();
 
-            Exercise existingExercise = await _context.Exercises
-                .Where(x => x.IdCoach == coachId && x.Name == exercise.Name)
-                .FirstOrDefaultAsync();
+            //Exercise existingExercise = await _context.Exercises
+            //    .Where(x => x.IdCoach == coachId && x.Name.ToUpper() == exercise.Name.ToUpper())
+            //    .FirstOrDefaultAsync();
 
-            if (existingExercise != null) //this coach already has an exercise with given name
-            {
-                result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "This coach already has an exercise with given name.";
-                return result;
-            }
+            //if (existingExercise != null) //this coach already has an exercise with given name
+            //{
+            //    result.Error = ErrorType.BadRequest;
+            //    result.ErrorMessage = "This coach already has an exercise with given name.";
+            //    return result;
+            //}
 
             Exercise _ex = new Exercise();
             _ex.IdCoach = coachId;
@@ -102,6 +102,8 @@ namespace Fitodu.Service.Concrete
                 .Where(x => x.Id == exercise.Id && x.IdCoach == coachId)
                 .FirstOrDefaultAsync();
 
+                Exercise _tmpExercise = existingExercise;
+
                 if (existingExercise == null) //this coach does not have an exercise with that Id
                 {
                     result.Error = ErrorType.BadRequest;
@@ -113,7 +115,12 @@ namespace Fitodu.Service.Concrete
                 existingExercise.Description = exercise.Description;
                 existingExercise.Archived = exercise.Archived;
 
-                if (await _context.SaveChangesAsync() == 0)
+                if(existingExercise.Equals(_tmpExercise))
+                {
+                    transaction.Commit();
+                    return result;
+                }
+                else if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;

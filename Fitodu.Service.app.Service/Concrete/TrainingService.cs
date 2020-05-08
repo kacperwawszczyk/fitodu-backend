@@ -191,6 +191,8 @@ namespace Fitodu.Service.Concrete
                 var exisitngTraining = await _context.Trainings.Where(
                 x => x.Id == trainingInput.Id && x.IdCoach == coachId).FirstOrDefaultAsync();
 
+                var _tmpExistingTraining = exisitngTraining;
+
                 if (exisitngTraining == null)
                 {
                     result.Error = ErrorType.NotFound;
@@ -219,15 +221,22 @@ namespace Fitodu.Service.Concrete
                 , trainingInput.StartDate.Value.Hour, trainingInput.StartDate.Value.Minute, 0);
                 exisitngTraining.EndDate = new DateTime(trainingInput.EndDate.Value.Year, trainingInput.EndDate.Value.Month, trainingInput.EndDate.Value.Day
                 , trainingInput.EndDate.Value.Hour, trainingInput.EndDate.Value.Minute, 0);
-
-                if (await _context.SaveChangesAsync() == 0)
+                if (exisitngTraining.Equals(_tmpExistingTraining))
+                {
+                    transaction.Commit();
+                    return result;
+                }
+                else if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
                     result.ErrorMessage = "Couldn't save changes to the database";
                     return result;
                 }
-                transaction.Commit();
+                else
+                {
+                    transaction.Commit();
+                }
             }
             return result;
         }
@@ -261,7 +270,7 @@ namespace Fitodu.Service.Concrete
                     var coach = await _context.Coaches.Where(x => x.Id == requesterId).FirstOrDefaultAsync();
                     var client = await _context.Clients.Where(x => x.Id == existingTraining.IdClient).FirstOrDefaultAsync();
                     var clientcoach = await _context.CoachClients.Where(x => x.IdClient == existingTraining.IdClient).FirstOrDefaultAsync();
-                    
+
                     if (clientcoach == null)
                     {
                         transaction.Rollback();
@@ -375,7 +384,7 @@ namespace Fitodu.Service.Concrete
                     var coach = await _context.Coaches.Where(x => x.Id == requesterId).FirstOrDefaultAsync();
                     var client = await _context.Clients.Where(x => x.Id == existingTraining.IdClient).FirstOrDefaultAsync();
                     var clientcoach = await _context.CoachClients.Where(x => x.IdClient == existingTraining.IdClient).FirstOrDefaultAsync();
-                    
+
                     if (clientcoach == null)
                     {
                         transaction.Rollback();

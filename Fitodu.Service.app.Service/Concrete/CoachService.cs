@@ -241,6 +241,7 @@ namespace Fitodu.Service.Concrete
         {
             var result = new Result<long>();
             var coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
+            var _tmpCoach = coach;
             User coachAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
 
             coach.Name = coachNew.Name;
@@ -268,17 +269,24 @@ namespace Fitodu.Service.Concrete
             {
                 _context.Coaches.Update(coach);
                 _context.Users.Update(coachAcc);
-                if (await _context.SaveChangesAsync() == 0)
+                if (coach.Equals(_tmpCoach))
+                {
+                    transaction.Commit();
+                    return result;
+                }
+                else if (await _context.SaveChangesAsync() == 0)
                 {
                     result.Error = ErrorType.Forbidden;
+                    result.ErrorMessage = "Couldn't save changes to the database";
                     transaction.Rollback();
+                    return result;
                 }
                 else
                 {
                     transaction.Commit();
+                    return result;
                 }
             }
-            return result;
         }
 
         public async Task<Result<ICollection<ClientOutput>>> GetAllClients(string Id)

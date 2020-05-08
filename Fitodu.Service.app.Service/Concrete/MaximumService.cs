@@ -95,7 +95,7 @@ namespace Fitodu.Service.Concrete
 
             IQueryable max = null;
             max = _context.Maximums.Where(x => x.IdClient == IdClient && x.IdExercise == IdExercise);
-            
+
             result.Data = await max
                     .ProjectTo<MaximumOutput>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync();
@@ -179,6 +179,8 @@ namespace Fitodu.Service.Concrete
                 .Where(x => x.IdClient == max.IdClient && x.IdExercise == max.IdExercise)
                 .FirstOrDefaultAsync();
 
+            Maximum _tmpMaximum = existingMaximum;
+
             if (coachClient == null)
             {
                 result.Error = ErrorType.BadRequest;
@@ -201,15 +203,22 @@ namespace Fitodu.Service.Concrete
                 using (var transaction = _context.Database.BeginTransaction())
                 {
                     _context.Maximums.Update(existingMaximum);
-
-                    if (await _context.SaveChangesAsync() == 0)
+                    if (existingMaximum.Equals(_tmpMaximum))
+                    {
+                        transaction.Commit();
+                        return result;
+                    }
+                    else if (await _context.SaveChangesAsync() == 0)
                     {
                         transaction.Rollback();
                         result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Couldn't save changes to the database";
                         return result;
                     }
-
-                    transaction.Commit();
+                    else
+                    {
+                        transaction.Commit();
+                    }
                 }
 
                 return result;

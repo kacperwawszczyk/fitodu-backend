@@ -710,6 +710,7 @@ namespace Fitodu.Service.Concrete
         public async Task<Result<long>> UpdateClient(string Id, UpdateClientInput model)
         {
             Client client = await _context.Clients.FirstOrDefaultAsync(x => x.Id == Id);
+            Client _tmpClient = client;
             var result = new Result<long>();
             if (client == null)
             {
@@ -742,7 +743,12 @@ namespace Fitodu.Service.Concrete
                 {
                     _context.Users.Update(clientAcc);
                     _context.Clients.Update(client);
-                    if (await _context.SaveChangesAsync() <= 0)
+                    if (client.Equals(_tmpClient))
+                    {
+                        transaction.Commit();
+                        return result;
+                    }
+                    else if (await _context.SaveChangesAsync() <= 0)
                     {
                         transaction.Rollback();
                         result.Error = ErrorType.InternalServerError;

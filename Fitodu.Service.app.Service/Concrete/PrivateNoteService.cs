@@ -113,7 +113,7 @@ namespace Fitodu.Service.Concrete
                 PrivateNote existingNote = await _context.PrivateNotes
                  .Where(x => x.IdCoach == coachId && x.IdClient == noteInput.IdClient)
                  .FirstOrDefaultAsync();
-
+                PrivateNote _tmpPrivateNote = existingNote;
                 if (existingNote == null)
                 {
                     result.Error = ErrorType.BadRequest;
@@ -122,14 +122,22 @@ namespace Fitodu.Service.Concrete
                 }
 
                 existingNote.Note = noteInput.Note;
-                if (await _context.SaveChangesAsync() == 0)
+                if (existingNote.Equals(_tmpPrivateNote))
+                {
+                    transaction.Commit();
+                    return result;
+                }
+                else if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
                     result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
-                transaction.Commit();
+                else
+                {
+                    transaction.Commit();
+                }
             }
             return result;
         }

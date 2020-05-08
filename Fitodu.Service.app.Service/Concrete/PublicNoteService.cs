@@ -19,7 +19,7 @@ namespace Fitodu.Service.Concrete
     {
         private readonly IMapper _mapper;
         private readonly Context _context;
-        
+
 
         public PublicNoteService(Context context,
            IMapper mapper)
@@ -28,7 +28,7 @@ namespace Fitodu.Service.Concrete
             _mapper = mapper;
         }
 
-        public async Task <Result<ICollection<PublicNoteOutput>>> GetAllNotes(string coachId)
+        public async Task<Result<ICollection<PublicNoteOutput>>> GetAllNotes(string coachId)
         {
 
             var result = new Result<ICollection<PublicNoteOutput>>();
@@ -52,14 +52,14 @@ namespace Fitodu.Service.Concrete
             var result = new Result<PublicNoteOutput>();
             IQueryable note = null;
 
-            if( clientId == requesterId)
+            if (clientId == requesterId)
             {
-                note =  _context.PublicNotes.Where(x => x.IdClient == clientId);
+                note = _context.PublicNotes.Where(x => x.IdClient == clientId);
 
             }
             else
             {
-                note =  _context.PublicNotes.Where(x => x.IdClient == clientId && x.IdCoach == requesterId);
+                note = _context.PublicNotes.Where(x => x.IdClient == clientId && x.IdCoach == requesterId);
             }
 
             result.Data = await note.ProjectTo<PublicNoteOutput>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
@@ -122,7 +122,7 @@ namespace Fitodu.Service.Concrete
                 PublicNote existingNote = await _context.PublicNotes
                 .Where(x => x.IdCoach == coachId && x.IdClient == note.IdClient)
                 .FirstOrDefaultAsync();
-
+                PublicNote _tmpExistingNote = existingNote;
                 if (existingNote == null)
                 {
                     result.Error = ErrorType.BadRequest;
@@ -131,15 +131,22 @@ namespace Fitodu.Service.Concrete
                 }
 
                 existingNote.Note = note.Note;
-
-                if (await _context.SaveChangesAsync() == 0)
+                if (existingNote.Equals(_tmpExistingNote))
+                {
+                    transaction.Commit();
+                    return result;
+                }
+                else if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
                     result.ErrorMessage = "Couldn't save changes to the database.";
                     return result;
                 }
-                transaction.Commit();
+                else
+                {
+                    transaction.Commit();
+                }
             }
             return result;
         }
