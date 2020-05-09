@@ -208,6 +208,14 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
+            var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
+            if(userAcc != null)
+            {
+                result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "User with this email already exists";
+                return result;
+            }
+
             var newClient = new Client
             {
                 Name = model.Name,
@@ -302,6 +310,14 @@ namespace Fitodu.Service.Concrete
         public async Task<Result> SelfCreateClientAccount(SelfRegisterClientInput model)
         {
             var result = new Result();
+
+            var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
+            if (userAcc != null)
+            {
+                result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "User with this email already exists";
+                return result;
+            }
 
             var creationToken = await _context.CreateClientTokens.Where(x => x.Token == model.Token).FirstOrDefaultAsync();
 
@@ -462,9 +478,15 @@ namespace Fitodu.Service.Concrete
             if (coach == null)
             {
                 result.Error = ErrorType.BadRequest;
-
                 result.ErrorMessage = "Requesting coach does not exist.";
+                return result;
+            }
 
+            var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
+            if(userAcc != null)
+            {
+                result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "User with this email already exists";
                 return result;
             }
 
@@ -480,9 +502,7 @@ namespace Fitodu.Service.Concrete
             if (client == null)
             {
                 result.Error = ErrorType.BadRequest;
-
                 result.ErrorMessage = $"Client (ID: {model.Id}) doesn't exist";
-
                 return result;
             }
 
@@ -491,9 +511,7 @@ namespace Fitodu.Service.Concrete
             if (coachClient == null)
             {
                 result.Error = ErrorType.BadRequest;
-
                 result.ErrorMessage = $"Client and coach are not connected.";
-
                 return result;
             }
 
@@ -569,6 +587,14 @@ namespace Fitodu.Service.Concrete
         public async Task<Result> SendSelfCreationLinkToClient(string CoachId, CreateSelfClientVerificationTokenInput model)
         {
             var result = new Result();
+
+            var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
+            if (userAcc != null)
+            {
+                result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "User with this email already exists";
+                return result;
+            }
 
             var claims = new[]
             {
@@ -1022,6 +1048,14 @@ namespace Fitodu.Service.Concrete
             {
                 result.Error = ErrorType.Forbidden;
                 result.ErrorMessage = "This user is not a coach";
+                return result;
+            }
+
+            var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
+            if (userAcc != null)
+            {
+                result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "User with this email already exists";
                 return result;
             }
 
