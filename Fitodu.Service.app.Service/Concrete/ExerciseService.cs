@@ -33,7 +33,8 @@ namespace Fitodu.Service.Concrete
 
             var exercises = await _context
                 .Exercises.Where(x => x.IdCoach == coachId)
-                .Select(x => new ExerciseOutput { 
+                .Select(x => new ExerciseOutput
+                {
                     Id = x.Id,
                     Description = x.Description,
                     Name = x.Name,
@@ -115,19 +116,26 @@ namespace Fitodu.Service.Concrete
                 existingExercise.Description = exercise.Description;
                 existingExercise.Archived = exercise.Archived;
 
-                if(existingExercise.Equals(_tmpExercise))
+                _context.Exercises.Update(existingExercise);
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    if (existingExercise.Equals(_tmpExercise))
+                    {
+                        transaction.Commit();
+                        return result;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Couldn't save changes to the database.";
+                        return result;
+                    }
+                }
+                else
                 {
                     transaction.Commit();
-                    return result;
                 }
-                else if (await _context.SaveChangesAsync() == 0)
-                {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Couldn't save changes to the database.";
-                    return result;
-                }
-                transaction.Commit();
             }
             return result;
         }
@@ -153,7 +161,7 @@ namespace Fitodu.Service.Concrete
 
                 var trainings = await _context.TrainingExercises.Where(x => x.IdExercise == exerciseId).ToListAsync();
 
-                if(trainings.Count == 0)
+                if (trainings.Count == 0)
                 {
                     _context.Exercises.Remove(existingExercise);
                 }
@@ -162,7 +170,7 @@ namespace Fitodu.Service.Concrete
                     existingExercise.Archived = true;
                     _context.Exercises.Update(existingExercise);
                 }
-                
+
                 if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();
@@ -242,7 +250,7 @@ namespace Fitodu.Service.Concrete
                    Name = x.Name,
                    Archived = x.Archived
                }).FirstOrDefaultAsync();
-            if(exercise == null)
+            if (exercise == null)
             {
                 result.Error = ErrorType.NotFound;
                 result.ErrorMessage = "Couldn't find exercise with given id.";

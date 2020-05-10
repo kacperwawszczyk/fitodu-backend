@@ -239,17 +239,21 @@ namespace Fitodu.Service.Concrete
                 {
                     _context.Summaries.Update(existingSummary);
                     _context.Clients.Update(existingClient);
-                    if (existingSummary.Equals(_tmpExisitingSummary) && existingClient.Equals(_tmpExisitingClient))
+
+                    if (await _context.SaveChangesAsync() == 0)
                     {
-                        transaction.Commit();
-                        return result;
-                    }
-                    else if (await _context.SaveChangesAsync() == 0)
-                    {
-                        transaction.Rollback();
-                        result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Couldn't save changes to the database";
-                        return result;
+                        if (existingSummary.Equals(_tmpExisitingSummary) && existingClient.Equals(_tmpExisitingClient))
+                        {
+                            transaction.Commit();
+                            return result;
+                        }
+                        else
+                        {
+                            transaction.Rollback();
+                            result.Error = ErrorType.InternalServerError;
+                            result.ErrorMessage = "Couldn't save changes to the database";
+                            return result;
+                        }
                     }
                     else
                     {

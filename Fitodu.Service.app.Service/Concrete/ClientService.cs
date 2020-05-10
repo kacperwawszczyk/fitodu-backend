@@ -209,7 +209,7 @@ namespace Fitodu.Service.Concrete
             }
 
             var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
-            if(userAcc != null)
+            if (userAcc != null)
             {
                 result.Error = ErrorType.Forbidden;
                 result.ErrorMessage = "User with this email already exists";
@@ -483,7 +483,7 @@ namespace Fitodu.Service.Concrete
             }
 
             var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
-            if(userAcc != null)
+            if (userAcc != null)
             {
                 result.Error = ErrorType.Forbidden;
                 result.ErrorMessage = "User with this email already exists";
@@ -769,16 +769,20 @@ namespace Fitodu.Service.Concrete
                 {
                     _context.Users.Update(clientAcc);
                     _context.Clients.Update(client);
-                    if (client.Equals(_tmpClient))
+
+                    if (await _context.SaveChangesAsync() <= 0)
                     {
-                        transaction.Commit();
-                        return result;
-                    }
-                    else if (await _context.SaveChangesAsync() <= 0)
-                    {
-                        transaction.Rollback();
-                        result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Couldn't execute changes to the database.";
+                        if (client.Equals(_tmpClient))
+                        {
+                            transaction.Commit();
+                            return result;
+                        }
+                        else
+                        {
+                            transaction.Rollback();
+                            result.Error = ErrorType.InternalServerError;
+                            result.ErrorMessage = "Couldn't execute changes to the database.";
+                        }
                     }
                     else
                     {
@@ -1100,15 +1104,25 @@ namespace Fitodu.Service.Concrete
             client.AddressPostalCode = model.AddressPostalCode;
             client.AddressState = model.AddressState;
 
+            Client _tmpClient = client;
+
             using (var transaction = _context.Database.BeginTransaction())
             {
                 _context.Clients.Update(client);
                 if (await _context.SaveChangesAsync() <= 0)
                 {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Could not save changes to the database.";
-                    return result;
+                    if (client.Equals(_tmpClient))
+                    {
+                        transaction.Commit();
+                        return result;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Could not save changes to the database.";
+                        return result;
+                    }
                 }
                 else
                 {

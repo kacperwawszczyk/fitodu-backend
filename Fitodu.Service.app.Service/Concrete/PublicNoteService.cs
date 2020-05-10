@@ -131,17 +131,21 @@ namespace Fitodu.Service.Concrete
                 }
 
                 existingNote.Note = note.Note;
-                if (existingNote.Equals(_tmpExistingNote))
+                _context.PublicNotes.Update(existingNote);
+                if (await _context.SaveChangesAsync() == 0)
                 {
-                    transaction.Commit();
-                    return result;
-                }
-                else if (await _context.SaveChangesAsync() == 0)
-                {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Couldn't save changes to the database.";
-                    return result;
+                    if (existingNote.Equals(_tmpExistingNote))
+                    {
+                        transaction.Commit();
+                        return result;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Couldn't save changes to the database.";
+                        return result;
+                    }
                 }
                 else
                 {

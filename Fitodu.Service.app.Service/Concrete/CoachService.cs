@@ -269,17 +269,21 @@ namespace Fitodu.Service.Concrete
             {
                 _context.Coaches.Update(coach);
                 _context.Users.Update(coachAcc);
-                if (coach.Equals(_tmpCoach))
+
+                if (await _context.SaveChangesAsync() == 0)
                 {
-                    transaction.Commit();
-                    return result;
-                }
-                else if (await _context.SaveChangesAsync() == 0)
-                {
-                    result.Error = ErrorType.Forbidden;
-                    result.ErrorMessage = "Couldn't save changes to the database";
-                    transaction.Rollback();
-                    return result;
+                    if (coach.Equals(_tmpCoach))
+                    {
+                        transaction.Commit();
+                        return result;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.Forbidden;
+                        result.ErrorMessage = "Couldn't save changes to the database";
+                        return result;
+                    }
                 }
                 else
                 {

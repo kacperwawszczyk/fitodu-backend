@@ -203,17 +203,21 @@ namespace Fitodu.Service.Concrete
                 using (var transaction = _context.Database.BeginTransaction())
                 {
                     _context.Maximums.Update(existingMaximum);
-                    if (existingMaximum.Equals(_tmpMaximum))
+
+                    if (await _context.SaveChangesAsync() == 0)
                     {
-                        transaction.Commit();
-                        return result;
-                    }
-                    else if (await _context.SaveChangesAsync() == 0)
-                    {
-                        transaction.Rollback();
-                        result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Couldn't save changes to the database";
-                        return result;
+                        if (existingMaximum.Equals(_tmpMaximum))
+                        {
+                            transaction.Commit();
+                            return result;
+                        }
+                        else
+                        {
+                            transaction.Rollback();
+                            result.Error = ErrorType.InternalServerError;
+                            result.ErrorMessage = "Couldn't save changes to the database";
+                            return result;
+                        }
                     }
                     else
                     {

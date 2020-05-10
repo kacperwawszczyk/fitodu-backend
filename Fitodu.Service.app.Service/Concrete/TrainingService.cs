@@ -221,17 +221,22 @@ namespace Fitodu.Service.Concrete
                 , trainingInput.StartDate.Value.Hour, trainingInput.StartDate.Value.Minute, 0);
                 exisitngTraining.EndDate = new DateTime(trainingInput.EndDate.Value.Year, trainingInput.EndDate.Value.Month, trainingInput.EndDate.Value.Day
                 , trainingInput.EndDate.Value.Hour, trainingInput.EndDate.Value.Minute, 0);
-                if (exisitngTraining.Equals(_tmpExistingTraining))
+
+                _context.Trainings.Update(exisitngTraining);
+                if (await _context.SaveChangesAsync() == 0)
                 {
-                    transaction.Commit();
-                    return result;
-                }
-                else if (await _context.SaveChangesAsync() == 0)
-                {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Couldn't save changes to the database";
-                    return result;
+                    if (exisitngTraining.Equals(_tmpExistingTraining))
+                    {
+                        transaction.Commit();
+                        return result;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Couldn't save changes to the database";
+                        return result;
+                    }
                 }
                 else
                 {

@@ -145,17 +145,21 @@ namespace Fitodu.Service.Concrete
                 existingResult.Time = trainingResult.Time;
                 existingResult.Description = trainingResult.Description;
                 existingResult.Note = trainingResult.Note;
-                if (existingResult.Equals(_tmpExistingResult))
+
+                _context.TrainingResults.Update(existingResult);
+                if (await _context.SaveChangesAsync() == 0)
                 {
-                    transaction.Commit();
-                    return result;
-                }
-                else if (await _context.SaveChangesAsync() == 0)
-                {
-                    transaction.Rollback();
-                    result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Couldn't save changes to the database";
-                    return result;
+                    if (existingResult.Equals(_tmpExistingResult))
+                    {
+                        transaction.Commit();
+                        return result;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Couldn't save changes to the database";
+                    }
                 }
                 else
                 {
