@@ -101,6 +101,14 @@ namespace Fitodu.Api.Controllers
             return GetResult(result);
         }
 
+        [HttpPut("week-plans/default")]
+        [AuthorizePolicy(UserRole.Coach)]
+        public async Task<IActionResult> EditDefaultWeekPlan([FromBody] UpdateDefaultWeekPlanInput weekPlan)
+        {
+            var result = await _weekPlanService.EditDefaultWeekPlan(CurrentUser.Id, weekPlan);
+            return GetResult(result);
+        }
+
 
         /// <summary>
         /// Used to delete an existing week plan with related day plans and workout times

@@ -36,16 +36,16 @@ namespace Fitodu.Service.Concrete
 
             string coachId = "";
 
-            if(requesterRole == UserRole.Coach)
+            if (requesterRole == UserRole.Coach)
             {
                 coachId = requesterId;
             }
-            else if(requesterRole == UserRole.Client)
+            else if (requesterRole == UserRole.Client)
             {
                 //TODO: zmienić jeśli client może mieć wielu trenerów
                 var clientsCoach = await _clientService.GetClientCoach(requesterId);
 
-                if(clientsCoach == null)
+                if (clientsCoach == null)
                 {
                     result.Error = ErrorType.NotFound;
                     result.ErrorMessage = "Coach not found";
@@ -118,22 +118,22 @@ namespace Fitodu.Service.Concrete
         {
             var result = new Result();
 
-            if(!IsValidEditInput(weekPlan))
+            if (!IsValidEditInput(weekPlan))
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Invalid input (more than 7 days or one day is written twice)";
                 return result;
             }
 
-            if (weekPlan.StartDate.Value.Date.DayOfWeek != DayOfWeek.Monday && weekPlan.IsDefault == false)
+            var exisitingWeekPlanStartDate = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.StartDate.Value.Date == weekPlan.StartDate.Date && x.Id != weekPlan.Id).FirstOrDefaultAsync();
+
+
+            if (exisitingWeekPlanStartDate.IsDefault == false && weekPlan.StartDate == null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Week plan must start at a Monday if it's not default";
+                result.ErrorMessage = "Cannot assign empty date to non default weekplan";
                 return result;
             }
-
-            var exisitingWeekPlanStartDate = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.StartDate.Value.Date == weekPlan.StartDate.Value.Date &&
-            x.Id != weekPlan.Id).FirstOrDefaultAsync();
 
             if (exisitingWeekPlanStartDate != null)
             {
@@ -142,44 +142,116 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
+            if (weekPlan.StartDate.Date.DayOfWeek != DayOfWeek.Monday && exisitingWeekPlanStartDate.IsDefault == false)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Week plan must start at a Monday if it's not default";
+                return result;
+            }
+
             using (var transaction = _context.Database.BeginTransaction())
             {
                 var exisitngWeekPlan = await _context.WeekPlans
                     .Where(x => x.Id == weekPlan.Id && x.IdCoach == coachId).FirstOrDefaultAsync();
 
-                if(exisitngWeekPlan == null)
+                if (exisitngWeekPlan.IsDefault == true)
                 {
+                    transaction.Rollback();
+                    result.Error = ErrorType.Forbidden;
+                    result.ErrorMessage = "Can't modify default weekplan with this method.";
+                    return result;
+                }
+
+                if (exisitngWeekPlan == null)
+                {
+                    transaction.Rollback();
                     result.Error = ErrorType.NotFound;
                     result.ErrorMessage = "WeekPlan with this Id does not exist in the database";
                     return result;
                 }
 
+
                 exisitngWeekPlan.StartDate = weekPlan.StartDate;
 
                 _context.DayPlans.RemoveRange(exisitngWeekPlan.DayPlans);
 
-                //exisitngWeekPlan.DayPlans = weekPlan.DayPlans;
-                if(weekPlan.IsDefault)
-                {
-                    var existingDefaultWeekPlan = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.IsDefault == true).ToListAsync();
-                    if(existingDefaultWeekPlan != null)
-                    {
-                        foreach(WeekPlan defaultWeekPlan in existingDefaultWeekPlan)
-                        {
-                            defaultWeekPlan.IsDefault = false;
-                        }
-                    }
-
-                    exisitngWeekPlan.IsDefault = true;
-                }
-                else
-                {
-                    exisitngWeekPlan.IsDefault = false;
-                }
-                
-
                 exisitngWeekPlan.IdCoach = coachId;
-                exisitngWeekPlan.StartDate = new DateTime(weekPlan.StartDate.Value.Date.Year, weekPlan.StartDate.Value.Date.Month, weekPlan.StartDate.Value.Date.Day, 0, 0, 0);
+                exisitngWeekPlan.StartDate = new DateTime(weekPlan.StartDate.Date.Year, weekPlan.StartDate.Date.Month, weekPlan.StartDate.Date.Day, 0, 0, 0);
+
+                List<DayPlan> dayPlans = new List<DayPlan>();
+                foreach (DayPlanInput dayPlanInput in weekPlan.DayPlans)
+                {
+                    DayPlan _dayPlan = new DayPlan();
+                    _dayPlan.Day = dayPlanInput.Day;
+                    _dayPlan.WeekPlan = exisitngWeekPlan;
+
+                    List<WorkoutTime> workoutTimes = new List<WorkoutTime>();
+                    foreach (WorkoutTimeInput workoutTimeInput in dayPlanInput.WorkoutTimes)
+                    {
+                        WorkoutTime _workoutTime = new WorkoutTime();
+                        _workoutTime.DayPlan = _dayPlan;
+                        _workoutTime.StartTime = workoutTimeInput.StartTime;
+                        _workoutTime.EndTime = workoutTimeInput.EndTime;
+                        workoutTimes.Add(_workoutTime);
+
+                    }
+                    _dayPlan.WorkoutTimes = workoutTimes;
+                    dayPlans.Add(_dayPlan);
+                }
+
+                exisitngWeekPlan.DayPlans = dayPlans;
+
+                if (await _context.SaveChangesAsync() == 0)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.InternalServerError;
+                    result.ErrorMessage = "Couldn't save changes to the database";
+                    return result;
+                }
+                transaction.Commit();
+            }
+            return result;
+        }
+
+        public async Task<Result> EditDefaultWeekPlan(string coachId, UpdateDefaultWeekPlanInput weekPlan)
+        {
+            var result = new Result();
+
+            if (!IsValidEditInput(weekPlan))
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Invalid input (more than 7 days or one day is written twice)";
+                return result;
+            }
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                var exisitngWeekPlan = await _context.WeekPlans
+                    .Where(x => x.Id == weekPlan.Id && x.IdCoach == coachId).FirstOrDefaultAsync();
+
+                if (exisitngWeekPlan.IsDefault == false)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.Forbidden;
+                    result.ErrorMessage = "Can't modify non default weekplan with this method.";
+                    return result;
+                }
+
+                if (exisitngWeekPlan == null)
+                {
+                    transaction.Rollback();
+                    result.Error = ErrorType.NotFound;
+                    result.ErrorMessage = "WeekPlan with this Id does not exist in the database";
+                    return result;
+                }
+
+
+                //exisitngWeekPlan.StartDate = weekPlan.StartDate;
+                // exisitngWeekPlan.StartDate = new DateTime(weekPlan.StartDate.Date.Year, weekPlan.StartDate.Date.Month, weekPlan.StartDate.Date.Day, 0, 0, 0);
+               
+                _context.DayPlans.RemoveRange(exisitngWeekPlan.DayPlans);
+                exisitngWeekPlan.IdCoach = coachId;
+                exisitngWeekPlan.StartDate = null;
 
                 List<DayPlan> dayPlans = new List<DayPlan>();
                 foreach (DayPlanInput dayPlanInput in weekPlan.DayPlans)
@@ -221,6 +293,7 @@ namespace Fitodu.Service.Concrete
         {
             var result = new Result<int>();
 
+
             if (!IsValidInput(weekPlanInput))
             {
                 result.Error = ErrorType.BadRequest;
@@ -228,16 +301,16 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            if(weekPlanInput.StartDate.Value.Date.DayOfWeek != DayOfWeek.Monday && weekPlanInput.IsDefault == false)
+            if (weekPlanInput.StartDate.Date.DayOfWeek != DayOfWeek.Monday) //&& weekPlanInput.IsDefault == false)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Week plan must start at a Monday if it's not default";
                 return result;
             }
 
-            var exisitingWeekPlan = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.StartDate.Value.Date == weekPlanInput.StartDate.Value.Date).FirstOrDefaultAsync();
+            var exisitingWeekPlan = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.StartDate.Value.Date == weekPlanInput.StartDate.Date && x.IsDefault == false).FirstOrDefaultAsync();
 
-            if(exisitingWeekPlan != null)
+            if (exisitingWeekPlan != null)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Week plan of this coach, starting at this date already exists";
@@ -246,7 +319,7 @@ namespace Fitodu.Service.Concrete
 
             WeekPlan _weekPlan = new WeekPlan();
             _weekPlan.IdCoach = coachId;
-            _weekPlan.StartDate = new DateTime(weekPlanInput.StartDate.Value.Date.Year, weekPlanInput.StartDate.Value.Date.Month, weekPlanInput.StartDate.Value.Date.Day, 0, 0, 0);
+            _weekPlan.StartDate = new DateTime(weekPlanInput.StartDate.Date.Year, weekPlanInput.StartDate.Date.Month, weekPlanInput.StartDate.Date.Day, 0, 0, 0);
 
             List<DayPlan> dayPlans = new List<DayPlan>();
             foreach (DayPlanInput dayPlanInput in weekPlanInput.DayPlans)
@@ -264,29 +337,29 @@ namespace Fitodu.Service.Concrete
                     _workoutTime.StartTime = workoutTimeInput.StartTime;
                     _workoutTime.EndTime = workoutTimeInput.EndTime;
                     workoutTimes.Add(_workoutTime);
-                    
+
                 }
                 _dayPlan.WorkoutTimes = workoutTimes;
                 dayPlans.Add(_dayPlan);
             }
 
-            if (weekPlanInput.IsDefault)
-            {
-                var existingDefaultWeekPlan = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.IsDefault == true).ToListAsync();
-                if (existingDefaultWeekPlan != null)
-                {
-                    foreach (WeekPlan defaultWeekPlan in existingDefaultWeekPlan)
-                    {
-                        defaultWeekPlan.IsDefault = false;
-                    }
-                }
+            //if (weekPlanInput.IsDefault)
+            //{
+            //    var existingDefaultWeekPlan = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.IsDefault == true).ToListAsync();
+            //    if (existingDefaultWeekPlan != null)
+            //    {
+            //        foreach (WeekPlan defaultWeekPlan in existingDefaultWeekPlan)
+            //        {
+            //            defaultWeekPlan.IsDefault = false;
+            //        }
+            //    }
 
-                _weekPlan.IsDefault = true;
-            }
-            else
-            {
-                _weekPlan.IsDefault = false;
-            }
+            //    _weekPlan.IsDefault = true;
+            //}
+            //else
+            //{
+            //    _weekPlan.IsDefault = false;
+            //}
 
             _weekPlan.DayPlans = dayPlans;
 
@@ -316,7 +389,15 @@ namespace Fitodu.Service.Concrete
                     return result;
                 }
 
-                _context.WeekPlans.Remove(exisitngWeekPlan);
+                if(exisitngWeekPlan.IsDefault == true)
+                {
+                    _context.DayPlans.RemoveRange(exisitngWeekPlan.DayPlans);
+                }
+                else
+                {
+                    _context.WeekPlans.Remove(exisitngWeekPlan);
+                }
+                
                 if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();
@@ -333,7 +414,7 @@ namespace Fitodu.Service.Concrete
         {
 
             if (weekPlan.DayPlans.Count > 7)
-            { 
+            {
                 return false;
             }
 
@@ -341,9 +422,9 @@ namespace Fitodu.Service.Concrete
 
             List<DayPlan> _dayPlans = weekPlan.DayPlans.ToList();
 
-            for (int i=0; i<_dayPlans.Count; i++)
+            for (int i = 0; i < _dayPlans.Count; i++)
             {
-                if(_dayPlans[i].Day == Day.Monday)
+                if (_dayPlans[i].Day == Day.Monday)
                 {
                     counters[0]++;
                 }
@@ -426,7 +507,7 @@ namespace Fitodu.Service.Concrete
                 }
             }
 
-            for(int i=0; i< 7; i++)
+            for (int i = 0; i < 7; i++)
             {
                 if (counters[i] > 1)
                 {
@@ -437,6 +518,60 @@ namespace Fitodu.Service.Concrete
         }
 
         public bool IsValidEditInput(UpdateWeekPlanInput editWeekPlanInput)
+        {
+
+            if (editWeekPlanInput.DayPlans.Count > 7)
+            {
+                return false;
+            }
+
+            int[] counters = { 0, 0, 0, 0, 0, 0, 0 };
+
+            List<DayPlanInput> _dayPlans = editWeekPlanInput.DayPlans.ToList();
+
+            for (int i = 0; i < _dayPlans.Count; i++)
+            {
+                if (_dayPlans[i].Day == Day.Monday)
+                {
+                    counters[0]++;
+                }
+                else if (_dayPlans[i].Day == Day.Tuesday)
+                {
+                    counters[1]++;
+                }
+                else if (_dayPlans[i].Day == Day.Wednesday)
+                {
+                    counters[2]++;
+                }
+                else if (_dayPlans[i].Day == Day.Thursday)
+                {
+                    counters[3]++;
+                }
+                else if (_dayPlans[i].Day == Day.Friday)
+                {
+                    counters[4]++;
+                }
+                else if (_dayPlans[i].Day == Day.Saturday)
+                {
+                    counters[5]++;
+                }
+                else if (_dayPlans[i].Day == Day.Sunday)
+                {
+                    counters[6]++;
+                }
+            }
+
+            for (int i = 0; i < 7; i++)
+            {
+                if (counters[i] > 1)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool IsValidEditInput(UpdateDefaultWeekPlanInput editWeekPlanInput)
         {
 
             if (editWeekPlanInput.DayPlans.Count > 7)
@@ -542,11 +677,11 @@ namespace Fitodu.Service.Concrete
             dayPlanOutputs.Add(new DayPlanOutput { Day = Day.Sunday, WorkoutTimes = new List<WorkoutTimeOutput>() });
 
             List<WorkoutTime> workoutTimes = new List<WorkoutTime>();
-            if(trainings != null)
+            if (trainings != null)
             {
-                foreach(Training training in trainings)
+                foreach (Training training in trainings)
                 {
-                    switch(training.StartDate.Value.Date.DayOfWeek)
+                    switch (training.StartDate.Value.Date.DayOfWeek)
                     {
                         case DayOfWeek.Monday:
                             dayPlanOutputs[0].WorkoutTimes.Add(new WorkoutTimeOutput { StartTime = (DateTime)training.StartDate, EndTime = (DateTime)training.EndDate });
@@ -591,9 +726,9 @@ namespace Fitodu.Service.Concrete
                 }
             }
 
-            foreach(DayPlanOutput dayPlanOutput in dayPlanOutputs.ToList())
+            foreach (DayPlanOutput dayPlanOutput in dayPlanOutputs.ToList())
             {
-                if(dayPlanOutput.WorkoutTimes.Count == 0)
+                if (dayPlanOutput.WorkoutTimes.Count == 0)
                 {
                     dayPlanOutputs.Remove(dayPlanOutput);
                 }

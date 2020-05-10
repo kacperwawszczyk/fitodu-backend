@@ -98,6 +98,12 @@ namespace Fitodu.Service.Concrete
             coach.Name = model.Name;
             coach.Surname = model.Surname;
 
+            var weekPlan = new WeekPlan();
+            weekPlan.IsDefault = true;
+            weekPlan.IdCoach = coach.Id;
+            weekPlan.StartDate = null;
+            weekPlan.DayPlans = null;
+
             user.SetCredentials(model.Password);
 
             using (var transaction = _context.Database.BeginTransaction())
@@ -134,16 +140,39 @@ namespace Fitodu.Service.Concrete
                     return result;
                 }
 
+
                 var createCoachResult = await _context.Coaches.AddAsync(coach);
 
                 if (createCoachResult.State != EntityState.Added)
                 {
                     transaction.Rollback();
+                    result.ErrorMessage = "Couldn't add coach to the database";
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
+                }
 
+
+                var addWeekPlanResult = await _context.WeekPlans.AddAsync(weekPlan);
+
+                if (addWeekPlanResult.State != EntityState.Added)
+                {
+                    transaction.Rollback();
+                    result.ErrorMessage = "Couldn't add coachs weekplan to the database";
+                    result.Error = ErrorType.InternalServerError;
+                    return result;
                 }
                 _context.SaveChanges();
-
+                //if (await _context.SaveChangesAsync() == 0)
+                //{
+                //    transaction.Rollback();
+                //    result.ErrorMessage = "Couldn't save changes to the database";
+                //    result.Error = ErrorType.InternalServerError;
+                //    return result;
+                //}
+                //else
+                //{
                 transaction.Commit();
+                //}
             }
 
             return result;
