@@ -125,15 +125,22 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            var exisitingWeekPlanStartDate = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.StartDate.Value.Date == weekPlan.StartDate.Date && x.Id != weekPlan.Id).FirstOrDefaultAsync();
-
-
-            if (exisitingWeekPlanStartDate.IsDefault == false && weekPlan.StartDate == null)
+            if (weekPlan.StartDate == null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Cannot assign empty date to non default weekplan";
+                result.ErrorMessage = "Invalid input: date is null";
                 return result;
             }
+
+            var exisitingWeekPlanStartDate = await _context.WeekPlans.Where(x => x.IdCoach == coachId && x.StartDate.Value.Date == weekPlan.StartDate.Value.Date && x.Id != weekPlan.Id).FirstOrDefaultAsync();
+
+
+            //if (exisitingWeekPlanStartDate.IsDefault == false)
+            //{
+            //    result.Error = ErrorType.BadRequest;
+            //    result.ErrorMessage = "Cannot assign empty date to non default weekplan";
+            //    return result;
+            //}
 
             if (exisitingWeekPlanStartDate != null)
             {
@@ -142,7 +149,7 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            if (weekPlan.StartDate.Date.DayOfWeek != DayOfWeek.Monday && exisitingWeekPlanStartDate.IsDefault == false)
+            if (weekPlan.StartDate.Value.Date.DayOfWeek != DayOfWeek.Monday && exisitingWeekPlanStartDate.IsDefault == false)
             {
                 result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Week plan must start at a Monday if it's not default";
@@ -176,7 +183,7 @@ namespace Fitodu.Service.Concrete
                 _context.DayPlans.RemoveRange(exisitngWeekPlan.DayPlans);
 
                 exisitngWeekPlan.IdCoach = coachId;
-                exisitngWeekPlan.StartDate = new DateTime(weekPlan.StartDate.Date.Year, weekPlan.StartDate.Date.Month, weekPlan.StartDate.Date.Day, 0, 0, 0);
+                exisitngWeekPlan.StartDate = new DateTime(weekPlan.StartDate.Value.Date.Year, weekPlan.StartDate.Value.Date.Month, weekPlan.StartDate.Value.Date.Day, 0, 0, 0);
 
                 List<DayPlan> dayPlans = new List<DayPlan>();
                 foreach (DayPlanInput dayPlanInput in weekPlan.DayPlans)
@@ -248,7 +255,7 @@ namespace Fitodu.Service.Concrete
 
                 //exisitngWeekPlan.StartDate = weekPlan.StartDate;
                 // exisitngWeekPlan.StartDate = new DateTime(weekPlan.StartDate.Date.Year, weekPlan.StartDate.Date.Month, weekPlan.StartDate.Date.Day, 0, 0, 0);
-               
+
                 _context.DayPlans.RemoveRange(exisitngWeekPlan.DayPlans);
                 exisitngWeekPlan.IdCoach = coachId;
                 exisitngWeekPlan.StartDate = null;
@@ -389,7 +396,7 @@ namespace Fitodu.Service.Concrete
                     return result;
                 }
 
-                if(exisitngWeekPlan.IsDefault == true)
+                if (exisitngWeekPlan.IsDefault == true)
                 {
                     _context.DayPlans.RemoveRange(exisitngWeekPlan.DayPlans);
                 }
@@ -397,7 +404,7 @@ namespace Fitodu.Service.Concrete
                 {
                     _context.WeekPlans.Remove(exisitngWeekPlan);
                 }
-                
+
                 if (await _context.SaveChangesAsync() == 0)
                 {
                     transaction.Rollback();
