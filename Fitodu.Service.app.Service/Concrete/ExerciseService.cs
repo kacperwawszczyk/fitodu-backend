@@ -27,12 +27,27 @@ namespace Fitodu.Service.Concrete
 
 
 
-        public async Task<Result<ICollection<ExerciseOutput>>> GetAllExercises(string coachId)
+        public async Task<Result<ICollection<ExerciseOutput>>> GetAllExercises(string coachId, string SearchTerm)
         {
             var result = new Result<ICollection<ExerciseOutput>>();
-
-            var exercises = await _context
-                .Exercises.Where(x => x.IdCoach == coachId)
+            var exercises = new List<ExerciseOutput>();
+            if (String.IsNullOrEmpty(SearchTerm))
+            {
+                exercises = await _context
+               .Exercises.Where(x => x.IdCoach == coachId)
+               .Select(x => new ExerciseOutput
+               {
+                   Id = x.Id,
+                   Description = x.Description,
+                   Name = x.Name,
+                   Archived = x.Archived
+               })
+               .ToListAsync();
+            }
+            else
+            {
+                exercises = await _context
+                .Exercises.Where(x => x.IdCoach == coachId && x.Name.ToUpper().StartsWith(SearchTerm.ToUpper()))
                 .Select(x => new ExerciseOutput
                 {
                     Id = x.Id,
@@ -41,6 +56,7 @@ namespace Fitodu.Service.Concrete
                     Archived = x.Archived
                 })
                 .ToListAsync();
+            }
 
             if (exercises != null)
             {
@@ -184,20 +200,34 @@ namespace Fitodu.Service.Concrete
 
         }
 
-        public async Task<Result<ICollection<ExerciseOutput>>> GetArchivedExercises(string coachId)
+        public async Task<Result<ICollection<ExerciseOutput>>> GetArchivedExercises(string coachId, string SearchTerm)
         {
             var result = new Result<ICollection<ExerciseOutput>>();
-
-            var exercises = await _context.Exercises
-                .Where(x => x.IdCoach == coachId && x.Archived == true)
-                .Select(x => new ExerciseOutput
-                {
-                    Id = x.Id,
-                    Description = x.Description,
-                    Name = x.Name,
-                    Archived = x.Archived
-                }).ToListAsync();
-
+            var exercises = new List<ExerciseOutput>();
+            if (String.IsNullOrEmpty(SearchTerm))
+            {
+                exercises = await _context.Exercises
+                  .Where(x => x.IdCoach == coachId && x.Archived == true)
+                  .Select(x => new ExerciseOutput
+                  {
+                      Id = x.Id,
+                      Description = x.Description,
+                      Name = x.Name,
+                      Archived = x.Archived
+                  }).ToListAsync();
+            }
+            else
+            {
+                exercises = await _context.Exercises
+                  .Where(x => x.IdCoach == coachId && x.Archived == true && x.Name.ToUpper().StartsWith(SearchTerm.ToUpper()))
+                  .Select(x => new ExerciseOutput
+                  {
+                      Id = x.Id,
+                      Description = x.Description,
+                      Name = x.Name,
+                      Archived = x.Archived
+                  }).ToListAsync();
+            }
             if (exercises != null)
             {
                 result.Data = exercises;
@@ -210,11 +240,13 @@ namespace Fitodu.Service.Concrete
 
             return result;
         }
-        public async Task<Result<ICollection<ExerciseOutput>>> GetNotArchivedExercises(string coachId)
+        public async Task<Result<ICollection<ExerciseOutput>>> GetNotArchivedExercises(string coachId, string SearchTerm)
         {
             var result = new Result<ICollection<ExerciseOutput>>();
-
-            var exercises = await _context.Exercises
+            var exercises = new List<ExerciseOutput>();
+            if (String.IsNullOrEmpty(SearchTerm))
+            {
+                exercises = await _context.Exercises
                 .Where(x => x.IdCoach == coachId && x.Archived == false)
                 .Select(x => new ExerciseOutput
                 {
@@ -224,6 +256,21 @@ namespace Fitodu.Service.Concrete
                     Archived = x.Archived
                 })
                 .ToListAsync();
+            }
+            else
+            {
+                exercises = await _context.Exercises
+                .Where(x => x.IdCoach == coachId && x.Archived == false && x.Name.ToUpper().StartsWith(SearchTerm.ToUpper()))
+                .Select(x => new ExerciseOutput
+                {
+                    Id = x.Id,
+                    Description = x.Description,
+                    Name = x.Name,
+                    Archived = x.Archived
+                })
+                .ToListAsync();
+            }
+
 
             if (exercises != null)
             {

@@ -153,19 +153,19 @@
             <param name="id">Id of the exercise</param>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.ExerciseController.GetAllExercises">
+        <member name="M:Fitodu.Api.Controllers.ExerciseController.GetAllExercises(System.String)">
             <summary>
             Used to get a list of all (archived and not-archvied) exercises of a requesting coach .
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.ExerciseController.GetArchivedExercises">
+        <member name="M:Fitodu.Api.Controllers.ExerciseController.GetArchivedExercises(System.String)">
             <summary>
             Used to get a list of archived exercises of a requesting coach.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.ExerciseController.GetNotArchivedExercises">
+        <member name="M:Fitodu.Api.Controllers.ExerciseController.GetNotArchivedExercises(System.String)">
             <summary>
             Used to get a list of not-archived exercises of a requesting coach.
             </summary>

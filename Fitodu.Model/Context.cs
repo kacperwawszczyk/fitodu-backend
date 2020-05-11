@@ -32,6 +32,8 @@ namespace Fitodu.Model
         public DbSet<DayPlan> DayPlans { get; set; }
         public DbSet<WorkoutTime> WorkoutTimes { get; set; }
 
+        public DbSet<UserFeedback> UserFeedbacks { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder builder)

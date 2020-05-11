@@ -50,9 +50,9 @@ namespace Fitodu.Api.Controllers
         [HttpGet("exercises")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(ICollection<ExerciseOutput>), 200)]
-        public async Task<IActionResult> GetAllExercises() //all exercises of a coach
+        public async Task<IActionResult> GetAllExercises([FromQuery] string name) //all exercises of a coach
         {
-            var result = await _exerciseService.GetAllExercises(CurrentUser.Id);
+            var result = await _exerciseService.GetAllExercises(CurrentUser.Id, name);
             return GetResult(result);
         }
 
@@ -63,9 +63,9 @@ namespace Fitodu.Api.Controllers
         [HttpGet("exercises/archived")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(ICollection<ExerciseOutput>), 200)]
-        public async Task<IActionResult> GetArchivedExercises() //all archived exercises of a coach
+        public async Task<IActionResult> GetArchivedExercises([FromQuery] string name) //all archived exercises of a coach
         {
-            var result = await _exerciseService.GetArchivedExercises(CurrentUser.Id);
+            var result = await _exerciseService.GetArchivedExercises(CurrentUser.Id, name);
             return GetResult(result);
         }
 
@@ -76,9 +76,9 @@ namespace Fitodu.Api.Controllers
         [HttpGet("exercises/not-archived")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(ICollection<ExerciseOutput>), 200)]
-        public async Task<IActionResult> GetNotArchivedExercises() //all  not archived exercises of a coach
+        public async Task<IActionResult> GetNotArchivedExercises([FromQuery] string name) //all  not archived exercises of a coach
         {
-            var result = await _exerciseService.GetNotArchivedExercises(CurrentUser.Id);
+            var result = await _exerciseService.GetNotArchivedExercises(CurrentUser.Id, name);
             return GetResult(result);
         }
 
