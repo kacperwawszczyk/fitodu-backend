@@ -465,7 +465,8 @@ namespace Fitodu.Service.Concrete
                     //    return result;
                     //}
 
-                    Bitmap newImage = ResizeImage(image, 150, 150);
+                    //Bitmap newImage = ResizeImage(image, 150, 150);
+                    Image newImage = ResizeImage(image, 150, 150);
                     BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
                     MemoryStream msImage = new MemoryStream();
                     newImage.Save(msImage, ImageFormat.Jpeg);
@@ -480,7 +481,7 @@ namespace Fitodu.Service.Concrete
                 else
                 {
                     result.Error = ErrorType.Forbidden;
-                    result.ErrorMessage = "Image format is not jpeg";
+                    result.ErrorMessage = "Image format is not jpeg or png";
                     return result;
                 }
             }
@@ -497,7 +498,7 @@ namespace Fitodu.Service.Concrete
                 fileBytes = ms.ToArray();
             }
 
-            return WriterHelper.GetImageFormat(fileBytes) == WriterHelper.ImageFormat.jpeg;
+            return (WriterHelper.GetImageFormat(fileBytes) == WriterHelper.ImageFormat.jpeg || WriterHelper.GetImageFormat(fileBytes) == WriterHelper.ImageFormat.png);
         }
 
         public static Bitmap ResizeImage(Image image, int width, int height)
@@ -523,6 +524,56 @@ namespace Fitodu.Service.Concrete
             }
 
             return destImage;
+        }
+
+        public static Image FixedSize(Image imgPhoto, int Width, int Height)
+        {
+            int sourceWidth = imgPhoto.Width;
+            int sourceHeight = imgPhoto.Height;
+            int sourceX = 0;
+            int sourceY = 0;
+            int destX = 0;
+            int destY = 0;
+
+            float nPercent = 0;
+            float nPercentW = 0;
+            float nPercentH = 0;
+
+            nPercentW = ((float)Width / (float)sourceWidth);
+            nPercentH = ((float)Height / (float)sourceHeight);
+            if (nPercentH < nPercentW)
+            {
+                nPercent = nPercentH;
+                destX = System.Convert.ToInt16((Width -
+                              (sourceWidth * nPercent)) / 2);
+            }
+            else
+            {
+                nPercent = nPercentW;
+                destY = System.Convert.ToInt16((Height -
+                              (sourceHeight * nPercent)) / 2);
+            }
+
+            int destWidth = (int)(sourceWidth * nPercent);
+            int destHeight = (int)(sourceHeight * nPercent);
+
+            Bitmap bmPhoto = new Bitmap(Width, Height,
+                              PixelFormat.Format24bppRgb);
+            bmPhoto.SetResolution(imgPhoto.HorizontalResolution,
+                             imgPhoto.VerticalResolution);
+
+            Graphics grPhoto = Graphics.FromImage(bmPhoto);
+            grPhoto.Clear(Color.Black);
+            grPhoto.InterpolationMode =
+                    InterpolationMode.HighQualityBicubic;
+
+            grPhoto.DrawImage(imgPhoto,
+                new Rectangle(destX, destY, destWidth, destHeight),
+                new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight),
+                GraphicsUnit.Pixel);
+
+            grPhoto.Dispose();
+            return bmPhoto;
         }
     }
 }
