@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fitodu.Service.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Fitodu.Service.Abstract
 {
@@ -19,5 +20,6 @@ namespace Fitodu.Service.Abstract
         Task<Result> SignOut(SignOutInput model);
         Task<Result> ForgotPassword(string email);
         Task<Result> ResetPassword(ResetPasswordInput model);
+        Task<Result<string>> UpdateAvatar(string id, IFormFile file);
     }
 }

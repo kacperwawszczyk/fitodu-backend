@@ -425,155 +425,155 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result<string>> UpdateAvatar(string id, UserRole role, IFormFile file)
-        {
-            var result = new Result<string>();
+        //public async Task<Result<string>> UpdateAvatar(string id, UserRole role, IFormFile file)
+        //{
+        //    var result = new Result<string>();
 
-            if (role != UserRole.Coach)
-            {
-                result.Error = ErrorType.Forbidden;
-                result.ErrorMessage = "User is not a coach";
-                return result;
-            }
-            else
-            {
-                var client = _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
+        //    if (role != UserRole.Coach)
+        //    {
+        //        result.Error = ErrorType.Forbidden;
+        //        result.ErrorMessage = "User is not a coach";
+        //        return result;
+        //    }
+        //    else
+        //    {
+        //        var client = _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
 
-                if (client == null)
-                {
-                    result.Error = ErrorType.BadRequest;
-                    result.ErrorMessage = "User does not exist";
-                    return result;
-                }
+        //        if (client == null)
+        //        {
+        //            result.Error = ErrorType.BadRequest;
+        //            result.ErrorMessage = "User does not exist";
+        //            return result;
+        //        }
 
-                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
-                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(id);
+        //        BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+        //        BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(id);
 
-                if (await blobContainerClient.ExistsAsync() == false)
-                {
-                    blobContainerClient = await blobServiceClient.CreateBlobContainerAsync(id);
-                    blobContainerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
-                }
+        //        if (await blobContainerClient.ExistsAsync() == false)
+        //        {
+        //            blobContainerClient = await blobServiceClient.CreateBlobContainerAsync(id);
+        //            blobContainerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+        //        }
 
-                if (CheckIfImageFile(file))
-                {
-                    Image image = Image.FromStream(file.OpenReadStream(), true, true);
-                    //if (image.Width < 128 || image.Width > 1024 || image.Height < 128 || image.Height > 1024)
-                    //{
-                    //    result.Error = ErrorType.Forbidden;
-                    //    result.ErrorMessage = "Image has to be between 128x128 and 1024x1024";
-                    //    return result;
-                    //}
+        //        if (CheckIfImageFile(file))
+        //        {
+        //            Image image = Image.FromStream(file.OpenReadStream(), true, true);
+        //            //if (image.Width < 128 || image.Width > 1024 || image.Height < 128 || image.Height > 1024)
+        //            //{
+        //            //    result.Error = ErrorType.Forbidden;
+        //            //    result.ErrorMessage = "Image has to be between 128x128 and 1024x1024";
+        //            //    return result;
+        //            //}
 
-                    //Bitmap newImage = ResizeImage(image, 150, 150);
-                    Image newImage = ResizeImage(image, 150, 150);
-                    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
-                    MemoryStream msImage = new MemoryStream();
-                    newImage.Save(msImage, ImageFormat.Jpeg);
-                    msImage.Position = 0;
-                    using (var ms = msImage)
-                    {
-                        await blobClient.UploadAsync(ms, true);
-                    }
-                    result.Data = blobClient.Uri.AbsoluteUri;
-                    //await blobClient.UploadAsync(file.OpenReadStream());
-                }
-                else
-                {
-                    result.Error = ErrorType.Forbidden;
-                    result.ErrorMessage = "Image format is not jpeg or png";
-                    return result;
-                }
-            }
+        //            //Bitmap newImage = ResizeImage(image, 150, 150);
+        //            Image newImage = ResizeImage(image, 150, 150);
+        //            BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+        //            MemoryStream msImage = new MemoryStream();
+        //            newImage.Save(msImage, ImageFormat.Jpeg);
+        //            msImage.Position = 0;
+        //            using (var ms = msImage)
+        //            {
+        //                await blobClient.UploadAsync(ms, true);
+        //            }
+        //            result.Data = blobClient.Uri.AbsoluteUri;
+        //            //await blobClient.UploadAsync(file.OpenReadStream());
+        //        }
+        //        else
+        //        {
+        //            result.Error = ErrorType.Forbidden;
+        //            result.ErrorMessage = "Image format is not jpeg or png";
+        //            return result;
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        private bool CheckIfImageFile(IFormFile file)
-        {
-            byte[] fileBytes;
-            using (var ms = new MemoryStream())
-            {
-                file.CopyTo(ms);
-                fileBytes = ms.ToArray();
-            }
+        //private bool CheckIfImageFile(IFormFile file)
+        //{
+        //    byte[] fileBytes;
+        //    using (var ms = new MemoryStream())
+        //    {
+        //        file.CopyTo(ms);
+        //        fileBytes = ms.ToArray();
+        //    }
 
-            return (WriterHelper.GetImageFormat(fileBytes) == WriterHelper.ImageFormat.jpeg || WriterHelper.GetImageFormat(fileBytes) == WriterHelper.ImageFormat.png);
-        }
+        //    return (WriterHelper.GetImageFormat(fileBytes) == WriterHelper.ImageFormat.jpeg || WriterHelper.GetImageFormat(fileBytes) == WriterHelper.ImageFormat.png);
+        //}
 
-        public static Bitmap ResizeImage(Image image, int width, int height)
-        {
-            var destRect = new Rectangle(0, 0, width, height);
-            var destImage = new Bitmap(width, height);
+        //public static Bitmap ResizeImage(Image image, int width, int height)
+        //{
+        //    var destRect = new Rectangle(0, 0, width, height);
+        //    var destImage = new Bitmap(width, height);
 
-            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+        //    destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
 
-            using (var graphics = Graphics.FromImage(destImage))
-            {
-                graphics.CompositingMode = CompositingMode.SourceCopy;
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
-                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+        //    using (var graphics = Graphics.FromImage(destImage))
+        //    {
+        //        graphics.CompositingMode = CompositingMode.SourceCopy;
+        //        graphics.CompositingQuality = CompositingQuality.HighQuality;
+        //        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+        //        graphics.SmoothingMode = SmoothingMode.HighQuality;
+        //        graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                using (var wrapMode = new ImageAttributes())
-                {
-                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
-                }
-            }
+        //        using (var wrapMode = new ImageAttributes())
+        //        {
+        //            wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+        //            graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+        //        }
+        //    }
 
-            return destImage;
-        }
+        //    return destImage;
+        //}
 
-        public static Image FixedSize(Image imgPhoto, int Width, int Height)
-        {
-            int sourceWidth = imgPhoto.Width;
-            int sourceHeight = imgPhoto.Height;
-            int sourceX = 0;
-            int sourceY = 0;
-            int destX = 0;
-            int destY = 0;
+        //public static Image FixedSize(Image imgPhoto, int Width, int Height)
+        //{
+        //    int sourceWidth = imgPhoto.Width;
+        //    int sourceHeight = imgPhoto.Height;
+        //    int sourceX = 0;
+        //    int sourceY = 0;
+        //    int destX = 0;
+        //    int destY = 0;
 
-            float nPercent = 0;
-            float nPercentW = 0;
-            float nPercentH = 0;
+        //    float nPercent = 0;
+        //    float nPercentW = 0;
+        //    float nPercentH = 0;
 
-            nPercentW = ((float)Width / (float)sourceWidth);
-            nPercentH = ((float)Height / (float)sourceHeight);
-            if (nPercentH < nPercentW)
-            {
-                nPercent = nPercentH;
-                destX = System.Convert.ToInt16((Width -
-                              (sourceWidth * nPercent)) / 2);
-            }
-            else
-            {
-                nPercent = nPercentW;
-                destY = System.Convert.ToInt16((Height -
-                              (sourceHeight * nPercent)) / 2);
-            }
+        //    nPercentW = ((float)Width / (float)sourceWidth);
+        //    nPercentH = ((float)Height / (float)sourceHeight);
+        //    if (nPercentH < nPercentW)
+        //    {
+        //        nPercent = nPercentH;
+        //        destX = System.Convert.ToInt16((Width -
+        //                      (sourceWidth * nPercent)) / 2);
+        //    }
+        //    else
+        //    {
+        //        nPercent = nPercentW;
+        //        destY = System.Convert.ToInt16((Height -
+        //                      (sourceHeight * nPercent)) / 2);
+        //    }
 
-            int destWidth = (int)(sourceWidth * nPercent);
-            int destHeight = (int)(sourceHeight * nPercent);
+        //    int destWidth = (int)(sourceWidth * nPercent);
+        //    int destHeight = (int)(sourceHeight * nPercent);
 
-            Bitmap bmPhoto = new Bitmap(Width, Height,
-                              PixelFormat.Format24bppRgb);
-            bmPhoto.SetResolution(imgPhoto.HorizontalResolution,
-                             imgPhoto.VerticalResolution);
+        //    Bitmap bmPhoto = new Bitmap(Width, Height,
+        //                      PixelFormat.Format24bppRgb);
+        //    bmPhoto.SetResolution(imgPhoto.HorizontalResolution,
+        //                     imgPhoto.VerticalResolution);
 
-            Graphics grPhoto = Graphics.FromImage(bmPhoto);
-            grPhoto.Clear(Color.Black);
-            grPhoto.InterpolationMode =
-                    InterpolationMode.HighQualityBicubic;
+        //    Graphics grPhoto = Graphics.FromImage(bmPhoto);
+        //    grPhoto.Clear(Color.Black);
+        //    grPhoto.InterpolationMode =
+        //            InterpolationMode.HighQualityBicubic;
 
-            grPhoto.DrawImage(imgPhoto,
-                new Rectangle(destX, destY, destWidth, destHeight),
-                new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight),
-                GraphicsUnit.Pixel);
+        //    grPhoto.DrawImage(imgPhoto,
+        //        new Rectangle(destX, destY, destWidth, destHeight),
+        //        new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight),
+        //        GraphicsUnit.Pixel);
 
-            grPhoto.Dispose();
-            return bmPhoto;
-        }
+        //    grPhoto.Dispose();
+        //    return bmPhoto;
+        //}
     }
 }

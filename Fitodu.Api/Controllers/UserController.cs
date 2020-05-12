@@ -5,6 +5,8 @@ using Fitodu.Service.Models;
 using Fitodu.Service.Infrastructure.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Fitodu.Api.Controllers
 {
@@ -154,6 +156,15 @@ namespace Fitodu.Api.Controllers
         public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordInput model)
         {
             var result = await _userService.ResetPassword(model);
+            return GetResult(result);
+        }
+
+        [HttpPut("avatar")]
+        [Authorize]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<IActionResult> UpdateAvatar(IFormFile file)
+        {
+            var result = await _userService.UpdateAvatar(CurrentUser.Id, file);
             return GetResult(result);
         }
     }

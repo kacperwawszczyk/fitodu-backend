@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -8,13 +12,16 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Azure.Storage.Blobs;
 using Fitodu.Core.Enums;
 using Fitodu.Core.Extensions;
 using Fitodu.Model;
 using Fitodu.Model.Entities;
 using Fitodu.Model.Extensions;
 using Fitodu.Service.Abstract;
+using Fitodu.Service.Attributes;
 using Fitodu.Service.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -39,6 +46,8 @@ namespace Fitodu.Service.Concrete
         private readonly IEmailMarketingService _emailMarketingService;
         private readonly IBillingService _billingService;
 
+        private string azureConnectionString;
+
         public UserService(
            ILogger<UserService> logger,
            IConfiguration configuration,
@@ -61,6 +70,8 @@ namespace Fitodu.Service.Concrete
             _emailService = emailService;
             _emailMarketingService = emailMarketingService;
             _billingService = billingService;
+
+            azureConnectionString = _configuration.GetConnectionString("StorageConnection");
         }
 
         //public async Task<Result<ICollection<UserListItemOutput>>> GetList(string userId)
@@ -130,7 +141,7 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        
+
 
         //public async Task<Result<string>> Create(CreateUserInput model)
         //{
@@ -424,10 +435,10 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            if(user.Role == UserRole.Coach)
+            if (user.Role == UserRole.Coach)
             {
                 var coach = await _context.Coaches.Where(x => x.Id == user.Id).FirstOrDefaultAsync();
-                if(coach.CancelTimeHours == null || coach.CancelTimeMinutes == null)
+                if (coach.CancelTimeHours == null || coach.CancelTimeMinutes == null)
                 {
                     firstLogin = true;
                 }
@@ -598,7 +609,7 @@ namespace Fitodu.Service.Concrete
             }
 
             //var decoded = WebUtility.UrlDecode(model.ResetToken);
-            
+
 
             var resetResult = await _userManager.ResetPasswordAsync(user, model.ResetToken, model.NewPassword);
             if (!resetResult.Succeeded)
@@ -624,6 +635,149 @@ namespace Fitodu.Service.Concrete
             }
 
             return result;
+        }
+
+        public async Task<Result<string>> UpdateAvatar(string id, IFormFile file)
+        {
+            var result = new Result<string>();
+
+
+            var client = _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
+
+            if (client == null)
+            {
+                result.Error = ErrorType.BadRequest;
+                result.ErrorMessage = "Not a valid user";
+                return result;
+            }
+
+            BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+            BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(id);
+
+            if (await blobContainerClient.ExistsAsync() == false)
+            {
+                blobContainerClient = await blobServiceClient.CreateBlobContainerAsync(id);
+                blobContainerClient.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+            }
+
+            if (CheckIfImageFile(file))
+            {
+                Image image = Image.FromStream(file.OpenReadStream(), true, true);
+                //if (image.Width < 128 || image.Width > 1024 || image.Height < 128 || image.Height > 1024)
+                //{
+                //    result.Error = ErrorType.Forbidden;
+                //    result.ErrorMessage = "Image have to be between 128x128 and 1024x1024";
+                //    return result;
+                //}
+                //Bitmap newImage = ResizeImage(image, 150, 150);
+                Image newImage = FixedSize(image, 150, 150);
+                BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                MemoryStream msImage = new MemoryStream();
+                newImage.Save(msImage, ImageFormat.Jpeg);
+                msImage.Position = 0;
+                using (var ms = msImage)
+                {
+                    await blobClient.UploadAsync(ms, true);
+                }
+                result.Data = blobClient.Uri.AbsoluteUri;
+                //await blobClient.UploadAsync(file.OpenReadStream());
+            }
+            else
+            {
+                result.Error = ErrorType.Forbidden;
+                result.ErrorMessage = "Image format is not jpeg or png";
+                return result;
+            }
+
+
+            return result;
+        }
+
+        private bool CheckIfImageFile(IFormFile file)
+        {
+            byte[] fileBytes;
+            using (var ms = new MemoryStream())
+            {
+                file.CopyTo(ms);
+                fileBytes = ms.ToArray();
+            }
+
+            return (WriterHelper.GetImageFormat(fileBytes) == WriterHelper.ImageFormat.jpeg || WriterHelper.GetImageFormat(fileBytes) == WriterHelper.ImageFormat.png);
+        }
+
+        public static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
+        public static Image FixedSize(Image imgPhoto, int Width, int Height)
+        {
+            int sourceWidth = imgPhoto.Width;
+            int sourceHeight = imgPhoto.Height;
+            int sourceX = 0;
+            int sourceY = 0;
+            int destX = 0;
+            int destY = 0;
+
+            float nPercent = 0;
+            float nPercentW = 0;
+            float nPercentH = 0;
+
+            nPercentW = ((float)Width / (float)sourceWidth);
+            nPercentH = ((float)Height / (float)sourceHeight);
+            if (nPercentH < nPercentW)
+            {
+                nPercent = nPercentH;
+                destX = System.Convert.ToInt16((Width -
+                              (sourceWidth * nPercent)) / 2);
+            }
+            else
+            {
+                nPercent = nPercentW;
+                destY = System.Convert.ToInt16((Height -
+                              (sourceHeight * nPercent)) / 2);
+            }
+
+            int destWidth = (int)(sourceWidth * nPercent);
+            int destHeight = (int)(sourceHeight * nPercent);
+
+            Bitmap bmPhoto = new Bitmap(Width, Height,
+                              PixelFormat.Format24bppRgb);
+            bmPhoto.SetResolution(imgPhoto.HorizontalResolution,
+                             imgPhoto.VerticalResolution);
+
+            Graphics grPhoto = Graphics.FromImage(bmPhoto);
+            grPhoto.Clear(Color.Black);
+            grPhoto.InterpolationMode =
+                    InterpolationMode.HighQualityBicubic;
+
+            grPhoto.DrawImage(imgPhoto,
+                new Rectangle(destX, destY, destWidth, destHeight),
+                new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight),
+                GraphicsUnit.Pixel);
+
+            grPhoto.Dispose();
+            return bmPhoto;
         }
 
         private (string, DateTime) CreateAccessToken(User user)
