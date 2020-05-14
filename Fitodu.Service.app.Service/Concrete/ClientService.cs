@@ -699,29 +699,30 @@ namespace Fitodu.Service.Concrete
             }
             else
             {
-                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
-                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
-                if (await blobContainerClient.ExistsAsync() == false)
-                {
-                    client.Avatar = null;
-                }
-                else
-                {
-                    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
-                    if (await blobClient.ExistsAsync() == false)
-                    {
-                        client.Avatar = null;
-                    }
-                    else
-                    {
-                        client.Avatar = blobClient.Uri.AbsoluteUri;
-                    }
-                }
+                //BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                //BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
+                //if (await blobContainerClient.ExistsAsync() == false)
+                //{
+                //    client.Avatar = null;
+                //}
+                //else
+                //{
+                //    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                //    if (await blobClient.ExistsAsync() == false)
+                //    {
+                //        client.Avatar = null;
+                //    }
+                //    else
+                //    {
+                //        client.Avatar = blobClient.Uri.AbsoluteUri;
+                //    }
+                //}
                 User clientAcc = await _context.Users.Where(x => x.Id == Id).FirstOrDefaultAsync();
                 if (clientAcc != null)
                 {
                     client.PhoneNumber = clientAcc.PhoneNumber;
                     client.Email = clientAcc.Email;
+                    client.Avatar = clientAcc.Avatar;
                 }
                 CoachClient clientTrain = await _context.CoachClients.Where(x => x.IdClient == Id).FirstOrDefaultAsync();
                 if (clientTrain != null)
@@ -840,29 +841,30 @@ namespace Fitodu.Service.Concrete
                     }
                     else
                     {
-                        BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
-                        BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(coach.Id);
-                        if (await blobContainerClient.ExistsAsync() == false)
-                        {
-                            coach.Avatar = null;
-                        }
-                        else
-                        {
-                            BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
-                            if (await blobClient.ExistsAsync() == false)
-                            {
-                                coach.Avatar = null;
-                            }
-                            else
-                            {
-                                coach.Avatar = blobClient.Uri.AbsoluteUri;
-                            }
-                        }
+                        //BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                        //BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(coach.Id);
+                        //if (await blobContainerClient.ExistsAsync() == false)
+                        //{
+                        //    coach.Avatar = null;
+                        //}
+                        //else
+                        //{
+                        //    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                        //    if (await blobClient.ExistsAsync() == false)
+                        //    {
+                        //        coach.Avatar = null;
+                        //    }
+                        //    else
+                        //    {
+                        //        coach.Avatar = blobClient.Uri.AbsoluteUri;
+                        //    }
+                        //}
                         User coachAcc = await _context.Users.Where(x => x.Id == coach.Id).FirstOrDefaultAsync();
                         if (coachAcc != null)
                         {
                             coach.PhoneNumber = coachAcc.PhoneNumber;
                             coach.Email = coachAcc.Email;
+                            coach.Avatar = coachAcc.Avatar;
                         }
                         result.Data = coach;
                     }
@@ -919,29 +921,30 @@ namespace Fitodu.Service.Concrete
                     }
                     else
                     {
-                        BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
-                        BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
-                        if (await blobContainerClient.ExistsAsync() == false)
-                        {
-                            client.Avatar = null;
-                        }
-                        else
-                        {
-                            BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
-                            if (await blobClient.ExistsAsync() == false)
-                            {
-                                client.Avatar = null;
-                            }
-                            else
-                            {
-                                client.Avatar = blobClient.Uri.AbsoluteUri;
-                            }
-                        }
+                        //BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                        //BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
+                        //if (await blobContainerClient.ExistsAsync() == false)
+                        //{
+                        //    client.Avatar = null;
+                        //}
+                        //else
+                        //{
+                        //    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                        //    if (await blobClient.ExistsAsync() == false)
+                        //    {
+                        //        client.Avatar = null;
+                        //    }
+                        //    else
+                        //    {
+                        //        client.Avatar = blobClient.Uri.AbsoluteUri;
+                        //    }
+                        //}
                         User clientAcc = await _context.Users.Where(x => x.Id == clientId).FirstOrDefaultAsync();
                         if (clientAcc != null)
                         {
                             client.PhoneNumber = clientAcc.PhoneNumber;
                             client.Email = clientAcc.Email;
+                            client.Avatar = clientAcc.Avatar;
                         }
                         CoachClient clientTrain = await _context.CoachClients.Where(x => x.IdClient == clientId).FirstOrDefaultAsync();
                         if (clientTrain != null)

@@ -21,7 +21,7 @@ namespace Fitodu.Service.Abstract
         Task<Result> DeleteTraining(string requesterId, UserRole requesterRole, int trainingId);
         Task<Result<string>> GetTrainingsClient(int idTraining);
         Task<Result<string>> GetTrainingsCoach(int idTraining);
-        Task<Result<ICollection<TrainingOutput>>> GetTrainings(string id, UserRole role, string date, string idClient);
+        Task<Result<ICollection<TrainingListOutput>>> GetTrainings(string id, UserRole role, string date, string idClient);
         Task<Result<TrainingOutput>> GetTraining(string userId, UserRole role, int trainingId);
     }
 }

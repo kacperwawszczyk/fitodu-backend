@@ -178,37 +178,37 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result<ICollection<CoachOutput>>> GetAllCoaches()
-        {
-            var result = new Result<ICollection<CoachOutput>>();
-            var coaches = await _context.Coaches.ToListAsync();
-            if (coaches == null)
-            {
-                result.Error = ErrorType.NoContent;
-                result.ErrorMessage = "No coaches found";
-                return result;
-            }
-            var coachesResult = new List<CoachOutput>();
-            foreach (Coach c in coaches)
-            {
-                CoachOutput nc = new CoachOutput();
-                nc.Id = c.Id;
-                nc.AddressCity = c.AddressCity;
-                nc.AddressCountry = c.AddressCountry;
-                nc.AddressLine1 = c.AddressLine1;
-                nc.AddressLine2 = c.AddressLine2;
-                nc.AddressPostalCode = c.AddressPostalCode;
-                nc.AddressState = c.AddressState;
-                nc.Name = c.Name;
-                nc.Rules = c.Rules;
-                nc.Surname = c.Surname;
-                nc.CancelTimeHours = c.CancelTimeHours;
-                nc.CancelTimeMinutes = c.CancelTimeMinutes;
-                coachesResult.Add(nc);
-            }
-            result.Data = coachesResult;
-            return result;
-        }
+        //public async Task<Result<ICollection<CoachOutput>>> GetAllCoaches()
+        //{
+        //    var result = new Result<ICollection<CoachOutput>>();
+        //    var coaches = await _context.Coaches.ToListAsync();
+        //    if (coaches == null)
+        //    {
+        //        result.Error = ErrorType.NoContent;
+        //        result.ErrorMessage = "No coaches found";
+        //        return result;
+        //    }
+        //    var coachesResult = new List<CoachOutput>();
+        //    foreach (Coach c in coaches)
+        //    {
+        //        CoachOutput nc = new CoachOutput();
+        //        nc.Id = c.Id;
+        //        nc.AddressCity = c.AddressCity;
+        //        nc.AddressCountry = c.AddressCountry;
+        //        nc.AddressLine1 = c.AddressLine1;
+        //        nc.AddressLine2 = c.AddressLine2;
+        //        nc.AddressPostalCode = c.AddressPostalCode;
+        //        nc.AddressState = c.AddressState;
+        //        nc.Name = c.Name;
+        //        nc.Rules = c.Rules;
+        //        nc.Surname = c.Surname;
+        //        nc.CancelTimeHours = c.CancelTimeHours;
+        //        nc.CancelTimeMinutes = c.CancelTimeMinutes;
+        //        coachesResult.Add(nc);
+        //    }
+        //    result.Data = coachesResult;
+        //    return result;
+        //}
 
         public async Task<Result<CoachOutput>> GetCoach(string Id)
         {
@@ -232,8 +232,13 @@ namespace Fitodu.Service.Concrete
                 .FirstOrDefaultAsync(x => x.Id == Id);
 
             User coachAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);
-            coach.PhoneNumber = coachAcc.PhoneNumber;
-            coach.Email = coachAcc.Email;
+            if (coachAcc != null)
+            {
+                coach.PhoneNumber = coachAcc.PhoneNumber;
+                coach.Email = coachAcc.Email;
+                coach.Avatar = coachAcc.Avatar;
+            }
+
 
             if (coach == null)
             {
@@ -243,24 +248,24 @@ namespace Fitodu.Service.Concrete
             }
             else
             {
-                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
-                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(coach.Id);
-                if (await blobContainerClient.ExistsAsync() == false)
-                {
-                    coach.Avatar = null;
-                }
-                else
-                {
-                    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
-                    if (await blobClient.ExistsAsync() == false)
-                    {
-                        coach.Avatar = null;
-                    }
-                    else
-                    {
-                        coach.Avatar = blobClient.Uri.AbsoluteUri;
-                    }
-                }
+                //BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                //BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(coach.Id);
+                //if (await blobContainerClient.ExistsAsync() == false)
+                //{
+                //    coach.Avatar = null;
+                //}
+                //else
+                //{
+                //    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                //    if (await blobClient.ExistsAsync() == false)
+                //    {
+                //        coach.Avatar = null;
+                //    }
+                //    else
+                //    {
+                //        coach.Avatar = blobClient.Uri.AbsoluteUri;
+                //    }
+                //}
                 result.Data = coach;
                 return result;
             }
@@ -366,29 +371,30 @@ namespace Fitodu.Service.Concrete
                     PhoneNumber = x.PhoneNumber
                 })
                 .FirstOrDefaultAsync();
-                BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
-                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
-                if (await blobContainerClient.ExistsAsync() == false)
-                {
-                    client.Avatar = null;
-                }
-                else
-                {
-                    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
-                    if (await blobClient.ExistsAsync() == false)
-                    {
-                        client.Avatar = null;
-                    }
-                    else
-                    {
-                        client.Avatar = blobClient.Uri.AbsoluteUri;
-                    }
-                }
+                //BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                //BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
+                //if (await blobContainerClient.ExistsAsync() == false)
+                //{
+                //    client.Avatar = null;
+                //}
+                //else
+                //{
+                //    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                //    if (await blobClient.ExistsAsync() == false)
+                //    {
+                //        client.Avatar = null;
+                //    }
+                //    else
+                //    {
+                //        client.Avatar = blobClient.Uri.AbsoluteUri;
+                //    }
+                //}
                 User clientAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == client.Id);
                 if (clientAcc != null)
                 {
                     client.PhoneNumber = clientAcc.PhoneNumber;
                     client.Email = clientAcc.Email;
+                    client.Avatar = clientAcc.Avatar;
                 }
 
                 clients.Add(client);

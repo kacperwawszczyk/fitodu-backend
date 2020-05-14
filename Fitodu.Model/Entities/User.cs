@@ -11,6 +11,7 @@ namespace Fitodu.Model.Entities
         public string FullName { get; set; }
 
         public string ResetToken { get; set; }
+        public string Avatar { get; set; }
 
         public DateTime? ResetTokenExpiresOn { get; set; }
 

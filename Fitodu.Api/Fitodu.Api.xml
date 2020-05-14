@@ -106,12 +106,6 @@
             <param name="id">Id of the client</param>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.CoachController.GetAllCoaches">
-            <summary>
-            Used by anyone to get list of all coaches
-            </summary>
-            <returns> Returns ICollection of CoachOutput containing collection of information about Coaches </returns>
-        </member>
         <member name="M:Fitodu.Api.Controllers.CoachController.GetCoach">
             <summary>
             Used by Coach to get information about oneself

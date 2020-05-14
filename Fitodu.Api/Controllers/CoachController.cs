@@ -32,20 +32,6 @@ namespace Fitodu.Api.Controllers
             return GetResult(result);
         }
 
-        // TODO: Wykomentować jak będzie niepotrzebne
-        /// <summary>
-        /// Used by anyone to get list of all coaches
-        /// </summary>
-        /// <returns> Returns ICollection of CoachOutput containing collection of information about Coaches </returns>
-        [HttpGet("coaches")]
-        [Authorize]
-        [ProducesResponseType(typeof(ICollection<CoachOutput>), 200)]
-        public async Task<IActionResult> GetAllCoaches()
-        {
-            var result = await _coachService.GetAllCoaches();
-            return GetResult(result);
-        }
-
         /// <summary>
         /// Used by Coach to get information about oneself
         /// </summary>

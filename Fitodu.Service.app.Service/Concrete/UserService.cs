@@ -642,7 +642,8 @@ namespace Fitodu.Service.Concrete
             var result = new Result<string>();
 
 
-            var client = _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
+            User client = await _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
+            User _tmpClient = client;
 
             if (client == null)
             {
@@ -679,7 +680,35 @@ namespace Fitodu.Service.Concrete
                 {
                     await blobClient.UploadAsync(ms, true);
                 }
-                result.Data = blobClient.Uri.AbsoluteUri;
+
+                using (var transaction = _context.Database.BeginTransaction())
+                {
+                    client.Avatar = blobClient.Uri.AbsoluteUri;
+                    var updateResult = _context.Users.Update(client);
+                    if (await _context.SaveChangesAsync() == 0)
+                    {
+                        if (client.Equals(_tmpClient))
+                        {
+                            result.Data = blobClient.Uri.AbsoluteUri;
+                            transaction.Commit();
+                            return result;
+                        }
+                        else
+                        {
+                            transaction.Rollback();
+                            result.Error = ErrorType.InternalServerError;
+                            result.ErrorMessage = "Couldn't save changes to the database";
+                            return result;
+                        }
+                    }
+                    else
+                    {
+                        result.Data = blobClient.Uri.AbsoluteUri;
+                        transaction.Commit();
+                        return result;
+                    }
+                }
+
                 //await blobClient.UploadAsync(file.OpenReadStream());
             }
             else
@@ -688,9 +717,6 @@ namespace Fitodu.Service.Concrete
                 result.ErrorMessage = "Image format is not jpeg or png";
                 return result;
             }
-
-
-            return result;
         }
 
         private bool CheckIfImageFile(IFormFile file)

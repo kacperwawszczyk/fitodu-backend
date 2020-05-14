@@ -501,9 +501,9 @@ namespace Fitodu.Service.Concrete
             return result;
         }
 
-        public async Task<Result<ICollection<TrainingOutput>>> GetTrainings(string id, UserRole role, string date, string idClient)
+        public async Task<Result<ICollection<TrainingListOutput>>> GetTrainings(string id, UserRole role, string date, string idClient)
         {
-            var result = new Result<ICollection<TrainingOutput>>();
+            var result = new Result<ICollection<TrainingListOutput>>();
 
             IQueryable trainings = null;
 
@@ -580,7 +580,7 @@ namespace Fitodu.Service.Concrete
                 }
             }
 
-            result.Data = await trainings.ProjectTo<TrainingOutput>(_mapper.ConfigurationProvider).ToListAsync();
+            result.Data = await trainings.ProjectTo<TrainingListOutput>(_mapper.ConfigurationProvider).ToListAsync();
 
             if (result.Data == null)
             {
@@ -590,49 +590,55 @@ namespace Fitodu.Service.Concrete
             else
             {
                 var _trainings = result.Data;
-                foreach (TrainingOutput trainingOutput in _trainings)
+                foreach (TrainingListOutput trainingOutput in _trainings)
                 {
-                    foreach (TrainingExerciseOutput trainingExerciseOutput in trainingOutput.TrainingExercises.ToList())
-                    {
-                        if (trainingExerciseOutput != null)
-                        {
-                            if (trainingExerciseOutput.Exercise != null)
-                            {
-                                var max = await _context.Maximums.Where(x => x.IdExercise == trainingExerciseOutput.Exercise.Id && x.IdClient == trainingOutput.IdClient).FirstOrDefaultAsync();
-                                if (max != null)
-                                {
-                                    MaximumOutput maxi = new MaximumOutput();
-                                    maxi.Max = max.Max;
-                                    trainingExerciseOutput.Maximum = maxi;
-                                }
+                    //foreach (TrainingExerciseOutput trainingExerciseOutput in trainingOutput.TrainingExercises.ToList())
+                    //{
+                    //    if (trainingExerciseOutput != null)
+                    //    {
+                    //        if (trainingExerciseOutput.Exercise != null)
+                    //        {
+                    //            var max = await _context.Maximums.Where(x => x.IdExercise == trainingExerciseOutput.Exercise.Id && x.IdClient == trainingOutput.IdClient).FirstOrDefaultAsync();
+                    //            if (max != null)
+                    //            {
+                    //                MaximumOutput maxi = new MaximumOutput();
+                    //                maxi.Max = max.Max;
+                    //                trainingExerciseOutput.Maximum = maxi;
+                    //            }
 
-                            }
+                    //        }
 
-                        }
-                    }
+                    //    }
+                    //}
                     var client = await _context.Clients.Where(x => x.Id == trainingOutput.IdClient).FirstOrDefaultAsync();
                     if (client != null)
                     {
                         trainingOutput.ClientName = client.Name;
                         trainingOutput.ClientSurname = client.Surname;
-                        BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
-                        BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
-                        if (await blobContainerClient.ExistsAsync() == false)
+                        var clientAcc = await _context.Users.Where(x => x.Id == client.Id).FirstOrDefaultAsync();
+                        if (clientAcc != null)
                         {
-                            trainingOutput.ClientAvatar = null;
+                            trainingOutput.ClientAvatar = clientAcc.Avatar;
                         }
-                        else
-                        {
-                            BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
-                            if (await blobClient.ExistsAsync() == false)
-                            {
-                                trainingOutput.ClientAvatar = null;
-                            }
-                            else
-                            {
-                                trainingOutput.ClientAvatar = blobClient.Uri.AbsoluteUri;
-                            }
-                        }
+
+                        //BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                        //BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
+                        //if (await blobContainerClient.ExistsAsync() == false)
+                        //{
+                        //    trainingOutput.ClientAvatar = null;
+                        //}
+                        //else
+                        //{
+                        //    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                        //    if (await blobClient.ExistsAsync() == false)
+                        //    {
+                        //        trainingOutput.ClientAvatar = null;
+                        //    }
+                        //    else
+                        //    {
+                        //        trainingOutput.ClientAvatar = blobClient.Uri.AbsoluteUri;
+                        //    }
+                        //}
                     }
                     if (role == UserRole.Client)
                     {
@@ -689,24 +695,29 @@ namespace Fitodu.Service.Concrete
                 {
                     result.Data.ClientName = client.Name;
                     result.Data.ClientSurname = client.Surname;
-                    BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
-                    BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
-                    if (await blobContainerClient.ExistsAsync() == false)
+                    var clientAcc = await _context.Users.Where(x => x.Id == result.Data.IdClient).FirstOrDefaultAsync();
+                    if (clientAcc != null)
                     {
-                        result.Data.ClientAvatar = null;
+                        result.Data.ClientAvatar = clientAcc.Avatar;
                     }
-                    else
-                    {
-                        BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
-                        if (await blobClient.ExistsAsync() == false)
-                        {
-                            result.Data.ClientAvatar = null;
-                        }
-                        else
-                        {
-                            result.Data.ClientAvatar = blobClient.Uri.AbsoluteUri;
-                        }
-                    }
+                    //BlobServiceClient blobServiceClient = new BlobServiceClient(azureConnectionString);
+                    //BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(client.Id);
+                    //if (await blobContainerClient.ExistsAsync() == false)
+                    //{
+                    //    result.Data.ClientAvatar = null;
+                    //}
+                    //else
+                    //{
+                    //    BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                    //    if (await blobClient.ExistsAsync() == false)
+                    //    {
+                    //        result.Data.ClientAvatar = null;
+                    //    }
+                    //    else
+                    //    {
+                    //        result.Data.ClientAvatar = blobClient.Uri.AbsoluteUri;
+                    //    }
+                    //}
                 }
             }
             return result;

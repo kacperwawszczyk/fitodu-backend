@@ -84,7 +84,7 @@ namespace Fitodu.Api.Controllers
         /// <returns></returns>
         [HttpGet("trainings")]
         [Authorize]
-        [ProducesResponseType(typeof(ICollection<TrainingOutput>), 200)]
+        [ProducesResponseType(typeof(ICollection<TrainingListOutput>), 200)]
         public async Task<IActionResult> GetFutureTrainings([FromQuery]string from, [FromQuery] string idClient)
         {
             var result = await _trainingService.GetTrainings(CurrentUser.Id, CurrentUser.Role, from, idClient);
