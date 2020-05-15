@@ -208,14 +208,16 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
-            if (userAcc != null)
+            if (!String.IsNullOrEmpty(model.Email))
             {
-                result.Error = ErrorType.Forbidden;
-                result.ErrorMessage = "User with this email already exists";
-                return result;
+                var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
+                if (userAcc != null)
+                {
+                    result.Error = ErrorType.Forbidden;
+                    result.ErrorMessage = "User with this email already exists";
+                    return result;
+                }
             }
-
             var newClient = new Client
             {
                 Name = model.Name,
