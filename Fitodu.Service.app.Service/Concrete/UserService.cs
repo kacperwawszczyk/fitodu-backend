@@ -672,9 +672,9 @@ namespace Fitodu.Service.Concrete
                 //}
                 //Bitmap newImage = ResizeImage(image, 150, 150);
                 Image newImage = FixedSize(image, 150, 150);
-                BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.jpg");
+                BlobClient blobClient = blobContainerClient.GetBlobClient("avatar.png");
                 MemoryStream msImage = new MemoryStream();
-                newImage.Save(msImage, ImageFormat.Jpeg);
+                newImage.Save(msImage, ImageFormat.Png);
                 msImage.Position = 0;
                 using (var ms = msImage)
                 {
@@ -716,7 +716,7 @@ namespace Fitodu.Service.Concrete
                 result.Error = ErrorType.Forbidden;
                 result.ErrorMessage = "Image format is not jpeg or png";
                 return result;
-            }
+            }   
         }
 
         private bool CheckIfImageFile(IFormFile file)
@@ -788,12 +788,12 @@ namespace Fitodu.Service.Concrete
             int destHeight = (int)(sourceHeight * nPercent);
 
             Bitmap bmPhoto = new Bitmap(Width, Height,
-                              PixelFormat.Format24bppRgb);
+                              PixelFormat.Format32bppArgb);
             bmPhoto.SetResolution(imgPhoto.HorizontalResolution,
                              imgPhoto.VerticalResolution);
 
             Graphics grPhoto = Graphics.FromImage(bmPhoto);
-            grPhoto.Clear(Color.Black);
+            grPhoto.Clear(Color.Transparent);
             grPhoto.InterpolationMode =
                     InterpolationMode.HighQualityBicubic;
 
