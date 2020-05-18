@@ -314,7 +314,7 @@ namespace Fitodu.Service.Concrete
                     else
                     {
                         transaction.Rollback();
-                        result.Error = ErrorType.Forbidden;
+                        result.Error = ErrorType.InternalServerError;
                         result.ErrorMessage = "Couldn't save changes to the database";
                         return result;
                     }

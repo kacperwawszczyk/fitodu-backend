@@ -213,7 +213,7 @@ namespace Fitodu.Service.Concrete
                 var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
                 if (userAcc != null)
                 {
-                    result.Error = ErrorType.Forbidden;
+                    result.Error = ErrorType.BadRequest;
                     result.ErrorMessage = "User with this email already exists";
                     return result;
                 }
@@ -316,7 +316,7 @@ namespace Fitodu.Service.Concrete
             var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
             if (userAcc != null)
             {
-                result.Error = ErrorType.Forbidden;
+                result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "User with this email already exists";
                 return result;
             }
@@ -487,7 +487,7 @@ namespace Fitodu.Service.Concrete
             var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
             if (userAcc != null)
             {
-                result.Error = ErrorType.Forbidden;
+                result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "User with this email already exists";
                 return result;
             }
@@ -593,7 +593,7 @@ namespace Fitodu.Service.Concrete
             var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
             if (userAcc != null)
             {
-                result.Error = ErrorType.Forbidden;
+                result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "User with this email already exists";
                 return result;
             }
@@ -1060,13 +1060,17 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
-            var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
-            if (userAcc != null)
+            if(!String.IsNullOrEmpty(model.Email))
             {
-                result.Error = ErrorType.Forbidden;
-                result.ErrorMessage = "User with this email already exists";
-                return result;
+                var userAcc = await _context.Users.Where(x => x.Email.ToUpper() == model.Email.ToUpper()).FirstOrDefaultAsync();
+                if (userAcc != null)
+                {
+                    result.Error = ErrorType.BadRequest;
+                    result.ErrorMessage = "User with this email already exists.";
+                    return result;
+                }
             }
+
 
             var coachClient = await _context.CoachClients.Where(x => x.IdCoach == CoachId && x.IdClient == ClientId).FirstOrDefaultAsync();
 
@@ -1132,9 +1136,10 @@ namespace Fitodu.Service.Concrete
                 else
                 {
                     transaction.Commit();
+                    return result;
                 }
             }
-            return result;
+            //return result;
         }
 
         //public async Task<Result<string>> UpdateAvatar(string id, UserRole role, IFormFile file)

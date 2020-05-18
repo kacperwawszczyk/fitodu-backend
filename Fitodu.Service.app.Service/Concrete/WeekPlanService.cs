@@ -164,7 +164,7 @@ namespace Fitodu.Service.Concrete
                 if (exisitngWeekPlan.IsDefault == true)
                 {
                     transaction.Rollback();
-                    result.Error = ErrorType.Forbidden;
+                    result.Error = ErrorType.BadRequest;
                     result.ErrorMessage = "Can't modify default weekplan with this method.";
                     return result;
                 }
@@ -239,7 +239,7 @@ namespace Fitodu.Service.Concrete
                 if (exisitngWeekPlan.IsDefault == false)
                 {
                     transaction.Rollback();
-                    result.Error = ErrorType.Forbidden;
+                    result.Error = ErrorType.BadRequest;
                     result.ErrorMessage = "Can't modify non default weekplan with this method.";
                     return result;
                 }

@@ -46,7 +46,7 @@
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.DummyClientUpdate(System.String,Fitodu.Service.Models.DummyClientUpdateInput)">
             <summary>
-            Used by coach to update dummy client information.
+            Used to update dummy client information
             </summary>
             <param name="id"></param>
             <param name="model"></param>

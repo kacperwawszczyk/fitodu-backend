@@ -494,7 +494,7 @@ namespace Fitodu.Service.Concrete
                     if (requesterRole == exisitingAwaitingTraining.Sender)
                     {
                         transaction.Rollback();
-                        result.Error = ErrorType.Forbidden;
+                        result.Error = ErrorType.BadRequest;
                         result.ErrorMessage = "User cannot accept his own training";
                         return result;
 

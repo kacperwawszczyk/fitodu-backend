@@ -53,15 +53,17 @@ namespace Fitodu.Api.Controllers
             var result = await _clientService.DummyClientDelete(CurrentUser.Id, CurrentUser.Role, id);
             return GetResult(result);
         }
+
         /// <summary>
-        /// Used by coach to update dummy client information.
+        /// Used to update dummy client information
         /// </summary>
         /// <param name="id"></param>
         /// <param name="model"></param>
         /// <returns></returns>
+        [Authorize]
         [AuthorizePolicy(UserRole.Coach)]
         [HttpPut("clients/dummy-clients/{id}")]
-        public async Task<IActionResult> DummyClientUpdate(string id, DummyClientUpdateInput model)
+        public async Task<IActionResult> DummyClientUpdate(string id, [FromBody] DummyClientUpdateInput model)
         {
             var result = await _clientService.DummyClientUpdate(CurrentUser.Id, CurrentUser.Role, id, model);
             return GetResult(result);

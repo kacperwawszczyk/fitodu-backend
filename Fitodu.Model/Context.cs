@@ -31,7 +31,6 @@ namespace Fitodu.Model
         public DbSet<WeekPlan> WeekPlans { get; set; }
         public DbSet<DayPlan> DayPlans { get; set; }
         public DbSet<WorkoutTime> WorkoutTimes { get; set; }
-
         public DbSet<UserFeedback> UserFeedbacks { get; set; }
 
 

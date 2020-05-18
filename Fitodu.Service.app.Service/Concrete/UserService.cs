@@ -713,7 +713,7 @@ namespace Fitodu.Service.Concrete
             }
             else
             {
-                result.Error = ErrorType.Forbidden;
+                result.Error = ErrorType.BadRequest;
                 result.ErrorMessage = "Image format is not jpeg or png";
                 return result;
             }   
