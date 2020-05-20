@@ -358,7 +358,7 @@ namespace Fitodu.Service.Concrete
                     }
                     transaction.Commit();
 
-                    if (existingTraining.StartDate > DateTime.UtcNow)
+                    if (existingTraining.StartDate > DateTime.UtcNow && client.IsRegistered)
                     {
                         var response = await _emailService.Send(model);
 
