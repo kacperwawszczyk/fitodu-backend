@@ -61,14 +61,16 @@ namespace Fitodu.Service.Concrete
             if (exist == null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Invalid verification code";
+                //result.ErrorMessage = "Invalid verification code";
+                result.ErrorMessage = Resource.ClientService.InvalidCode;
                 return result;
             }
 
             if (exist.ExpiresOn < DateTime.Now)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Code expired";
+                //result.ErrorMessage = "Code expired";
+                result.ErrorMessage = Resource.ClientService.CodeExpired;
                 return result;
             }
 
@@ -77,7 +79,8 @@ namespace Fitodu.Service.Concrete
             if (client == null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Invalid User";
+                //result.ErrorMessage = "Invalid User";
+                result.ErrorMessage = Resource.ClientService.InvalidUser;
                 return result;
             }
 
@@ -90,7 +93,8 @@ namespace Fitodu.Service.Concrete
             if (exisitingUser != null)
             {
                 result.Error = ErrorType.InternalServerError;
-                result.ErrorMessage = "Cannot create User (User already exists)";
+                //result.ErrorMessage = "Cannot create User (User already exists)";
+                result.ErrorMessage = Resource.ClientService.UserExists;
                 return result;
             }
 
@@ -118,7 +122,8 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot create User (User already exists)";
+                    //result.ErrorMessage = "Cannot create User (User already exists)";
+                    result.ErrorMessage = Resource.ClientService.UserExists;
                     return result;
                 }
 
@@ -134,7 +139,8 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot add User to role.";
+                    //result.ErrorMessage = "Cannot add User to role.";
+                    result.ErrorMessage = Resource.ClientService.UserRoleError;
                     return result;
                 }
 
@@ -144,7 +150,8 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot update Client register state";
+                    //result.ErrorMessage = "Cannot update Client register state";
+                    result.ErrorMessage = Resource.ClientService.ClientStateError;
                     return result;
                 }
 
@@ -159,7 +166,8 @@ namespace Fitodu.Service.Concrete
                     {
                         transaction.Rollback();
                         result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Cannot create public note";
+                        //result.ErrorMessage = "Cannot create public note";
+                        result.ErrorMessage = Resource.ClientService.PublicNoteError;
                         return result;
                     }
                     client.PublicNote = publicNote;
@@ -175,7 +183,8 @@ namespace Fitodu.Service.Concrete
                     {
                         transaction.Rollback();
                         result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Cannot create private note";
+                        //result.ErrorMessage = "Cannot create private note";
+                        result.ErrorMessage = Resource.ClientService.PrivateNoteError;
                         return result;
                     }
                     client.PrivateNote = privateNote;
@@ -185,7 +194,8 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot save changes";
+                    //result.ErrorMessage = "Cannot save changes";
+                    result.ErrorMessage = Resource.ClientService.SaveChangesError;
                     return result;
                 }
 
@@ -204,7 +214,8 @@ namespace Fitodu.Service.Concrete
             if (coach == null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Coach doesn't exist";
+                //result.ErrorMessage = "Coach doesn't exist";
+                result.ErrorMessage = Resource.ClientService.CoachError;
                 return result;
             }
 
@@ -214,7 +225,8 @@ namespace Fitodu.Service.Concrete
                 if (userAcc != null)
                 {
                     result.Error = ErrorType.BadRequest;
-                    result.ErrorMessage = "User with this email already exists";
+                    //result.ErrorMessage = "User with this email already exists";
+                    result.ErrorMessage = Resource.ClientService.EmailExists;
                     return result;
                 }
             }
@@ -238,7 +250,8 @@ namespace Fitodu.Service.Concrete
                     transaction.Rollback();
 
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot create client";
+                    //result.ErrorMessage = "Cannot create client";
+                    result.ErrorMessage = Resource.ClientService.CreateClientError;
                     return result;
                 }
 
@@ -255,7 +268,8 @@ namespace Fitodu.Service.Concrete
                     transaction.Rollback();
 
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot add Client to Coach";
+                    //result.ErrorMessage = "Cannot add Client to Coach";
+                    result.ErrorMessage = Resource.ClientService.AddClientError;
                     return result;
                 }
 
@@ -271,7 +285,8 @@ namespace Fitodu.Service.Concrete
                         transaction.Rollback();
 
                         result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Cannot create public note";
+                        //result.ErrorMessage = "Cannot create public note";
+                        result.ErrorMessage = Resource.ClientService.PublicNoteError;
                         return result;
                     }
                     newClient.PublicNote = publicNote;
@@ -288,7 +303,8 @@ namespace Fitodu.Service.Concrete
                     {
                         transaction.Rollback();
                         result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Cannot create private note";
+                        //result.ErrorMessage = "Cannot create private note";
+                        result.ErrorMessage = Resource.ClientService.PrivateNoteError;
                         return result;
                     }
                     newClient.PrivateNote = privateNote;
@@ -298,7 +314,8 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot save changes";
+                    //result.ErrorMessage = "Cannot save changes";
+                    result.ErrorMessage = Resource.ClientService.SaveChangesError;
                     return result;
                 }
 
@@ -317,7 +334,8 @@ namespace Fitodu.Service.Concrete
             if (userAcc != null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "User with this email already exists";
+                //result.ErrorMessage = "User with this email already exists";
+                result.ErrorMessage = Resource.ClientService.EmailExists;
                 return result;
             }
 
@@ -326,14 +344,16 @@ namespace Fitodu.Service.Concrete
             if (creationToken == null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Invalid token";
+                //result.ErrorMessage = "Invalid token";
+                result.ErrorMessage = Resource.ClientService.InvalidToken;
                 return result;
             }
 
             if (creationToken.ExpiresOn < DateTime.UtcNow)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Code expired";
+                //result.ErrorMessage = "Code expired";
+                result.ErrorMessage = Resource.ClientService.CodeExpired;
                 return result;
             }
 
@@ -342,7 +362,8 @@ namespace Fitodu.Service.Concrete
             if (coach == null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Coach doesn't exist";
+                //result.ErrorMessage = "Coach doesn't exist";
+                result.ErrorMessage = Resource.ClientService.CoachError;
                 return result;
             }
 
@@ -384,7 +405,8 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot create User.";
+                    //result.ErrorMessage = "Cannot create User.";
+                    result.ErrorMessage = Resource.ClientService.CreateUserError;
                     return result;
                 }
 
@@ -399,7 +421,8 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot add User to role.";
+                    //result.ErrorMessage = "Cannot add User to role.";
+                    result.ErrorMessage = Resource.ClientService.UserRoleError;
                     return result;
                 }
 
@@ -409,7 +432,8 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot create Client.";
+                    //result.ErrorMessage = "Cannot create Client.";
+                    result.ErrorMessage = Resource.ClientService.CreateClientError;
                     return result;
                 }
 
@@ -424,7 +448,8 @@ namespace Fitodu.Service.Concrete
                     {
                         transaction.Rollback();
                         result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Cannot create public note";
+                        //result.ErrorMessage = "Cannot create public note";
+                        result.ErrorMessage = Resource.ClientService.PublicNoteError;
                         return result;
                     }
                     newClient.PublicNote = publicNote;
@@ -440,7 +465,8 @@ namespace Fitodu.Service.Concrete
                     {
                         transaction.Rollback();
                         result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Cannot create private note";
+                        //result.ErrorMessage = "Cannot create private note";
+                        result.ErrorMessage = Resource.ClientService.PrivateNoteError;
                         return result;
                     }
                     newClient.PrivateNote = privateNote;
@@ -452,7 +478,8 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot add Client to Coach.";
+                    //result.ErrorMessage = "Cannot add Client to Coach.";
+                    result.ErrorMessage = Resource.ClientService.AddClientError;
                     return result;
                 }
 
@@ -460,7 +487,8 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot save changes";
+                    //result.ErrorMessage = "Cannot save changes";
+                    result.ErrorMessage = Resource.ClientService.SaveChangesError;
                     return result;
                 }
 
@@ -480,7 +508,8 @@ namespace Fitodu.Service.Concrete
             if (coach == null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Requesting coach does not exist.";
+                //result.ErrorMessage = "Requesting coach does not exist.";
+                result.ErrorMessage = Resource.ClientService.RequestingCoachError;
                 return result;
             }
 
@@ -488,14 +517,16 @@ namespace Fitodu.Service.Concrete
             if (userAcc != null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "User with this email already exists";
+                //result.ErrorMessage = "User with this email already exists";
+                result.ErrorMessage = Resource.ClientService.EmailExists;
                 return result;
             }
 
             if (coach.Role != UserRole.Coach)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Requesting coach account role is not coach.";
+                //result.ErrorMessage = "Requesting coach account role is not coach.";
+                result.ErrorMessage = Resource.ClientService.RequestingCoachRoleError;
                 return result;
             }
 
@@ -504,7 +535,8 @@ namespace Fitodu.Service.Concrete
             if (client == null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = $"Client (ID: {model.Id}) doesn't exist";
+                //result.ErrorMessage = $"Client (ID: {model.Id}) doesn't exist";
+                result.ErrorMessage = Resource.ClientService.ClientError;
                 return result;
             }
 
@@ -513,7 +545,8 @@ namespace Fitodu.Service.Concrete
             if (coachClient == null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = $"Client and coach are not connected.";
+                //result.ErrorMessage = $"Client and coach are not connected.";
+                result.ErrorMessage = Resource.ClientService.ClientCoachError;
                 return result;
             }
 
@@ -554,7 +587,8 @@ namespace Fitodu.Service.Concrete
                     transaction.Rollback();
 
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot create token";
+                    //result.ErrorMessage = "Cannot create token";
+                    result.ErrorMessage = Resource.ClientService.CreateTokenError;
                     return result;
                 }
 
@@ -580,7 +614,8 @@ namespace Fitodu.Service.Concrete
             if (response.Code != HttpStatusCode.Accepted && response.Code != HttpStatusCode.OK)
             {
                 result.Error = ErrorType.InternalServerError;
-                result.ErrorMessage = "Cannot send email.";
+                //result.ErrorMessage = "Cannot send email.";
+                result.ErrorMessage = Resource.ClientService.SendMailError;
             }
 
             return result;
@@ -594,7 +629,8 @@ namespace Fitodu.Service.Concrete
             if (userAcc != null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "User with this email already exists";
+                //result.ErrorMessage = "User with this email already exists";
+                result.ErrorMessage = Resource.ClientService.EmailExists;
                 return result;
             }
 
@@ -635,7 +671,8 @@ namespace Fitodu.Service.Concrete
                     transaction.Rollback();
 
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Cannot create token.";
+                    //result.ErrorMessage = "Cannot create token.";
+                    result.ErrorMessage = Resource.ClientService.CreateTokenError;
                     return result;
                 }
 
@@ -661,7 +698,8 @@ namespace Fitodu.Service.Concrete
             if (response.Code != HttpStatusCode.Accepted && response.Code != HttpStatusCode.OK)
             {
                 result.Error = ErrorType.InternalServerError;
-                result.ErrorMessage = "Cannot send email.";
+                //result.ErrorMessage = "Cannot send email.";
+                result.ErrorMessage = Resource.ClientService.SendMailError;
             }
 
             return result;
@@ -697,7 +735,8 @@ namespace Fitodu.Service.Concrete
             if (client == null)
             {
                 result.Error = ErrorType.NotFound;
-                result.ErrorMessage = "Client not found";
+                //result.ErrorMessage = "Client not found";
+                result.ErrorMessage = Resource.ClientService.ClientNotFound;
             }
             else
             {
@@ -744,7 +783,8 @@ namespace Fitodu.Service.Concrete
             if (client == null)
             {
                 result.Error = ErrorType.NotFound;
-                result.ErrorMessage = "Client not found";
+                //result.ErrorMessage = "Client not found";
+                result.ErrorMessage = Resource.ClientService.ClientNotFound;
                 return result;
             }
             else
@@ -784,7 +824,8 @@ namespace Fitodu.Service.Concrete
                         {
                             transaction.Rollback();
                             result.Error = ErrorType.InternalServerError;
-                            result.ErrorMessage = "Couldn't execute changes to the database.";
+                            //result.ErrorMessage = "Couldn't execute changes to the database.";
+                            result.ErrorMessage = Resource.ClientService.SaveChangesError;
                         }
                     }
                     else
@@ -804,7 +845,8 @@ namespace Fitodu.Service.Concrete
             if (client == null)
             {
                 result.Error = ErrorType.NotFound;
-                result.ErrorMessage = "Client not found";
+                //result.ErrorMessage = "Client not found";
+                result.ErrorMessage = Resource.ClientService.ClientNotFound;
                 return result;
             }
             else
@@ -813,7 +855,8 @@ namespace Fitodu.Service.Concrete
                 if (coachClient == null)
                 {
                     result.Error = ErrorType.NotFound;
-                    result.ErrorMessage = "Coach not found";
+                    //result.ErrorMessage = "Coach not found";
+                    result.ErrorMessage = Resource.ClientService.CoachNotFound;
                     return result;
                 }
                 else
@@ -839,7 +882,8 @@ namespace Fitodu.Service.Concrete
                     if (coach == null)
                     {
                         result.Error = ErrorType.NotFound;
-                        result.ErrorMessage = "Coach does not exist";
+                        //result.ErrorMessage = "Coach does not exist";
+                        result.ErrorMessage = Resource.ClientService.CoachError;
                     }
                     else
                     {
@@ -882,7 +926,8 @@ namespace Fitodu.Service.Concrete
             if (coach == null)
             {
                 result.Error = ErrorType.NotFound;
-                result.ErrorMessage = "Coach does not exist";
+                //result.ErrorMessage = "Coach does not exist";
+                result.ErrorMessage = Resource.ClientService.CoachError;
                 //return result;
             }
             else
@@ -891,7 +936,8 @@ namespace Fitodu.Service.Concrete
                 if (coachClient == null)
                 {
                     result.Error = ErrorType.NotFound;
-                    result.ErrorMessage = "User is not a client of selected coach";
+                    //result.ErrorMessage = "User is not a client of selected coach";
+                    result.ErrorMessage = Resource.ClientService.SelectedCoachError;
                 }
                 else
                 {
@@ -919,7 +965,8 @@ namespace Fitodu.Service.Concrete
                     if (client == null)
                     {
                         result.Error = ErrorType.NotFound;
-                        result.ErrorMessage = "Client does not exist";
+                        //result.ErrorMessage = "Client does not exist";
+                        result.ErrorMessage = Resource.ClientService.ClientError;
                     }
                     else
                     {
@@ -977,7 +1024,8 @@ namespace Fitodu.Service.Concrete
                 if (requesterId != clientId)
                 {
                     result.Error = ErrorType.BadRequest;
-                    result.ErrorMessage = "Cannot get notes of another client.";
+                    //result.ErrorMessage = "Cannot get notes of another client.";
+                    result.ErrorMessage = Resource.ClientService.NotesError;
                     return result;
                 }
 
@@ -999,7 +1047,8 @@ namespace Fitodu.Service.Concrete
             if (requesterRole != UserRole.Coach)
             {
                 result.Error = ErrorType.Forbidden;
-                result.ErrorMessage = "This user is not a coach";
+                //result.ErrorMessage = "This user is not a coach";
+                result.ErrorMessage = Resource.ClientService.NotCoachError;
                 return result;
             }
 
@@ -1008,7 +1057,8 @@ namespace Fitodu.Service.Concrete
             if (coachClient == null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Selected user is not a client of this coach.";
+                //result.ErrorMessage = "Selected user is not a client of this coach.";
+                result.ErrorMessage = Resource.ClientService.SelectedClientError;
                 return result;
             }
 
@@ -1017,7 +1067,8 @@ namespace Fitodu.Service.Concrete
             if (client == null)
             {
                 result.Error = ErrorType.NotFound;
-                result.ErrorMessage = "This client does not exist.";
+                //result.ErrorMessage = "This client does not exist.";
+                result.ErrorMessage = Resource.ClientService.ClientError;
                 return result;
             }
 
@@ -1026,7 +1077,8 @@ namespace Fitodu.Service.Concrete
             if (clientAcc != null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "This client is not a dummy client.";
+                //result.ErrorMessage = "This client is not a dummy client.";
+                result.ErrorMessage = Resource.ClientService.NotDummyClientError;
                 return result;
             }
 
@@ -1038,7 +1090,8 @@ namespace Fitodu.Service.Concrete
                 {
                     transaction.Rollback();
                     result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Could not save changes to the database.";
+                    //result.ErrorMessage = "Could not save changes to the database.";
+                    result.ErrorMessage = Resource.ClientService.SaveChangesError;
                     return result;
                 }
                 else
@@ -1056,7 +1109,8 @@ namespace Fitodu.Service.Concrete
             if (role != UserRole.Coach)
             {
                 result.Error = ErrorType.Forbidden;
-                result.ErrorMessage = "This user is not a coach";
+                //result.ErrorMessage = "This user is not a coach";
+                result.ErrorMessage = Resource.ClientService.NotCoachError;
                 return result;
             }
 
@@ -1066,7 +1120,8 @@ namespace Fitodu.Service.Concrete
                 if (userAcc != null)
                 {
                     result.Error = ErrorType.BadRequest;
-                    result.ErrorMessage = "User with this email already exists.";
+                    //result.ErrorMessage = "User with this email already exists.";
+                    result.ErrorMessage = Resource.ClientService.EmailExists;
                     return result;
                 }
             }
@@ -1077,7 +1132,8 @@ namespace Fitodu.Service.Concrete
             if (coachClient == null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Selected user is not a client of this coach.";
+                //result.ErrorMessage = "Selected user is not a client of this coach.";
+                result.ErrorMessage = Resource.ClientService.SelectedClientError;
                 return result;
             }
 
@@ -1086,7 +1142,8 @@ namespace Fitodu.Service.Concrete
             if (client == null)
             {
                 result.Error = ErrorType.NotFound;
-                result.ErrorMessage = "This client does not exist.";
+                //result.ErrorMessage = "This client does not exist.";
+                result.ErrorMessage = Resource.ClientService.ClientError;
                 return result;
             }
 
@@ -1095,7 +1152,8 @@ namespace Fitodu.Service.Concrete
             if (clientAcc != null)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "This client is not a dummy client.";
+                //result.ErrorMessage = "This client is not a dummy client.";
+                result.ErrorMessage = Resource.ClientService.NotDummyClientError;
                 return result;
             }
 
@@ -1129,7 +1187,8 @@ namespace Fitodu.Service.Concrete
                     {
                         transaction.Rollback();
                         result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Could not save changes to the database.";
+                        //result.ErrorMessage = "Could not save changes to the database.";
+                        result.ErrorMessage = Resource.ClientService.SaveChangesError;
                         return result;
                     }
                 }

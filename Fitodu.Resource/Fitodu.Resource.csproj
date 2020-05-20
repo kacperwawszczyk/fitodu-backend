@@ -10,6 +10,11 @@
        <AutoGen>True</AutoGen>
        <DependentUpon>AwaitingTrainingMailTemplate.resx</DependentUpon>
      </Compile>
+     <Compile Update="ClientService.Designer.cs">
+       <DesignTime>True</DesignTime>
+       <AutoGen>True</AutoGen>
+       <DependentUpon>ClientService.resx</DependentUpon>
+     </Compile>
      <Compile Update="Template - kopiować.Designer.cs">
        <DependentUpon>Template.resx</DependentUpon>
        <DesignTime>True</DesignTime>
@@ -44,6 +49,10 @@
     <EmbeddedResource Update="AwaitingTrainingMailTemplate.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>AwaitingTrainingMailTemplate.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="ClientService.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ClientService.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="TrainingMailTemplate.en.resx">
       <Generator></Generator>

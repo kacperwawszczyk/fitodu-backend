@@ -43,7 +43,7 @@ namespace Fitodu.Api.Controllers
             switch (result.Error)
             {
                 case ErrorType.NotFound:
-                    return NotFound();
+                    return NotFound(result.ErrorMessage);
                 case ErrorType.NoContent:
                     return NoContent();
                 case ErrorType.BadRequest:
