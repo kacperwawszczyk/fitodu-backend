@@ -118,9 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="VerifyClientBody" xml:space="preserve">
-    <value>Hi -fullName-!&lt;br&gt;&lt;br&gt;We have received a request to create Fitodu client account for you.&lt;br&gt;&lt;br&gt;To create account, you can go &lt;a href="-url-"&gt;HERE&lt;/a&gt;. Otherwise just ignore and discard this email.</value>
+    <value>Hi!&lt;br&gt;&lt;br&gt;We have received a request to create Fitodu client account for you.&lt;br&gt;&lt;br&gt;To create account, you can go &lt;a href="-url-"&gt;HERE&lt;/a&gt;. Otherwise just ignore this email.</value>
   </data>
   <data name="VerifyClientSubject" xml:space="preserve">
-    <value>Client Verification</value>
+    <value>Fitodu invitation</value>
   </data>
 </root>

@@ -118,9 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="VerifyClientBody" xml:space="preserve">
-    <value>Cześć -fullName-!&lt;br&gt;&lt;br&gt;Otrzymaliśmy prośbę o utworzenie konta klienta Fitodu dla Ciebie.&lt;br&gt;&lt;br&gt;Aby utworzyć konto, przejdź &lt;a href="-url-"&gt;TUTAJ&lt;/a&gt;. W przeciwnym razie po prostu zignoruj i usuń tę wiadomość.</value>
+    <value>Cześć!&lt;br&gt;&lt;br&gt;Twój trener zaprosił Cię do korzystania z aplikacji Fitodu.&lt;br&gt;&lt;br&gt;Aby utworzyć konto, przejdź &lt;a href="-url-"&gt;TUTAJ&lt;/a&gt;. W przeciwnym razie po prostu zignoruj tę wiadomość.</value>
   </data>
   <data name="VerifyClientSubject" xml:space="preserve">
-    <value>Weryfikacja klienta</value>
+    <value>Zaproszenie do aplikacji Fitodu</value>
   </data>
 </root>

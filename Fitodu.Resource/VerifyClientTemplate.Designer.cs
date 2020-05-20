@@ -61,7 +61,7 @@ namespace Fitodu.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hi -fullName-!&lt;br&gt;&lt;br&gt;We have received a request to create Fitodu client account for you.&lt;br&gt;&lt;br&gt;To create account, you can go &lt;a href=&quot;-url-&quot;&gt;HERE&lt;/a&gt;. Otherwise just ignore and discard this email..
+        ///   Looks up a localized string similar to Hi!&lt;br&gt;&lt;br&gt;We have received a request to create Fitodu client account for you.&lt;br&gt;&lt;br&gt;To create account, you can go &lt;a href=&quot;-url-&quot;&gt;HERE&lt;/a&gt;. Otherwise just ignore this email..
         /// </summary>
         public static string VerifyClientBody {
             get {
@@ -70,7 +70,7 @@ namespace Fitodu.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Client Verification.
+        ///   Looks up a localized string similar to Fitodu invitation.
         /// </summary>
         public static string VerifyClientSubject {
             get {

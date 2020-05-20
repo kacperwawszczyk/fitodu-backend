@@ -607,7 +607,7 @@ namespace Fitodu.Service.Concrete
                 HtmlBody = Resource.VerifyClientTemplate.VerifyClientBody
             };
 
-            message.HtmlBody = message.HtmlBody.Replace("-fullName-", model.FullName).Replace("-url-", url);
+            message.HtmlBody = message.HtmlBody.Replace("-url-", url);
 
             var response = await _emailService.Send(message);
 
@@ -691,7 +691,7 @@ namespace Fitodu.Service.Concrete
                 HtmlBody = Resource.VerifyClientTemplate.VerifyClientBody
             };
 
-            message.HtmlBody = message.HtmlBody.Replace("-fullName-", model.Email).Replace("-url-", url);
+            message.HtmlBody = message.HtmlBody.Replace("-url-", url);
 
             var response = await _emailService.Send(message);
 
