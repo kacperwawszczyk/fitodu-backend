@@ -330,16 +330,13 @@ namespace Fitodu.Service.Concrete
                         }
                         clientcoach.PurchasedTrainings++;
                         _context.CoachClients.Update(clientcoach);
-                    }
-
-                    _context.Trainings.Remove(existingTraining);
-
-                    if (await _context.SaveChangesAsync() == 0)
-                    {
-                        transaction.Rollback();
-                        result.Error = ErrorType.InternalServerError;
-                        result.ErrorMessage = "Couldn't save changes to the database";
-                        return result;
+                        if (await _context.SaveChangesAsync() == 0)
+                        {
+                            transaction.Rollback();
+                            result.Error = ErrorType.InternalServerError;
+                            result.ErrorMessage = "Couldn't save changes to the database";
+                            return result;
+                        }
                     }
 
                     var trainingsExercises = await _context.TrainingExercises.Where
@@ -356,6 +353,17 @@ namespace Fitodu.Service.Concrete
                             return result;
                         }
                     }
+
+                    _context.Trainings.Remove(existingTraining);
+
+                    if (await _context.SaveChangesAsync() == 0)
+                    {
+                        transaction.Rollback();
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Couldn't save changes to the database";
+                        return result;
+                    }
+
                     transaction.Commit();
 
                     if (existingTraining.StartDate > DateTime.UtcNow && client.IsRegistered)

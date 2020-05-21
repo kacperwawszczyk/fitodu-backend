@@ -126,7 +126,8 @@ namespace Fitodu.Api.Controllers
         /// <param name="id">Id of the training you wish to delete</param>
         /// <returns></returns>
         [HttpDelete("trainings")]
-        [AuthorizePolicy(UserRole.Coach)]
+        [Authorize]
+        //[AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> DeleteTraining(int id)
         {
             var result = await _trainingService.DeleteTraining(CurrentUser.Id, CurrentUser.Role, id);
