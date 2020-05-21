@@ -120,6 +120,21 @@ namespace Fitodu.Service.Concrete
                 return result;
             }
 
+            var coachClient = await _context.CoachClients.Where(x => x.IdCoach == clientsCoach.Data.Id && x.IdClient == trainingInput.IdClient).FirstOrDefaultAsync();
+            if (coachClient == null)
+            {
+                result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "User is not a client of this coach";
+                return result;
+            }
+            if (coachClient.AvailableTrainings <= 0)
+            {
+                result.Error = ErrorType.NotFound;
+                result.ErrorMessage = "Client does not have any trainings left";
+                return result;
+            }
+            coachClient.AvailableTrainings -= 1;
+
             if (trainingInput.StartDate >= trainingInput.EndDate)
             {
                 result.Error = ErrorType.BadRequest;
@@ -274,7 +289,7 @@ namespace Fitodu.Service.Concrete
 
                     var coach = await _context.Coaches.Where(x => x.Id == requesterId).FirstOrDefaultAsync();
                     var client = await _context.Clients.Where(x => x.Id == existingTraining.IdClient).FirstOrDefaultAsync();
-                    var clientcoach = await _context.CoachClients.Where(x => x.IdClient == existingTraining.IdClient).FirstOrDefaultAsync();
+                    var clientcoach = await _context.CoachClients.Where(x => x.IdClient == existingTraining.IdClient && x.IdCoach == existingTraining.IdCoach).FirstOrDefaultAsync();
 
                     if (clientcoach == null)
                     {
@@ -328,15 +343,15 @@ namespace Fitodu.Service.Concrete
                             model.HtmlBody = model.HtmlBody.Replace("-clientName-", clientName);
                             model.HtmlBody = model.HtmlBody.Replace("-date-", date);
                         }
-                        clientcoach.PurchasedTrainings++;
-                        _context.CoachClients.Update(clientcoach);
-                        if (await _context.SaveChangesAsync() == 0)
-                        {
-                            transaction.Rollback();
-                            result.Error = ErrorType.InternalServerError;
-                            result.ErrorMessage = "Couldn't save changes to the database";
-                            return result;
-                        }
+                        clientcoach.AvailableTrainings += 1;
+                        //_context.CoachClients.Update(clientcoach);
+                        //if (await _context.SaveChangesAsync() == 0)
+                        //{
+                        //    transaction.Rollback();
+                        //    result.Error = ErrorType.InternalServerError;
+                        //    result.ErrorMessage = "Couldn't save changes to the database";
+                        //    return result;
+                        //}
                     }
 
                     var trainingsExercises = await _context.TrainingExercises.Where
@@ -345,13 +360,13 @@ namespace Fitodu.Service.Concrete
                     if (trainingsExercises.Count != 0)
                     {
                         _context.TrainingExercises.RemoveRange(trainingsExercises);
-                        if (await _context.SaveChangesAsync() == 0)
-                        {
-                            transaction.Rollback();
-                            result.Error = ErrorType.InternalServerError;
-                            result.ErrorMessage = "Couldn't save changes to the database";
-                            return result;
-                        }
+                        //if (await _context.SaveChangesAsync() == 0)
+                        //{
+                        //    transaction.Rollback();
+                        //    result.Error = ErrorType.InternalServerError;
+                        //    result.ErrorMessage = "Couldn't save changes to the database";
+                        //    return result;
+                        //}
                     }
 
                     _context.Trainings.Remove(existingTraining);
@@ -394,9 +409,9 @@ namespace Fitodu.Service.Concrete
                         return result;
                     }
 
-                    var coach = await _context.Coaches.Where(x => x.Id == requesterId).FirstOrDefaultAsync();
+                    var coach = await _context.Coaches.Where(x => x.Id == existingTraining.IdCoach).FirstOrDefaultAsync();
                     var client = await _context.Clients.Where(x => x.Id == existingTraining.IdClient).FirstOrDefaultAsync();
-                    var clientcoach = await _context.CoachClients.Where(x => x.IdClient == existingTraining.IdClient).FirstOrDefaultAsync();
+                    var clientcoach = await _context.CoachClients.Where(x => x.IdClient == existingTraining.IdClient && x.IdCoach == existingTraining.IdCoach).FirstOrDefaultAsync();
 
                     if (clientcoach == null)
                     {
@@ -422,15 +437,23 @@ namespace Fitodu.Service.Concrete
 
                     if (existingTraining.StartDate > DateTime.UtcNow.AddHours(Convert.ToDouble(coach.CancelTimeHours)).AddMinutes(Convert.ToDouble(coach.CancelTimeMinutes)))
                     {
-                        clientcoach.PurchasedTrainings++;
-                        _context.CoachClients.Update(clientcoach);
+                        clientcoach.AvailableTrainings += 1;
+                        //_context.CoachClients.Update(clientcoach);
+
+                        //if (await _context.SaveChangesAsync() == 0)
+                        //{
+                        //    transaction.Rollback();
+                        //    result.Error = ErrorType.InternalServerError;
+                        //    result.ErrorMessage = "Couldn't save changes to the database";
+                        //    return result;
+                        //}
 
                         var coachAcc = await _context.Users.Where(x => x.Id == coach.Id).FirstOrDefaultAsync();
                         if (coachAcc == null)
                         {
                             transaction.Rollback();
                             result.Error = ErrorType.InternalServerError;
-                            result.ErrorMessage = "Client account does not exist (Internal error?)";
+                            result.ErrorMessage = "Coach account does not exist (Internal error?)";
                             return result;
                         }
                         clientName = client.Name + " " + client.Surname;
@@ -453,6 +476,20 @@ namespace Fitodu.Service.Concrete
                         model.HtmlBody = model.HtmlBody.Replace("-coachName-", coachName);
                         model.HtmlBody = model.HtmlBody.Replace("-date-", date);
 
+                        var trainingsExercises = await _context.TrainingExercises.Where(x => x.IdTraining == trainingId).ToListAsync();
+
+                        if (trainingsExercises.Count != 0)
+                        {
+                            _context.TrainingExercises.RemoveRange(trainingsExercises);
+                            //if (await _context.SaveChangesAsync() == 0)
+                            //{
+                            //    transaction.Rollback();
+                            //    result.Error = ErrorType.InternalServerError;
+                            //    result.ErrorMessage = "Couldn't save changes to the database";
+                            //    return result;
+                            //}
+                        }
+
                         _context.Trainings.Remove(existingTraining);
 
                         if (await _context.SaveChangesAsync() == 0)
@@ -463,20 +500,6 @@ namespace Fitodu.Service.Concrete
                             return result;
                         }
 
-                        var trainingsExercises = await _context.TrainingExercises.Where
-                        (x => x.IdTraining == trainingId).ToListAsync();
-
-                        if (trainingsExercises.Count != 0)
-                        {
-                            _context.TrainingExercises.RemoveRange(trainingsExercises);
-                            if (await _context.SaveChangesAsync() == 0)
-                            {
-                                transaction.Rollback();
-                                result.Error = ErrorType.InternalServerError;
-                                result.ErrorMessage = "Couldn't save changes to the database";
-                                return result;
-                            }
-                        }
                         transaction.Commit();
                     }
                     else
