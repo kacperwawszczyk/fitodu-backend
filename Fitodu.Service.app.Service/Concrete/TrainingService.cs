@@ -323,7 +323,7 @@ namespace Fitodu.Service.Concrete
 
                             model.To = email;
                             model.Subject = Resource.TrainingMailTemplate.TrainingCoachWithdrawalSubject;
-                            model.HtmlBody = Resource.TrainingMailTemplate.TrainingCoachWithdrawalSubject;
+                            model.HtmlBody = Resource.TrainingMailTemplate.TrainingCoachWithdrawalBody;
                             model.HtmlBody = model.HtmlBody.Replace("-url-", url);
                             model.HtmlBody = model.HtmlBody.Replace("-clientName-", clientName);
                             model.HtmlBody = model.HtmlBody.Replace("-date-", date);
@@ -439,7 +439,7 @@ namespace Fitodu.Service.Concrete
 
                         model.To = email;
                         model.Subject = Resource.TrainingMailTemplate.TrainingClientWithdrawalSubject;
-                        model.HtmlBody = Resource.TrainingMailTemplate.TrainingClientWithdrawalSubject;
+                        model.HtmlBody = Resource.TrainingMailTemplate.TrainingClientWithdrawalBody;
                         model.HtmlBody = model.HtmlBody.Replace("-url-", url);
                         model.HtmlBody = model.HtmlBody.Replace("-clientName-", clientName);
                         model.HtmlBody = model.HtmlBody.Replace("-coachName-", coachName);
