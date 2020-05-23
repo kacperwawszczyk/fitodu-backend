@@ -124,6 +124,7 @@ namespace Fitodu.Api.Controllers
         /// Used to delete an existing training for a requesting coach. Also deletes all TrainingExercises related to that training.
         /// </summary>
         /// <param name="id">Id of the training you wish to delete</param>
+        /// <param name="time_zone_offset"> Timezone offset (in minutes) </param>
         /// <returns></returns>
         [HttpDelete("trainings/{id}/{time_zone_offset}")]
         [Authorize]
