@@ -349,7 +349,7 @@
             <param name="editTrainingInput"></param>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.TrainingController.DeleteTraining(System.Int32)">
+        <member name="M:Fitodu.Api.Controllers.TrainingController.DeleteTraining(System.Int32,System.Int32)">
             <summary>
             Used to delete an existing training for a requesting coach. Also deletes all TrainingExercises related to that training.
             </summary>

@@ -88,7 +88,7 @@ namespace Fitodu.Service.Concrete
         {
             var result = new Result<SummaryOutput>();
 
-            if (IdCoach == null)
+            if (String.IsNullOrEmpty(IdCoach))
             {
                 result.Error = ErrorType.BadRequest;
                 return result;
@@ -118,9 +118,12 @@ namespace Fitodu.Service.Concrete
             IQueryable sum = null;
             sum = _context.Summaries.Where(x => x.IdClient == IdClient && x.Id == Id);
 
-            result.Data = await sum
+            if (sum != null)
+            {
+                result.Data = await sum
                 .ProjectTo<SummaryOutput>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
+            }
 
             if (result.Data == null)
             {

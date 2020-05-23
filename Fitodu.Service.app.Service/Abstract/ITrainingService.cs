@@ -18,7 +18,7 @@ namespace Fitodu.Service.Abstract
         //Task<Result<ICollection<Training>>> GetTrainings(string id, UserRole role);
         Task<Result<int>> AddTraining(string coachId, TrainingInput trainingInput);
         Task<Result> EditTraining(string coachId, UpdateTrainingInput trainingInput);
-        Task<Result> DeleteTraining(string requesterId, UserRole requesterRole, int trainingId);
+        Task<Result> DeleteTraining(string requesterId, UserRole requesterRole, int trainingId, int time_zone_offset);
         Task<Result<string>> GetTrainingsClient(int idTraining);
         Task<Result<string>> GetTrainingsCoach(int idTraining);
         Task<Result<ICollection<TrainingListOutput>>> GetTrainings(string id, UserRole role, string date, string idClient);

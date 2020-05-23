@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Fitodu.Model.Migrations
 {
-    public partial class NewDatabase : Migration
+    public partial class NewDatabase2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -64,8 +64,8 @@ namespace Fitodu.Model.Migrations
                     AddressState = table.Column<string>(nullable: true),
                     AddressCountry = table.Column<string>(nullable: true),
                     VatIn = table.Column<string>(nullable: true),
-                    CancelTimeHours = table.Column<uint>(nullable: true),
-                    CancelTimeMinutes = table.Column<uint>(nullable: true),
+                    CancelTimeHours = table.Column<long>(nullable: true),
+                    CancelTimeMinutes = table.Column<long>(nullable: true),
                     EndOfLicenseDate = table.Column<DateTime>(type: "datetime", nullable: true),
                     CreatedOn = table.Column<DateTime>(nullable: false),
                     UpdatedOn = table.Column<DateTime>(nullable: false)
@@ -80,7 +80,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreatedOn = table.Column<DateTime>(nullable: false),
                     UpdatedOn = table.Column<DateTime>(nullable: false),
                     IsArchived = table.Column<bool>(nullable: false),
@@ -142,7 +142,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<string>(nullable: false),
                     Date = table.Column<DateTime>(type: "datetime", nullable: false),
                     Role = table.Column<int>(nullable: false),
@@ -159,7 +159,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -180,7 +180,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreatedOn = table.Column<DateTime>(nullable: false),
                     UpdatedOn = table.Column<DateTime>(nullable: false),
                     IsArchived = table.Column<bool>(nullable: false),
@@ -205,7 +205,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     IdClient = table.Column<string>(nullable: true),
                     Weight = table.Column<decimal>(type: "decimal(5, 2)", nullable: true),
                     FatPercentage = table.Column<decimal>(type: "decimal(4, 2)", nullable: true),
@@ -228,7 +228,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     IdCoach = table.Column<string>(nullable: false),
                     IdClient = table.Column<string>(nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -286,7 +286,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     IdCoach = table.Column<string>(nullable: true),
                     Name = table.Column<string>(maxLength: 30, nullable: true),
                     Description = table.Column<string>(nullable: true),
@@ -358,7 +358,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     IdClient = table.Column<string>(nullable: true),
                     IdCoach = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
@@ -389,7 +389,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     IdCoach = table.Column<string>(nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime", nullable: true),
                     IsDefault = table.Column<bool>(nullable: false)
@@ -410,7 +410,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     IdCoach = table.Column<string>(nullable: false),
                     Day = table.Column<DateTime>(type: "date", nullable: true),
                     StartHour = table.Column<TimeSpan>(nullable: true),
@@ -497,7 +497,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     IdExercise = table.Column<int>(nullable: false),
                     IdTraining = table.Column<int>(nullable: false),
                     Repetitions = table.Column<int>(nullable: false),
@@ -527,7 +527,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Day = table.Column<int>(nullable: false),
                     WeekPlanId = table.Column<int>(nullable: false)
                 },
@@ -547,7 +547,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -632,7 +632,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreatedOn = table.Column<DateTime>(nullable: false),
                     UpdatedOn = table.Column<DateTime>(nullable: false),
                     IsArchived = table.Column<bool>(nullable: false),
@@ -656,7 +656,7 @@ namespace Fitodu.Model.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     StartTime = table.Column<DateTime>(type: "datetime", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime", nullable: false),
                     DayPlanId = table.Column<int>(nullable: false)
@@ -681,7 +681,8 @@ namespace Fitodu.Model.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -712,7 +713,8 @@ namespace Fitodu.Model.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AwaitingTrainings_IdClient",
@@ -733,7 +735,8 @@ namespace Fitodu.Model.Migrations
                 name: "IX_Companies_Url",
                 table: "Companies",
                 column: "Url",
-                unique: true);
+                unique: true,
+                filter: "[Url] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CreateClientTokens_ClientId",

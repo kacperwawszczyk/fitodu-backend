@@ -125,12 +125,12 @@ namespace Fitodu.Api.Controllers
         /// </summary>
         /// <param name="id">Id of the training you wish to delete</param>
         /// <returns></returns>
-        [HttpDelete("trainings")]
+        [HttpDelete("trainings/{id}/{time_zone_offset}")]
         [Authorize]
         //[AuthorizePolicy(UserRole.Coach)]
-        public async Task<IActionResult> DeleteTraining(int id)
+        public async Task<IActionResult> DeleteTraining(int id, int time_zone_offset)
         {
-            var result = await _trainingService.DeleteTraining(CurrentUser.Id, CurrentUser.Role, id);
+            var result = await _trainingService.DeleteTraining(CurrentUser.Id, CurrentUser.Role, id, time_zone_offset);
             return GetResult(result);
         }
     }

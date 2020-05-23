@@ -16,7 +16,7 @@ namespace Fitodu.Service
         public static void RegisterDatabase(this IServiceCollection services, IConfiguration config)
         {
             services
-                .AddDbContext<Context>(x => x.UseMySql(config
+                .AddDbContext<Context>(x => x.UseSqlServer(config
                 .GetConnectionString("DefaultConnection"))
                 .UseLazyLoadingProxies());
 

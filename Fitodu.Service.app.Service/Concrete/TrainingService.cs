@@ -262,7 +262,7 @@ namespace Fitodu.Service.Concrete
         }
 
 
-        public async Task<Result> DeleteTraining(string requesterId, UserRole requesterRole, int trainingId)
+        public async Task<Result> DeleteTraining(string requesterId, UserRole requesterRole, int trainingId, int time_zone_offset)
         {
             var result = new Result();
 
@@ -312,7 +312,7 @@ namespace Fitodu.Service.Concrete
                         result.ErrorMessage = "Coach with given id does not exist!";
                         return result;
                     }
-                    if (existingTraining.StartDate > DateTime.UtcNow)
+                    if (existingTraining.StartDate > DateTime.UtcNow.AddHours(Convert.ToDouble(time_zone_offset)))
                     {
                         if (client.IsRegistered)
                         {
@@ -381,7 +381,7 @@ namespace Fitodu.Service.Concrete
 
                     transaction.Commit();
 
-                    if (existingTraining.StartDate > DateTime.UtcNow && client.IsRegistered)
+                    if (existingTraining.StartDate > DateTime.UtcNow.AddHours(Convert.ToDouble(time_zone_offset)) && client.IsRegistered)
                     {
                         var response = await _emailService.Send(model);
 
@@ -435,7 +435,7 @@ namespace Fitodu.Service.Concrete
                         return result;
                     }
 
-                    if (existingTraining.StartDate > DateTime.UtcNow.AddHours(Convert.ToDouble(coach.CancelTimeHours)).AddMinutes(Convert.ToDouble(coach.CancelTimeMinutes)))
+                    if (existingTraining.StartDate > DateTime.UtcNow.AddHours(Convert.ToDouble(time_zone_offset)).AddHours(Convert.ToDouble(coach.CancelTimeHours)).AddMinutes(Convert.ToDouble(coach.CancelTimeMinutes)))
                     {
                         clientcoach.AvailableTrainings += 1;
                         //_context.CoachClients.Update(clientcoach);
@@ -609,6 +609,12 @@ namespace Fitodu.Service.Concrete
                         trainings = _context.Trainings.Where(x => x.IdClient == id);
                     }
                 }
+            }
+
+            if(trainings == null)
+            {
+                result.Error = ErrorType.NotFound;
+                return result;
             }
 
             result.Data = await trainings.ProjectTo<TrainingListOutput>(_mapper.ConfigurationProvider).ToListAsync();

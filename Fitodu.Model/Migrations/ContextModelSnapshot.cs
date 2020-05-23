@@ -3,6 +3,7 @@ using System;
 using Fitodu.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Fitodu.Model.Migrations
@@ -15,12 +16,14 @@ namespace Fitodu.Model.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Fitodu.Model.Entities.AwaitingTraining", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime");
@@ -115,9 +118,9 @@ namespace Fitodu.Model.Migrations
 
                     b.Property<string>("AddressState");
 
-                    b.Property<uint?>("CancelTimeHours");
+                    b.Property<long?>("CancelTimeHours");
 
-                    b.Property<uint?>("CancelTimeMinutes");
+                    b.Property<long?>("CancelTimeMinutes");
 
                     b.Property<DateTime>("CreatedOn");
 
@@ -167,7 +170,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.Company", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("AddressCity");
 
@@ -208,7 +212,8 @@ namespace Fitodu.Model.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Url")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Url] IS NOT NULL");
 
                     b.ToTable("Companies");
                 });
@@ -216,7 +221,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.CreateClientToken", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClientId");
 
@@ -242,7 +248,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.DayPlan", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("Day");
 
@@ -258,7 +265,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.Exercise", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<bool>("Archived");
 
@@ -342,7 +350,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.RefreshToken", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreatedOn");
 
@@ -366,7 +375,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.Summary", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime?>("Date");
 
@@ -391,7 +401,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.Training", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -423,7 +434,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.TrainingExercise", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("IdExercise");
 
@@ -541,7 +553,8 @@ namespace Fitodu.Model.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex");
+                        .HasName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -549,7 +562,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.UserFeedback", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime");
@@ -573,7 +587,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.WeekPlan", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("IdCoach")
                         .IsRequired();
@@ -593,7 +608,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.WorkTime", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime?>("Day")
                         .HasColumnType("date");
@@ -615,7 +631,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.WorkoutTime", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("DayPlanId");
 
@@ -650,7 +667,8 @@ namespace Fitodu.Model.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex");
+                        .HasName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
                 });
@@ -658,7 +676,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType");
 
@@ -677,7 +696,8 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType");
 
