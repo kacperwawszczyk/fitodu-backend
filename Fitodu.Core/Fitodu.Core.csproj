@@ -8,4 +8,9 @@
     <Folder Include="Extensions\" />
     <Folder Include="Helpers\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="6.10.9" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.4" />
+  </ItemGroup>
 </Project>

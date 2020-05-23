@@ -3,29 +3,26 @@ using System;
 using Fitodu.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Fitodu.Model.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20200324111900_NameChangesForTrainingExcercise")]
-    partial class NameChangesForTrainingExcercise
+    [Migration("20200523110240_NewDatabase")]
+    partial class NewDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Fitodu.Model.Entities.AwaitingTraining", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime");
@@ -36,6 +33,8 @@ namespace Fitodu.Model.Migrations
                     b.Property<string>("IdCoach")
                         .IsRequired();
 
+                    b.Property<string>("Name");
+
                     b.Property<int>("Receiver");
 
                     b.Property<int>("Sender");
@@ -44,6 +43,10 @@ namespace Fitodu.Model.Migrations
                         .HasColumnType("datetime");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdClient");
+
+                    b.HasIndex("IdCoach");
 
                     b.ToTable("AwaitingTrainings");
                 });
@@ -67,6 +70,8 @@ namespace Fitodu.Model.Migrations
 
                     b.Property<DateTime>("CreatedOn");
 
+                    b.Property<string>("Email");
+
                     b.Property<decimal?>("FatPercentage")
                         .HasColumnType("decimal(4, 2)");
 
@@ -78,6 +83,8 @@ namespace Fitodu.Model.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30);
+
+                    b.Property<string>("PhoneNumber");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -110,9 +117,9 @@ namespace Fitodu.Model.Migrations
 
                     b.Property<string>("AddressState");
 
-                    b.Property<long?>("CancelTimeHours");
+                    b.Property<uint?>("CancelTimeHours");
 
-                    b.Property<long?>("CancelTimeMinutes");
+                    b.Property<uint?>("CancelTimeMinutes");
 
                     b.Property<DateTime>("CreatedOn");
 
@@ -152,10 +159,9 @@ namespace Fitodu.Model.Migrations
 
                     b.Property<int>("PurchasedTrainings");
 
-                    b.Property<string>("TimeToResign")
-                        .HasMaxLength(30);
-
                     b.HasKey("IdCoach", "IdClient");
+
+                    b.HasIndex("IdClient");
 
                     b.ToTable("CoachClients");
                 });
@@ -163,8 +169,7 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.Company", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("AddressCity");
 
@@ -205,8 +210,7 @@ namespace Fitodu.Model.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Url")
-                        .IsUnique()
-                        .HasFilter("[Url] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Companies");
                 });
@@ -214,8 +218,7 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.CreateClientToken", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClientId");
 
@@ -241,8 +244,7 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.DayPlan", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("Day");
 
@@ -258,8 +260,7 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.Exercise", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<bool>("Archived");
 
@@ -271,6 +272,8 @@ namespace Fitodu.Model.Migrations
                         .HasMaxLength(30);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdCoach");
 
                     b.ToTable("Exercises");
                 });
@@ -284,6 +287,8 @@ namespace Fitodu.Model.Migrations
                     b.Property<string>("Max");
 
                     b.HasKey("IdExercise", "IdClient");
+
+                    b.HasIndex("IdClient");
 
                     b.ToTable("Maximums");
                 });
@@ -313,6 +318,9 @@ namespace Fitodu.Model.Migrations
 
                     b.HasKey("IdCoach", "IdClient");
 
+                    b.HasIndex("IdClient")
+                        .IsUnique();
+
                     b.ToTable("PrivateNotes");
                 });
 
@@ -327,14 +335,16 @@ namespace Fitodu.Model.Migrations
 
                     b.HasKey("IdCoach", "IdClient");
 
+                    b.HasIndex("IdClient")
+                        .IsUnique();
+
                     b.ToTable("PublicNotes");
                 });
 
             modelBuilder.Entity("Fitodu.Model.Entities.RefreshToken", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("CreatedOn");
 
@@ -358,18 +368,24 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.Summary", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("Date");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int>("IdTraining");
+                    b.Property<decimal?>("FatPercentage")
+                        .HasColumnType("decimal(4, 2)");
 
-                    b.Property<decimal?>("WeightChange")
-                        .HasColumnType("decimal(3, 2)");
+                    b.Property<string>("IdClient");
+
+                    b.Property<decimal?>("Weight")
+                        .HasColumnType("decimal(5, 2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdClient");
 
                     b.ToTable("Summaries");
                 });
@@ -377,8 +393,7 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Fitodu.Model.Entities.Training", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -390,6 +405,8 @@ namespace Fitodu.Model.Migrations
 
                     b.Property<string>("IdCoach");
 
+                    b.Property<string>("Name");
+
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
@@ -398,30 +415,35 @@ namespace Fitodu.Model.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IdClient");
+
+                    b.HasIndex("IdCoach");
+
                     b.ToTable("Trainings");
                 });
 
             modelBuilder.Entity("Fitodu.Model.Entities.TrainingExercise", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("IdExercise");
 
                     b.Property<int>("IdTraining");
 
-                    b.Property<string>("Note")
-                        .HasColumnType("text");
-
                     b.Property<int>("Repetitions");
+
+                    b.Property<int>("RepetitionsResult");
 
                     b.Property<TimeSpan?>("Time");
 
+                    b.Property<TimeSpan?>("TimeResult");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("IdExercise");
+
+                    b.HasIndex("IdTraining");
 
                     b.ToTable("TrainingExercises");
                 });
@@ -435,9 +457,9 @@ namespace Fitodu.Model.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int>("IdTrainingExercise");
+                    b.Property<int>("Id");
 
-                    b.Property<int>("IdTrainingResult");
+                    b.Property<int>("IdTrainingExercise");
 
                     b.Property<string>("Note")
                         .HasColumnType("text");
@@ -448,7 +470,7 @@ namespace Fitodu.Model.Migrations
 
                     b.HasKey("IdExercise", "IdTraining");
 
-                    b.HasAlternateKey("IdTrainingResult");
+                    b.HasAlternateKey("Id");
 
                     b.HasIndex("IdTrainingExercise")
                         .IsUnique();
@@ -462,6 +484,8 @@ namespace Fitodu.Model.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AccessFailedCount");
+
+                    b.Property<string>("Avatar");
 
                     b.Property<long>("CompanyId");
 
@@ -519,17 +543,39 @@ namespace Fitodu.Model.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("Fitodu.Model.Entities.UserFeedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Message")
+                        .IsRequired();
+
+                    b.Property<int>("Role");
+
+                    b.Property<string>("URL")
+                        .IsRequired();
+
+                    b.Property<string>("UserId")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserFeedbacks");
                 });
 
             modelBuilder.Entity("Fitodu.Model.Entities.WeekPlan", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("IdCoach")
                         .IsRequired();
@@ -541,14 +587,15 @@ namespace Fitodu.Model.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IdCoach");
+
                     b.ToTable("WeekPlans");
                 });
 
             modelBuilder.Entity("Fitodu.Model.Entities.WorkTime", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("Day")
                         .HasColumnType("date");
@@ -562,14 +609,15 @@ namespace Fitodu.Model.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IdCoach");
+
                     b.ToTable("WorkTimes");
                 });
 
             modelBuilder.Entity("Fitodu.Model.Entities.WorkoutTime", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("DayPlanId");
 
@@ -604,8 +652,7 @@ namespace Fitodu.Model.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
                 });
@@ -613,8 +660,7 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -633,8 +679,7 @@ namespace Fitodu.Model.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -696,6 +741,32 @@ namespace Fitodu.Model.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Fitodu.Model.Entities.AwaitingTraining", b =>
+                {
+                    b.HasOne("Fitodu.Model.Entities.Client", "Client")
+                        .WithMany("AwaitingTrainings")
+                        .HasForeignKey("IdClient")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Fitodu.Model.Entities.Coach", "Coach")
+                        .WithMany("AwaitingTrainings")
+                        .HasForeignKey("IdCoach")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Fitodu.Model.Entities.CoachClient", b =>
+                {
+                    b.HasOne("Fitodu.Model.Entities.Client", "Client")
+                        .WithMany("ClientCoaches")
+                        .HasForeignKey("IdClient")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Fitodu.Model.Entities.Coach", "Coach")
+                        .WithMany("CoachClients")
+                        .HasForeignKey("IdCoach")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Fitodu.Model.Entities.CreateClientToken", b =>
                 {
                     b.HasOne("Fitodu.Model.Entities.Client", "Client")
@@ -712,6 +783,52 @@ namespace Fitodu.Model.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("Fitodu.Model.Entities.Exercise", b =>
+                {
+                    b.HasOne("Fitodu.Model.Entities.Coach", "Coach")
+                        .WithMany("Exercises")
+                        .HasForeignKey("IdCoach");
+                });
+
+            modelBuilder.Entity("Fitodu.Model.Entities.Maximum", b =>
+                {
+                    b.HasOne("Fitodu.Model.Entities.Client", "Client")
+                        .WithMany("Maximums")
+                        .HasForeignKey("IdClient")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Fitodu.Model.Entities.Exercise", "Exercise")
+                        .WithMany("Maximums")
+                        .HasForeignKey("IdExercise")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Fitodu.Model.Entities.PrivateNote", b =>
+                {
+                    b.HasOne("Fitodu.Model.Entities.Client", "Client")
+                        .WithOne("PrivateNote")
+                        .HasForeignKey("Fitodu.Model.Entities.PrivateNote", "IdClient")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Fitodu.Model.Entities.Coach", "Coach")
+                        .WithMany("PrivateNotes")
+                        .HasForeignKey("IdCoach")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Fitodu.Model.Entities.PublicNote", b =>
+                {
+                    b.HasOne("Fitodu.Model.Entities.Client", "Client")
+                        .WithOne("PublicNote")
+                        .HasForeignKey("Fitodu.Model.Entities.PublicNote", "IdClient")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Fitodu.Model.Entities.Coach", "Coach")
+                        .WithMany("PublicNotes")
+                        .HasForeignKey("IdCoach")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Fitodu.Model.Entities.RefreshToken", b =>
                 {
                     b.HasOne("Fitodu.Model.Entities.User", "User")
@@ -720,11 +837,60 @@ namespace Fitodu.Model.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("Fitodu.Model.Entities.Summary", b =>
+                {
+                    b.HasOne("Fitodu.Model.Entities.Client", "Client")
+                        .WithMany("Summaries")
+                        .HasForeignKey("IdClient")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Fitodu.Model.Entities.Training", b =>
+                {
+                    b.HasOne("Fitodu.Model.Entities.Client", "Client")
+                        .WithMany("Trainings")
+                        .HasForeignKey("IdClient")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Fitodu.Model.Entities.Coach", "Coach")
+                        .WithMany("Trainings")
+                        .HasForeignKey("IdCoach");
+                });
+
+            modelBuilder.Entity("Fitodu.Model.Entities.TrainingExercise", b =>
+                {
+                    b.HasOne("Fitodu.Model.Entities.Exercise", "Exercise")
+                        .WithMany("TrainingExercises")
+                        .HasForeignKey("IdExercise")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Fitodu.Model.Entities.Training", "Training")
+                        .WithMany("TrainingExercises")
+                        .HasForeignKey("IdTraining")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Fitodu.Model.Entities.User", b =>
                 {
                     b.HasOne("Fitodu.Model.Entities.Company", "Company")
                         .WithMany("Users")
                         .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Fitodu.Model.Entities.WeekPlan", b =>
+                {
+                    b.HasOne("Fitodu.Model.Entities.Coach", "Coach")
+                        .WithMany("WeekPlans")
+                        .HasForeignKey("IdCoach")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Fitodu.Model.Entities.WorkTime", b =>
+                {
+                    b.HasOne("Fitodu.Model.Entities.Coach", "Coach")
+                        .WithMany("WorkTimes")
+                        .HasForeignKey("IdCoach")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
