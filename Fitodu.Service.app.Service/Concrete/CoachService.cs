@@ -410,7 +410,7 @@ namespace Fitodu.Service.Concrete
         public async Task<Result> SetClientsTrainingsAvailable(string requesterId, UserRole role, string clientId, int value)
         {
             var result = new Result();
-            string date = DateTime.Today.ToString("g");
+            string date = DateTime.Today.ToString("d");
             string url = "https://fitodu.azurewebsites.net";
             var model = new EmailInput();
             using (var transcation = _context.Database.BeginTransaction())
@@ -439,8 +439,8 @@ namespace Fitodu.Service.Concrete
                 if (user != null)
                 {
                     model.To = user.Email;
-                    model.Subject = Resource.TrainingMailTemplate.TrainingClientWithdrawalSubject;
-                    model.HtmlBody = Resource.TrainingMailTemplate.TrainingClientWithdrawalBody;
+                    model.Subject = Resource.UpdateAvailableTrainingsTemplate.UpdateAvailableTrainingsSubject;
+                    model.HtmlBody = Resource.UpdateAvailableTrainingsTemplate.UpdateAvailableTrainingsBody;
                     model.HtmlBody = model.HtmlBody.Replace("-url-", url);
                     model.HtmlBody = model.HtmlBody.Replace("-date-", date);
 
