@@ -423,7 +423,7 @@ namespace Fitodu.Service.Concrete
                     result.ErrorMessage = "Invalid value of available trainings or user is not a coach or this user is not client of this coach.";
                     return result;
                 }
-
+                int oldValue = coachClient.AvailableTrainings;
                 coachClient.AvailableTrainings = value;
 
                 if (await _context.SaveChangesAsync() == 0)
@@ -443,6 +443,8 @@ namespace Fitodu.Service.Concrete
                     model.HtmlBody = Resource.UpdateAvailableTrainingsTemplate.UpdateAvailableTrainingsBody;
                     model.HtmlBody = model.HtmlBody.Replace("-url-", url);
                     model.HtmlBody = model.HtmlBody.Replace("-date-", date);
+                    model.HtmlBody = model.HtmlBody.Replace("-oldValue-", oldValue.ToString());
+                    model.HtmlBody = model.HtmlBody.Replace("-newValue-", value.ToString());
 
                     var response = await _emailService.Send(model);
 

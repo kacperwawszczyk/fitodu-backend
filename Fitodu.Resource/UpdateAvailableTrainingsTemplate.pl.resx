@@ -119,7 +119,7 @@
   </resheader>
   <data name="UpdateAvailableTrainingsBody" xml:space="preserve">
     <value>Witaj! &lt;br&gt; &lt;br&gt;
-Twój trener zmienił ilość treningów dostępnych dla Ciebie! Zmiana nastąpiła -date-. Sprawdź czy wszystko jest w porządku na &lt;a href="-url-"&gt;Fitodu&lt;/a&gt;! Skontaktuj się z trenerem jeśli coś liczba dostępnych treningów się nie zgadza.</value>
+Twój trener zmienił ilość treningów dostępnych dla Ciebie! Zmiana nastąpiła -date-. Ilość dostępnych treningów została zmieniona z -oldValue- na -newValue-. Sprawdź czy wszystko jest w porządku na &lt;a href="-url-"&gt;Fitodu&lt;/a&gt;! Skontaktuj się z trenerem jeśli coś liczba dostępnych treningów się nie zgadza.</value>
   </data>
   <data name="UpdateAvailableTrainingsSubject" xml:space="preserve">
     <value>Fitodu - ilość dostępnych treningów została zmieniona!</value>

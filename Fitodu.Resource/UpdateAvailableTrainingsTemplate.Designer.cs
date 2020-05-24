@@ -62,7 +62,7 @@ namespace Fitodu.Resource {
         
         /// <summary>
         ///   Looks up a localized string similar to Hello! &lt;br&gt; &lt;br&gt;
-        ///You coach has changed amount of available trainings. Change happened on -date-. Check if everything is right at &lt;a href=&quot;-url-&quot;&gt;Fitodu&lt;/a&gt;. Contact your coach if something went wrong!.
+        ///You coach has changed amount of available trainings. Change happened on -date-. Value changed from -oldValue- to -newValue-. Check if everything is right at &lt;a href=&quot;-url-&quot;&gt;Fitodu&lt;/a&gt;. Contact your coach if something went wrong!.
         /// </summary>
         public static string UpdateAvailableTrainingsBody {
             get {
