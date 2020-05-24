@@ -117,52 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AwaitingTrainingAcceptedClientBody" xml:space="preserve">
-    <value>Cześć -clientName-! &lt;br&gt;&lt;br&gt; Twój trening zaczynający się o -date-, właśnie został zaakceptowany przez Twojego trenera! Przejdź do &lt;a href="-url-"&gt;FITODU&lt;/a&gt; aby zobaczyć!</value>
+  <data name="UpdateAvailableTrainingsBody" xml:space="preserve">
+    <value>Hello! &lt;br&gt; &lt;br&gt;
+You coach has changed amount of available trainings. Change happened on -date-. Check if everything is right at &lt;a href="-url-"&gt;Fitodu&lt;/a&gt;. Contact your coach if something went wrong!</value>
   </data>
-  <data name="AwaitingTrainingAcceptedClientSubject" xml:space="preserve">
-    <value>Fitodu - masz nowy zaplanowany trening!</value>
-  </data>
-  <data name="AwaitingTrainingAcceptedCoachBody" xml:space="preserve">
-    <value>Cześć -coachName-! &lt;br&gt;&lt;br&gt; Twój trening z -clientName-, zaczynający się o -date-, właśnie został zaakceptowany przez Twojego klienta! Przejdź do &lt;a href="-url-"&gt;FITODU&lt;/a&gt; aby zobaczyć!</value>
-  </data>
-  <data name="AwaitingTrainingAcceptedCoachSubject" xml:space="preserve">
-    <value>Fitodu - masz nowy zaplanowany trening!</value>
-  </data>
-  <data name="AwaitingTrainingRejectedClientBody" xml:space="preserve">
-    <value>Cześć -clientName-! &lt;br&gt;&lt;br&gt; Twój trening zaczynający się o -date-, właśnie został odrzucony przez Twojego trenera. Przejdź do &lt;a href="-url-"&gt;FITODU&lt;/a&gt; aby zaplanować Twój trening w innym terminie!</value>
-  </data>
-  <data name="AwaitingTrainingRejectedClientSubject" xml:space="preserve">
-    <value>Fitodu - Twój trening został odrzucony</value>
-  </data>
-  <data name="AwaitingTrainingRejectedCoachBody" xml:space="preserve">
-    <value>Cześć -coachName-! &lt;br&gt;&lt;br&gt; Twój trening z -clientName-, zaczynający się o -date-, właśnie został odrzucony przez Twojego klienta. Przejdź do &lt;a href="-url-"&gt;FITODU&lt;/a&gt; aby zaplanować Twój trening w innym terminie!</value>
-  </data>
-  <data name="AwaitingTrainingRejectedCoachSubject" xml:space="preserve">
-    <value>Fitodu - Twój trening został odrzucony</value>
-  </data>
-  <data name="AwaitingTrainingWithdrawnClientBody" xml:space="preserve">
-    <value>Cześć -clientName-! &lt;br&gt;&lt;br&gt; Twój trening, czekający na Twoje potwierdzenie, zaczynający się o -date-, właśnie został wycofany przez Twojego trenera. Przejdź do &lt;a href="-url-"&gt;FITODU&lt;/a&gt; jeśli chcesz zaproponować nowy termin treningu Twojemu trenerowi!</value>
-  </data>
-  <data name="AwaitingTrainingWithdrawnClientSubject" xml:space="preserve">
-    <value>Fitodu - jeden z Twoich treningów oczekujących na potwierdzenie został wycofany</value>
-  </data>
-  <data name="AwaitingTrainingWithdrawnCoachBody" xml:space="preserve">
-    <value>Cześć -coachName-! &lt;br&gt;&lt;br&gt; Trening z -clientName-, czekający na Twoje potwierdzenie, zaczynający się o -date-, właśnie został wycofany przez Twojego klienta. Przejdź do &lt;a href="-url-"&gt;FITODU&lt;/a&gt; jeśli chcesz zaproponować nowy termin treningu Twojemu klientowi!</value>
-  </data>
-  <data name="AwaitingTrainingWithdrawnCoachSubject" xml:space="preserve">
-    <value>Fitodu - jeden z Twoich treningów oczekujących na potwierdzenie został wycofany</value>
-  </data>
-  <data name="NewAwaitingTrainingClientBody" xml:space="preserve">
-    <value>Cześć -fullName-!&lt;br&gt;&lt;br&gt;Masz nową prośbę treningu od -coachName-!&lt;br&gt;&lt;br&gt;Aby ją zatwierdzić lub odrzucić, udaj się na naszą stronę: &lt;a href="-url-"&gt;TUTAJ&lt;/a&gt;.</value>
-  </data>
-  <data name="NewAwaitingTrainingClientSubject" xml:space="preserve">
-    <value>Fitodu - masz nową prośbę treningu!</value>
-  </data>
-  <data name="NewAwaitingTrainingCoachBody" xml:space="preserve">
-    <value>Cześć -fullName-!&lt;br&gt;&lt;br&gt;Masz nową prośbę treningu od -clientName-!&lt;br&gt;&lt;br&gt;Aby ją zatwierdzić lub odrzucić, udaj się na naszą stronę: &lt;a href="-url-"&gt;TUTAJ&lt;/a&gt;.</value>
-  </data>
-  <data name="NewAwaitingTrainingCoachSubject" xml:space="preserve">
-    <value>Fitodu - masz nową prośbę treningu!</value>
+  <data name="UpdateAvailableTrainingsSubject" xml:space="preserve">
+    <value>Fitodu - amount of available trainings was changed!</value>
   </data>
 </root>

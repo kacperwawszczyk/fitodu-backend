@@ -501,6 +501,18 @@ namespace Fitodu.Service.Concrete
                         }
 
                         transaction.Commit();
+
+                        if (existingTraining.StartDate > DateTime.UtcNow.AddMinutes(Convert.ToDouble(-time_zone_offset)).AddHours(Convert.ToDouble(coach.CancelTimeHours)).AddMinutes(Convert.ToDouble(coach.CancelTimeMinutes)))
+                        {
+                            var response = await _emailService.Send(model);
+
+                            if (response.Code != HttpStatusCode.Accepted && response.Code != HttpStatusCode.OK)
+                            {
+                                result.Error = ErrorType.InternalServerError;
+                                result.ErrorMessage = "Mail: mail not sent but training was deleted";
+                                return result;
+                            }
+                        }
                     }
                     else
                     {

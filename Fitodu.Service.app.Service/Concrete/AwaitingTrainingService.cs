@@ -238,7 +238,7 @@ namespace Fitodu.Service.Concrete
             }
             string url = "https://fitodu.azurewebsites.net";
 
-            string email = receiverEmail.NormalizedEmail;
+            string email = receiverEmail.Email;
 
 
             var model = new EmailInput()
@@ -348,6 +348,7 @@ namespace Fitodu.Service.Concrete
             else
             {
                 var workoutTimes = _context.WorkoutTimes.Where(x =>
+                                                        x.DayPlan.WeekPlan.IsDefault == false &&
                                                         x.DayPlan.WeekPlan.IdCoach == awaitingTraining.IdCoach &&
                                                         x.DayPlan.WeekPlan.StartDate.Value.Date <= awaitingTrainingInput.StartDate.Date &&
                                                         x.DayPlan.WeekPlan.StartDate.Value.Date.AddDays(7) > awaitingTrainingInput.EndDate.Date &&
@@ -366,6 +367,9 @@ namespace Fitodu.Service.Concrete
                 }
 
                 bool found = false;
+                var weekPlans = _context.WeekPlans.Where(x => x.IdCoach == awaitingTraining.IdCoach);
+
+
                 foreach (WorkoutTime workoutTime in workoutTimes)
                 {
                     if ((workoutTime.DayPlan.Day == Day.Monday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Monday) ||
@@ -383,11 +387,9 @@ namespace Fitodu.Service.Concrete
                     }
                 }
 
-                if(!found)
+                if (!found && workoutTimes == null)
                 {
-                    var weekPlans = _context.WeekPlans.Where(x => x.IdCoach == awaitingTraining.IdCoach);
-
-                    if(defaultWeekplan.DayPlans == null || weekPlans == null)
+                    if (defaultWeekplan.DayPlans.Count == 0)
                     {
                         found = true;
                         awaitingTraining.StartDate = awaitingTrainingInput.StartDate;
@@ -455,11 +457,18 @@ namespace Fitodu.Service.Concrete
                         return result;
                     }
 
+                    if (requesterRole == exisitingAwaitingTraining.Sender && accept == true)
+                    {
+                        result.Error = ErrorType.BadRequest;
+                        result.ErrorMessage = "Cannot accept your own workout!";
+                        return result;
+                    }
+
                     var receiverEmail = await _context.Users.Where(x => x.Id == exisitingAwaitingTraining.IdClient).FirstOrDefaultAsync();
 
                     if (receiverEmail != null)
                     {
-                        email = receiverEmail.NormalizedEmail;
+                        email = receiverEmail.Email;
                     }
 
                 }
@@ -472,11 +481,18 @@ namespace Fitodu.Service.Concrete
                         return result;
                     }
 
-                    var receiverEmail = await _context.Users.Where(x => x.Id == exisitingAwaitingTraining.IdClient).FirstOrDefaultAsync();
+                    if (requesterRole == exisitingAwaitingTraining.Sender && accept == true)
+                    {
+                        result.Error = ErrorType.BadRequest;
+                        result.ErrorMessage = "Cannot accept your own workout!";
+                        return result;
+                    }
+
+                    var receiverEmail = await _context.Users.Where(x => x.Id == exisitingAwaitingTraining.IdCoach).FirstOrDefaultAsync();
 
                     if (receiverEmail != null)
                     {
-                        email = receiverEmail.NormalizedEmail;
+                        email = receiverEmail.Email;
                     }
                 }
                 Training training = new Training();
@@ -539,8 +555,8 @@ namespace Fitodu.Service.Concrete
             }
 
             //wysyłanie maili
-            if (accept != null)
-            {
+            //if (accept != null)
+            //{
                 if (email == "" || email == null)
                 {
                     result.Error = ErrorType.InternalServerError;
@@ -605,7 +621,7 @@ namespace Fitodu.Service.Concrete
                     result.ErrorMessage = "Mail: mail not sent";
                 }
 
-            }
+            //}
             return result;
         }
     }

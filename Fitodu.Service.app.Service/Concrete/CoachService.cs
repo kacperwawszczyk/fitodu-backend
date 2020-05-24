@@ -23,6 +23,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using Fitodu.Service.Attributes;
 using System.Drawing.Drawing2D;
+using System.Net;
 
 namespace Fitodu.Service.Concrete
 {
@@ -35,6 +36,7 @@ namespace Fitodu.Service.Concrete
         private readonly Context _context;
         private readonly IMapper _mapper;
         private readonly IEmailMarketingService _emailMarketingService;
+        private readonly IEmailService _emailService;
         private string azureConnectionString;
         //private readonly IEmailService _emailService;
         //private readonly SignInManager<User> _signInManager;
@@ -47,7 +49,8 @@ namespace Fitodu.Service.Concrete
             UserManager<User> userManager,
             Context context,
             IMapper mapper,
-            IEmailMarketingService emailMarketingService)
+            IEmailMarketingService emailMarketingService,
+            IEmailService emailService)
         {
             _logger = logger;
             _configuration = configuration;
@@ -56,6 +59,7 @@ namespace Fitodu.Service.Concrete
             _context = context;
             _mapper = mapper;
             _emailMarketingService = emailMarketingService;
+            _emailService = emailService;
             azureConnectionString = _configuration.GetConnectionString("StorageConnection");
         }
 
@@ -406,6 +410,9 @@ namespace Fitodu.Service.Concrete
         public async Task<Result> SetClientsTrainingsAvailable(string requesterId, UserRole role, string clientId, int value)
         {
             var result = new Result();
+            string date = DateTime.Today.ToString("g");
+            string url = "https://fitodu.azurewebsites.net";
+            var model = new EmailInput();
             using (var transcation = _context.Database.BeginTransaction())
             {
                 var coachClient = await _context.CoachClients.Where(x => x.IdCoach == requesterId && x.IdClient == clientId).FirstOrDefaultAsync();
@@ -427,6 +434,27 @@ namespace Fitodu.Service.Concrete
                     return result;
                 }
                 transcation.Commit();
+
+                var user = await _context.Users.Where(x => x.Id == clientId).FirstOrDefaultAsync();
+                if (user != null)
+                {
+                    model.To = user.Email;
+                    model.Subject = Resource.TrainingMailTemplate.TrainingClientWithdrawalSubject;
+                    model.HtmlBody = Resource.TrainingMailTemplate.TrainingClientWithdrawalBody;
+                    model.HtmlBody = model.HtmlBody.Replace("-url-", url);
+                    model.HtmlBody = model.HtmlBody.Replace("-date-", date);
+
+                    var response = await _emailService.Send(model);
+
+                    if (response.Code != HttpStatusCode.Accepted && response.Code != HttpStatusCode.OK)
+                    {
+                        result.Error = ErrorType.InternalServerError;
+                        result.ErrorMessage = "Mail: mail not sent but amount of available trainings was updated.";
+                        return result;
+                    }
+                }
+
+
             }
             return result;
         }
