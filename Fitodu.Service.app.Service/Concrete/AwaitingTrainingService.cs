@@ -357,43 +357,78 @@ namespace Fitodu.Service.Concrete
 
                 var defaultWeekplan = await _context.WeekPlans.Where(x => x.IsDefault == true && x.IdCoach == awaitingTraining.IdCoach).FirstOrDefaultAsync();
 
-                if (defaultWeekplan != null)
-                {
-                    var defaultWorkoutTimes = _context.WorkoutTimes.Where(x => x.DayPlan.WeekPlan.Id == defaultWeekplan.Id &&
-                                x.StartTime.TimeOfDay <= awaitingTrainingInput.StartDate.TimeOfDay &&
-                                x.EndTime.TimeOfDay >= awaitingTrainingInput.EndDate.TimeOfDay);
+                //if (defaultWeekplan != null)
+                //{
+                //    var defaultWorkoutTimes = _context.WorkoutTimes.Where(x => x.DayPlan.WeekPlan.Id == defaultWeekplan.Id &&
+                //                x.StartTime.TimeOfDay <= awaitingTrainingInput.StartDate.TimeOfDay &&
+                //                x.EndTime.TimeOfDay >= awaitingTrainingInput.EndDate.TimeOfDay);
 
-                    workoutTimes = workoutTimes.Concat(defaultWorkoutTimes);
-                }
+                //    //workoutTimes = workoutTimes.Concat(defaultWorkoutTimes);
+                //}
 
                 bool found = false;
                 var weekPlans = _context.WeekPlans.Where(x => x.IdCoach == awaitingTraining.IdCoach);
 
-
-                foreach (WorkoutTime workoutTime in workoutTimes)
+                if (workoutTimes.Count() > 0)
                 {
-                    if ((workoutTime.DayPlan.Day == Day.Monday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Monday) ||
-                        (workoutTime.DayPlan.Day == Day.Wednesday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Wednesday) ||
-                        (workoutTime.DayPlan.Day == Day.Tuesday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Tuesday) ||
-                        (workoutTime.DayPlan.Day == Day.Thursday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Thursday) ||
-                        (workoutTime.DayPlan.Day == Day.Saturday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Saturday) ||
-                        (workoutTime.DayPlan.Day == Day.Sunday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Sunday) ||
-                        (workoutTime.DayPlan.Day == Day.Friday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Friday))
+                    foreach (WorkoutTime workoutTime in workoutTimes)
                     {
-                        found = true;
-                        awaitingTraining.StartDate = awaitingTrainingInput.StartDate;
-                        awaitingTraining.EndDate = awaitingTrainingInput.EndDate;
-                        break;
+                        if ((workoutTime.DayPlan.Day == Day.Monday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Monday) ||
+                            (workoutTime.DayPlan.Day == Day.Wednesday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Wednesday) ||
+                            (workoutTime.DayPlan.Day == Day.Tuesday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Tuesday) ||
+                            (workoutTime.DayPlan.Day == Day.Thursday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Thursday) ||
+                            (workoutTime.DayPlan.Day == Day.Saturday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Saturday) ||
+                            (workoutTime.DayPlan.Day == Day.Sunday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Sunday) ||
+                            (workoutTime.DayPlan.Day == Day.Friday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Friday))
+                        {
+                            found = true;
+                            awaitingTraining.StartDate = awaitingTrainingInput.StartDate;
+                            awaitingTraining.EndDate = awaitingTrainingInput.EndDate;
+                            break;
+                        }
                     }
                 }
 
-                if (!found && workoutTimes == null)
+
+
+                if (!found && workoutTimes.Count() == 0)
                 {
-                    if (defaultWeekplan.DayPlans.Count == 0)
+                    int sum = 0;
+                    foreach (DayPlan dayPlan in defaultWeekplan.DayPlans)
+                    {
+                        sum += dayPlan.WorkoutTimes.Count;
+                    }
+                    if (defaultWeekplan.DayPlans.Count == 0 || sum == 0)
                     {
                         found = true;
                         awaitingTraining.StartDate = awaitingTrainingInput.StartDate;
                         awaitingTraining.EndDate = awaitingTrainingInput.EndDate;
+                    }
+                    else
+                    {
+                        if (defaultWeekplan != null)
+                        {
+                            var defaultWorkoutTimes = _context.WorkoutTimes.Where(x => x.DayPlan.WeekPlan.Id == defaultWeekplan.Id &&
+                                        x.StartTime.TimeOfDay <= awaitingTrainingInput.StartDate.TimeOfDay &&
+                                        x.EndTime.TimeOfDay >= awaitingTrainingInput.EndDate.TimeOfDay);
+
+                            foreach (WorkoutTime workoutTime in defaultWorkoutTimes)
+                            {
+                                if ((workoutTime.DayPlan.Day == Day.Monday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Monday) ||
+                                    (workoutTime.DayPlan.Day == Day.Wednesday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Wednesday) ||
+                                    (workoutTime.DayPlan.Day == Day.Tuesday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Tuesday) ||
+                                    (workoutTime.DayPlan.Day == Day.Thursday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Thursday) ||
+                                    (workoutTime.DayPlan.Day == Day.Saturday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Saturday) ||
+                                    (workoutTime.DayPlan.Day == Day.Sunday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Sunday) ||
+                                    (workoutTime.DayPlan.Day == Day.Friday && awaitingTrainingInput.StartDate.DayOfWeek == DayOfWeek.Friday))
+                                {
+                                    found = true;
+                                    awaitingTraining.StartDate = awaitingTrainingInput.StartDate;
+                                    awaitingTraining.EndDate = awaitingTrainingInput.EndDate;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -557,69 +592,69 @@ namespace Fitodu.Service.Concrete
             //wysyłanie maili
             //if (accept != null)
             //{
-                if (email == "" || email == null)
+            if (email == "" || email == null)
+            {
+                result.Error = ErrorType.InternalServerError;
+                result.ErrorMessage = "Mail: receiver email not found, mail not sent";
+                return result;
+            }
+
+            var model = new EmailInput()
+            {
+                To = email
+            };
+
+            if (requesterRole == UserRole.Coach)
+            {
+                if (accept == true)
                 {
-                    result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Mail: receiver email not found, mail not sent";
-                    return result;
+                    model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingAcceptedClientSubject;
+                    model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingAcceptedClientBody;
                 }
-
-                var model = new EmailInput()
+                else if (accept == false)
                 {
-                    To = email
-                };
-
-                if (requesterRole == UserRole.Coach)
-                {
-                    if (accept == true)
-                    {
-                        model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingAcceptedClientSubject;
-                        model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingAcceptedClientBody;
-                    }
-                    else if (accept == false)
-                    {
-                        model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedClientSubject;
-                        model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedClientBody;
-                    }
-                    else if (accept == null)
-                    {
-                        model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnClientSubject;
-                        model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnClientBody;
-                    }
+                    model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedClientSubject;
+                    model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedClientBody;
                 }
-                else if (requesterRole == UserRole.Client)
+                else if (accept == null)
                 {
-                    if (accept == true)
-                    {
-                        model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingAcceptedCoachSubject;
-                        model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingAcceptedCoachBody;
-                    }
-                    else if (accept == false)
-                    {
-                        model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedCoachSubject;
-                        model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedCoachBody;
-                    }
-                    else if (accept == null)
-                    {
-                        model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnCoachSubject;
-                        model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnCoachBody;
-                    }
-                    model.HtmlBody = model.HtmlBody.Replace("-coachName-", coachName);
+                    model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnClientSubject;
+                    model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnClientBody;
                 }
-
-
-                string url = "https://fitodu.azurewebsites.net";
-                model.HtmlBody = model.HtmlBody.Replace("-url-", url);
-                model.HtmlBody = model.HtmlBody.Replace("-clientName-", clientName);
-                model.HtmlBody = model.HtmlBody.Replace("-date-", date);
-
-                var response = await _emailService.Send(model);
-
-                if (response.Code != HttpStatusCode.Accepted && response.Code != HttpStatusCode.OK)
+            }
+            else if (requesterRole == UserRole.Client)
+            {
+                if (accept == true)
                 {
-                    result.Error = ErrorType.InternalServerError;
-                    result.ErrorMessage = "Mail: mail not sent";
+                    model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingAcceptedCoachSubject;
+                    model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingAcceptedCoachBody;
                 }
+                else if (accept == false)
+                {
+                    model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedCoachSubject;
+                    model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingRejectedCoachBody;
+                }
+                else if (accept == null)
+                {
+                    model.Subject = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnCoachSubject;
+                    model.HtmlBody = Resource.AwaitingTrainingMailTemplate.AwaitingTrainingWithdrawnCoachBody;
+                }
+                model.HtmlBody = model.HtmlBody.Replace("-coachName-", coachName);
+            }
+
+
+            string url = "https://fitodu.azurewebsites.net";
+            model.HtmlBody = model.HtmlBody.Replace("-url-", url);
+            model.HtmlBody = model.HtmlBody.Replace("-clientName-", clientName);
+            model.HtmlBody = model.HtmlBody.Replace("-date-", date);
+
+            var response = await _emailService.Send(model);
+
+            if (response.Code != HttpStatusCode.Accepted && response.Code != HttpStatusCode.OK)
+            {
+                result.Error = ErrorType.InternalServerError;
+                result.ErrorMessage = "Mail: mail not sent";
+            }
 
             //}
             return result;
