@@ -24,7 +24,11 @@ namespace Fitodu.Api.Controllers
         {
             _coachService = coachService;
         }
-        // TODO: Uzupełnić
+        /// <summary>
+        /// Registers a new coach.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("coaches")]
         public async Task<IActionResult> CoachRegister([FromBody]RegisterCoachInput model)
         {
@@ -33,7 +37,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Coach to get information about oneself
+        /// Returns a signed in coach's information.
         /// </summary>
         /// <returns> Returns CoachOutput containing information about Coach </returns>
         [HttpGet("coaches/me")]
@@ -46,13 +50,12 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Coach to update information about oneself
+        /// Updates signed in coach.
         /// </summary>
-        /// <param name="coach"></param>
-        /// <returns> Returns long </returns>
+        /// <param name="coach">UpdateCoachInput</param>
+        /// <returns></returns>
         [HttpPut("coaches/me")]
         [AuthorizePolicy(UserRole.Coach)]
-        [ProducesResponseType(typeof(long), 200)]
         public async Task<IActionResult> UpdateCoach([FromBody] UpdateCoachInput coach)
         {
             var result = await _coachService.UpdateCoach(CurrentUser.Id, coach);
@@ -61,7 +64,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Coach to get list of Clients
+        /// Returns a list of signed in coach's clients.
         /// </summary>
         /// <returns> Returns ICollection of ClientOutput containing information about Clients </returns>
         [HttpGet("coaches/clients")]
@@ -74,7 +77,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by a coach to set a new value for client's available trainings.
+        /// Updates amount of available trainings of signed in coach's client.
         /// </summary>
         /// <param name="id">Id of the client you wish to change the value for</param>
         /// <param name="value">new value that will be set, it has be greater than or equal to 0</param>

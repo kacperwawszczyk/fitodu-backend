@@ -28,10 +28,12 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Coach to create dummy Client account.
+        /// Creates an unregistered client.
         /// </summary>
+        /// <remarks> Used by coach. </remarks>
         /// <param name="model"></param>
-        /// <returns>Id of dummy client</returns>
+        /// <returns>Id of dummy client</returns> 
+        /// <response code="200">Returns id of created unregistered client.</response>
         [AuthorizePolicy(UserRole.Coach)]
         [HttpPost("clients/dummy-register")]
         [ProducesResponseType(typeof(string), 200)]
@@ -42,8 +44,9 @@ namespace Fitodu.Api.Controllers
             return GetResult(result);
         }
         /// <summary>
-        /// Used to delete dummy client by coach.
+        /// Deletes an unregistered client.
         /// </summary>
+        /// <remarks> Used by coach. </remarks>
         /// <param name="id"></param>
         /// <returns></returns>
         [AuthorizePolicy(UserRole.Coach)]
@@ -55,8 +58,9 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to update dummy client information
+        /// Updates an unregistered client's information.
         /// </summary>
+        /// <remarks> Used by coach. </remarks>
         /// <param name="id"></param>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -69,8 +73,9 @@ namespace Fitodu.Api.Controllers
             return GetResult(result);
         }
         /// <summary>
-        /// Used by Client to create User account from dummy Client account.
+        /// Creates client account from unregistered client.
         /// </summary>
+        /// <remarks> Creates account from invitation sent by coach. </remarks>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("clients")]
@@ -81,8 +86,9 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Coach to send invitation to Client (to create user account).
+        /// Sends an invitation to client's email.
         /// </summary>
+        /// <remarks> Sends link to create a client account from unregistered client. </remarks>
         /// <param name="model"></param>
         /// <returns></returns>
         [AuthorizePolicy(UserRole.Coach)]
@@ -94,8 +100,9 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Client to create User account by oneself (from invitation from Coach)
+        /// Creates a new client account.
         /// </summary>
+        /// <remarks> Creates a client account from the invitation. Created account is related to the coach that sent the invitation. </remarks>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("clients/self-create-account")]
@@ -106,8 +113,9 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Coach to send invitation to Client and by Client to create his User account by oneself.
+        /// Sends an invitation to create a client account.
         /// </summary>
+        /// <remarks> Sends an invitation to email. </remarks>
         /// <param name="model"></param>
         /// <returns></returns>
         [AuthorizePolicy(UserRole.Coach)]
@@ -119,7 +127,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Client to get information about oneself.
+        /// Returns information about signed in client.
         /// </summary>
         /// <returns></returns>
         [AuthorizePolicy(UserRole.Client)]
@@ -132,7 +140,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Client to update information about onself.
+        /// Updates signed in client.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -146,7 +154,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by Client to get information about its Coach.
+        /// Returns information about signed in client's coach.
         /// </summary>
         /// <returns></returns>
         [AuthorizePolicy(UserRole.Client)]
@@ -157,7 +165,11 @@ namespace Fitodu.Api.Controllers
             var result = await _clientService.GetClientCoach(CurrentUser.Id);
             return GetResult(result);
         }
-
+        /// <summary>
+        /// Returns information about client with given id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [AuthorizePolicy(UserRole.Coach)]
         [HttpGet("clients/{id}")]
         [ProducesResponseType(typeof(ClientOutput), 200)]
@@ -168,8 +180,10 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to get both private and public note of a client (can by used by a coach to return notes of one of his clients, or by a client to return his own notes)
+        /// Returns both private and public note of a client.
         /// </summary>
+        /// <remarks> Can be used by a coach to return notes of one of his clients, or by a client to return his own notes.
+        /// </remarks>
         /// <param name="id">Id of the client</param>
         /// <returns></returns>
         [HttpGet("clients/{id}/notes")]

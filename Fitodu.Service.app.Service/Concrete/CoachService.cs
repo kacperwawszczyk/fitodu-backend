@@ -275,9 +275,9 @@ namespace Fitodu.Service.Concrete
             }
         }
 
-        public async Task<Result<long>> UpdateCoach(string Id, UpdateCoachInput coachNew)
+        public async Task<Result> UpdateCoach(string Id, UpdateCoachInput coachNew)
         {
-            var result = new Result<long>();
+            var result = new Result();
             var coach = await _context.Coaches.FirstOrDefaultAsync(x => x.Id == Id);
             var _tmpCoach = coach;
             User coachAcc = await _context.Users.FirstOrDefaultAsync(x => x.Id == Id);

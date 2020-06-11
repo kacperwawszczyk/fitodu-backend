@@ -28,7 +28,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to get a list of all public notes of a requsting coach.
+        /// Returns a list of all public notes of a requsting coach.
         /// </summary>
         /// <returns></returns>
         [HttpGet("public-notes")]
@@ -41,7 +41,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to get a single public note of a client with given Id.
+        /// Returns a single public note of a client with given Id.
         /// </summary>
         /// <param name="client">Id of the client you wish to get the public note of</param>
         /// <returns></returns>
@@ -55,8 +55,11 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to create a new public note. There can only be one public note for a single coach's client.
+        /// Creates a new public note. 
         /// </summary>
+        /// <remarks>
+        /// There can only be one public note for a single coach's client.
+        /// </remarks>
         /// <param name="note"></param>
         /// <returns></returns>
         [HttpPost("public-notes")]
@@ -68,7 +71,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to modify an existing public note.
+        /// Modifies an existing public note.
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
@@ -81,7 +84,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to delete an existing public note.
+        /// Deletes an existing public note.
         /// </summary>
         /// <param name="client">Id of the client you wish to delete the public note of</param>
         /// <returns></returns>

@@ -77,11 +77,11 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to get training with a StartDate greater than given.
+        /// Returns training with a StartDate greater than given.
         /// </summary>
         /// <param name="from">StartDate</param>
         /// <param name="idClient">if not specified method will return trainings with all coach's clients</param>
-        /// <returns></returns>
+        /// <returns>List of trainings</returns>
         [HttpGet("trainings")]
         [Authorize]
         [ProducesResponseType(typeof(ICollection<TrainingListOutput>), 200)]
@@ -92,10 +92,13 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to create a new training for a requesting coach (can only be used to create a training with a client that does not have an account). Automatically sets seconds property of StartDate and EndDate to 0.
+        /// Creates a new training for a requesting coach. 
         /// </summary>
+        /// <remarks>
+        /// Can only be used to create a training with a client that does not have an account. Automatically sets seconds property of StartDate and EndDate to 0.
+        /// </remarks>
         /// <param name="trainingInput"></param>
-        /// <returns></returns>
+        /// <returns>ID of created training</returns>
         [HttpPost("trainings")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(int), 200)]
@@ -107,8 +110,10 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to modify an existing training for a requesting coach.  Automatically sets seconds property of StartDate and EndDate to 0.
+        /// Modifies an existing training for a requesting coach. 
         /// </summary>
+        /// <remarks> Automatically sets seconds property of StartDate and EndDate to 0.
+        /// </remarks>
         /// <param name="editTrainingInput"></param>
         /// <returns></returns>
         [HttpPut("trainings")]
@@ -121,8 +126,11 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to delete an existing training for a requesting coach. Also deletes all TrainingExercises related to that training.
+        /// Deletes an existing training for a requesting coach. 
         /// </summary>
+        /// <remarks>
+        /// Also deletes all TrainingExercises related to that training.
+        /// </remarks>
         /// <param name="id">Id of the training you wish to delete</param>
         /// <param name="time_zone_offset"> Timezone offset (in minutes) </param>
         /// <returns></returns>

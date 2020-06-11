@@ -26,7 +26,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by coach to get a list of all summaries of selected client
+        /// Returns all summaries of client.
         /// </summary>
         /// <param name="IdClient"> string type </param>
         /// <returns> Returns ICollection of SummaryOutput </returns>
@@ -40,7 +40,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by coach to get concrete summary of selected client
+        /// Returns summary of selected client.
         /// </summary>
         /// <param name="IdClient"> string type </param>
         /// <param name="Id"> int type of summary entity key </param>
@@ -55,10 +55,11 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by coach to create a new summary
+        /// Creates a new summary.
         /// </summary>
         /// <param name="sum"> SummaryInput type </param>
-        /// <returns> returns summary id </returns>
+        /// <returns></returns>
+        /// <response code="200" > Returns summary id. </response>
         [HttpPost("summaries")]
         [AuthorizePolicy(UserRole.Coach)]
         public async Task<IActionResult> CreateSummary([FromBody]SummaryInput sum)
@@ -68,7 +69,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by coach to modify an existing summary
+        /// Modifies exisiting summary.
         /// </summary>
         /// <param name="sum"> UpdateSummaryInput type </param>
         /// <returns></returns>
@@ -81,7 +82,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by coach to delete an existing summary
+        /// Deletes existing summary.
         /// </summary>
         /// <param name="Id"> int type of summary key </param>
         /// <returns></returns>

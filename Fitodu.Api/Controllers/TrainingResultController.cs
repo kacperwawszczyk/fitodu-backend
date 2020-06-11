@@ -28,7 +28,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to get a list of exercises' results for a given training
+        /// Used to get a list of exercises' results for a given training.
         /// </summary>
         /// <param name="idTraining"></param>
         /// <returns></returns>
@@ -43,7 +43,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to create a new result
+        /// Used to create a new training result.
         /// </summary>
         /// <param name="trainingResultInput"></param>
         /// <returns></returns>
@@ -57,7 +57,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to modify an existing result
+        /// Used to modify an existing training result.
         /// </summary>
         /// <param name="trainingResult"></param>
         /// <returns></returns>
@@ -71,7 +71,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to delete an existing result
+        /// Used to delete an existing training result.
         /// </summary>
         /// <param name="trainingResultId"></param>
         /// <returns></returns>

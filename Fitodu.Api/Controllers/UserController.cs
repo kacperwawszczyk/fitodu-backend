@@ -110,7 +110,11 @@ namespace Fitodu.Api.Controllers
         //    var result = await _userService.Delete(CurrentUser.Id, id);
         //    return GetResult(result);
         //}
-
+        /// <summary>
+        /// Returns JWT token of selected user.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("token")]
         [ProducesResponseType(typeof(TokenOutput), 200)]
         public async Task<IActionResult> CreateToken([FromBody]CreateTokenInput model)
@@ -129,7 +133,12 @@ namespace Fitodu.Api.Controllers
 
         //    return GetResult(result);
         //}
-
+        /// <summary>
+        /// Returns JWT token of selected user.
+        /// </summary>
+        /// <remarks> Returned access token is refreshed. </remarks>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("token/refresh")]
         [ProducesResponseType(typeof(TokenOutput), 200)]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenInput model)
@@ -137,28 +146,45 @@ namespace Fitodu.Api.Controllers
             var result = await _userService.RefreshToken(model);
             return GetResult(result);
         }
-
+        /// <summary>
+        /// Deletes refresh token (signs out).
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("signout")]
         public async Task<IActionResult> SignOut([FromBody]SignOutInput model)
         {
             var result = await _userService.SignOut(model);
             return GetResult(result);
         }
-
+        /// <summary>
+        /// Sends reset password mail to the user.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("password/forgot")]
         public async Task<IActionResult> ForgotPassword([FromBody]ForgotPasswordInput model)
         {
             var result = await _userService.ForgotPassword(model.Email);
             return GetResult(result);
         }
-
+        /// <summary>
+        /// Resets user password with new password.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("password/reset")]
         public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordInput model)
         {
             var result = await _userService.ResetPassword(model);
             return GetResult(result);
         }
-
+        /// <summary>
+        /// Updates user avatar or uploads one if it doesn't exist yet.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        /// <response code="200"> Returns link to the user avatar. </response>
         [HttpPut("avatar")]
         [Authorize]
         [ProducesResponseType(typeof(string), 200)]

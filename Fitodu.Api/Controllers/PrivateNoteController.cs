@@ -31,7 +31,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to get a list of all private notes of a requsting coach.
+        /// Returns a list of all private notes of a requsting coach.
         /// </summary>
         /// <returns></returns>
         [HttpGet("private-notes")]
@@ -44,7 +44,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to get a single private note of a requsting coach.
+        /// Returns a single private note of a requsting coach.
         /// </summary>
         /// <param name="client">Id of the client you wish to get the private note of</param>
         /// <returns></returns>
@@ -58,8 +58,11 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to create a new private note. There can only be one private note for a single coach's client.
+        /// Creates a new private note. 
         /// </summary>
+        /// <remarks>
+        /// There can only be one private note for a single coach's client.
+        /// </remarks>
         /// <param name="note"></param>
         /// <returns></returns>
         [HttpPost("private-notes")]
@@ -71,7 +74,7 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to modify an existing private note.
+        /// Modifies an existing private note.
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
@@ -85,7 +88,7 @@ namespace Fitodu.Api.Controllers
 
 
         /// <summary>
-        /// Used to delete an existing private note.
+        /// Deletes an existing private note.
         /// </summary>
         /// <param name="client">Id of the client you wish to delete the private note of</param>
         /// <returns></returns>

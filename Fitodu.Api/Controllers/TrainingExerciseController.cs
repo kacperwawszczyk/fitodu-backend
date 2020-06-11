@@ -50,6 +50,7 @@ namespace Fitodu.Api.Controllers
         /// </summary>
         /// <param name="trainingExerciseInput"></param>
         /// <returns></returns>
+        /// <response code="200"> ID of created training exercises. </response>
         [HttpPost("training-exercises")]
         [AuthorizePolicy(UserRole.Coach)]
         [ProducesResponseType(typeof(int), 200)]

@@ -6,11 +6,16 @@
     <members>
         <member name="M:Fitodu.Api.Controllers.AwaitingTrainingController.GetAwaitingTrainings(System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
             <summary>
-            Used to display awaiting trainings. If type equals "sent" it displays sent training requests, else if type equals "received" it displays received training request, if left empty or something else is type it displays both recieved and sent training requests.
-            </summary>
-            <param name="sent"></param>
-            <param name="received"></param>
-            <returns></returns>
+            Returns awaiting trainings of a user.         
+            </summary>         
+            <remarks>         
+            If <paramref name="sent"/> is true then returns sent requests. 
+            If <paramref name="received"/> is true it returns received training request. 
+            If both are left empty or something else is type it displays both recieved and sent training requests.         
+            </remarks>         
+            <param name="sent"></param>         
+            <param name="received"></param>         
+            <returns>AwaitingTrainingOutput[]</returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.AwaitingTrainingController.CreateAwaitingTraining(Fitodu.Service.Models.AwaitingTraining.AwaitingTrainingInput)">
             <summary>
@@ -32,102 +37,126 @@
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.DummyClientRegister(Fitodu.Service.Models.RegisterDummyClientInput)">
             <summary>
-            Used by Coach to create dummy Client account.
+            Creates an unregistered client.
             </summary>
+            <remarks> Used by coach. </remarks>
             <param name="model"></param>
-            <returns>Id of dummy client</returns>
+            <returns>Id of dummy client</returns> 
+            <response code="200">Returns id of created unregistered client.</response>
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.DummyClientDelete(System.String)">
             <summary>
-            Used to delete dummy client by coach.
+            Deletes an unregistered client.
             </summary>
+            <remarks> Used by coach. </remarks>
             <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.DummyClientUpdate(System.String,Fitodu.Service.Models.DummyClientUpdateInput)">
             <summary>
-            Used to update dummy client information
+            Updates an unregistered client's information.
             </summary>
+            <remarks> Used by coach. </remarks>
             <param name="id"></param>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.CreateClientAccount(Fitodu.Service.Models.RegisterClientInput)">
             <summary>
-            Used by Client to create User account from dummy Client account.
+            Creates client account from unregistered client.
             </summary>
+            <remarks> Creates account from invitation sent by coach. </remarks>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.SendCreationLinkToClient(Fitodu.Service.Models.CreateClientVerificationTokenInput)">
             <summary>
-            Used by Coach to send invitation to Client (to create user account).
+            Sends an invitation to client's email.
             </summary>
+            <remarks> Sends link to create a client account from unregistered client. </remarks>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.SelfCreateClientAccount(Fitodu.Service.Models.SelfRegisterClientInput)">
             <summary>
-            Used by Client to create User account by oneself (from invitation from Coach)
+            Creates a new client account.
             </summary>
+            <remarks> Creates a client account from the invitation. Created account is related to the coach that sent the invitation. </remarks>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.SendSelfCreationLinkToClient(Fitodu.Service.Models.CreateSelfClientVerificationTokenInput)">
             <summary>
-            Used by Coach to send invitation to Client and by Client to create his User account by oneself.
+            Sends an invitation to create a client account.
             </summary>
+            <remarks> Sends an invitation to email. </remarks>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.GetClient">
             <summary>
-            Used by Client to get information about oneself.
+            Returns information about signed in client.
             </summary>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.UpdateClient(Fitodu.Service.Models.UpdateClientInput)">
             <summary>
-            Used by Client to update information about onself.
+            Updates signed in client.
             </summary>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.GetClientCoach">
             <summary>
-            Used by Client to get information about its Coach.
+            Returns information about signed in client's coach.
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.ClientController.GetClientById(System.String)">
+            <summary>
+            Returns information about client with given id.
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ClientController.GetClientNotes(System.String)">
             <summary>
-            Used to get both private and public note of a client (can by used by a coach to return notes of one of his clients, or by a client to return his own notes)
+            Returns both private and public note of a client.
             </summary>
+            <remarks> Can be used by a coach to return notes of one of his clients, or by a client to return his own notes.
+            </remarks>
             <param name="id">Id of the client</param>
+            <returns></returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.CoachController.CoachRegister(Fitodu.Service.Models.RegisterCoachInput)">
+            <summary>
+            Registers a new coach.
+            </summary>
+            <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.CoachController.GetCoach">
             <summary>
-            Used by Coach to get information about oneself
+            Returns a signed in coach's information.
             </summary>
             <returns> Returns CoachOutput containing information about Coach </returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.CoachController.UpdateCoach(Fitodu.Service.Models.UpdateCoachInput)">
             <summary>
-            Used by Coach to update information about oneself
+            Updates signed in coach.
             </summary>
-            <param name="coach"></param>
-            <returns> Returns long </returns>
+            <param name="coach">UpdateCoachInput</param>
+            <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.CoachController.GetAllClients">
             <summary>
-            Used by Coach to get list of Clients
+            Returns a list of signed in coach's clients.
             </summary>
             <returns> Returns ICollection of ClientOutput containing information about Clients </returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.CoachController.SetClientsTrainingsAvailable(System.String,System.Int32)">
             <summary>
-            Used by a coach to set a new value for client's available trainings.
+            Updates amount of available trainings of signed in coach's client.
             </summary>
             <param name="id">Id of the client you wish to change the value for</param>
             <param name="value">new value that will be set, it has be greater than or equal to 0</param>
@@ -135,165 +164,184 @@
         </member>
         <member name="M:Fitodu.Api.Controllers.ExerciseController.GetExerciseById(System.Int32)">
             <summary>
-            Used by coach to get exercise by id.
+            Returns an exercise with given id.
             </summary>
+            <remarks> Used by coach. </remarks>
             <param name="id">Id of the exercise</param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ExerciseController.GetAllExercises(System.String)">
             <summary>
-            Used to get a list of all (archived and not-archvied) exercises of a requesting coach .
+            Returns a list of all (archived and not-archvied) exercises.
             </summary>
+            <remarks> Used by coach. </remarks>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ExerciseController.GetArchivedExercises(System.String)">
             <summary>
-            Used to get a list of archived exercises of a requesting coach.
+            Returns a list of archived exercises.
             </summary>
+            <remarks> Used by coach. </remarks>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ExerciseController.GetNotArchivedExercises(System.String)">
             <summary>
-            Used to get a list of not-archived exercises of a requesting coach.
+            Returns a list of not-archived exercises.
             </summary>
+            <remarks> Used by coach. </remarks>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ExerciseController.CreateExercise(Fitodu.Service.Models.Exercise.ExerciseInput)">
             <summary>
-            Used to create a new exercise for a requesting coach (if an exercise with given name doesn't already exist).
+            Creates a new exercise for a requesting coach.
             </summary>
+            <remarks> Used by coach. </remarks>
             <param name="exercise"></param>
             <returns></returns>
+            <response code="200"> Returns id of newly created exercise. </response>
         </member>
         <member name="M:Fitodu.Api.Controllers.ExerciseController.EditExercise(Fitodu.Service.Models.Exercise.UpdateExerciseInput)">
             <summary>
-            Used to modify an existing exercise for a requesting coach.
+            Modifies an existing exercise.
             </summary>
+            <remarks> Used by coach. </remarks>
             <param name="exercise"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.ExerciseController.DeleteExercise(System.Int32)">
             <summary>
-            Used to delete an existing exercise for a requesting coach.
+            Deletes an existing exerciseh.
             </summary>
+            <remarks> Used by coach. </remarks>
             <param name="id">Id of the exercise you wish to delete</param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.MaximumController.GetAllMaximums(System.String)">
             <summary>
-            Used by coach to get a list of all maximums of all exercises of selected client
+            Returns a list of all maximums of all exercises of selected client.
             </summary>
+            <remarks> Used by coach. </remarks>
             <param name="IdClient"> string type </param>
             <returns> Returns ICollection of MaximumOutput </returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.MaximumController.GetClientMaximum(System.String,System.Int32)">
             <summary>
-            Used by coach to get a maximum of selected client and exercise
+            Returns a maximum of selected client and exercise.
             </summary>
+            <remarks> Used by coach. </remarks>
             <param name="IdClient"> string type </param>
             <param name="IdExercise"> int type </param>
             <returns> Returns MaximumOutput </returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.MaximumController.CreateMaximum(Fitodu.Service.Models.MaximumInput)">
             <summary>
-            Used by coach to create a new maximum
+            Creates a new maximum.
             </summary>
+            <remarks> Used by coach. </remarks>
             <param name="max"> MaximumInput type </param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.MaximumController.UpdateMaximum(Fitodu.Service.Models.MaximumInput)">
             <summary>
-            Used by coach to modify an existing maximum
+            Modifies an existing maximum.
             </summary>
+            <remarks> Used by coach. </remarks>
             <param name="max"> MaximumInput type </param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.MaximumController.DeleteMaximum(System.String,System.Int32)">
             <summary>
-            Used by coach to delete an existing maximum
+            Deletes an existing maximum.
             </summary>
+            <remarks> Used by coach. </remarks>
             <param name="IdClient"> string type </param>
             <param name="IdExercise"> int type </param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.PrivateNoteController.GetAllNotes">
             <summary>
-            Used to get a list of all private notes of a requsting coach.
+            Returns a list of all private notes of a requsting coach.
             </summary>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.PrivateNoteController.GetUsersNote(System.String)">
             <summary>
-            Used to get a single private note of a requsting coach.
+            Returns a single private note of a requsting coach.
             </summary>
             <param name="client">Id of the client you wish to get the private note of</param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.PrivateNoteController.CreateNote(Fitodu.Service.Models.PrivateNote.PrivateNoteInput)">
             <summary>
-            Used to create a new private note. There can only be one private note for a single coach's client.
+            Creates a new private note. 
             </summary>
+            <remarks>
+            There can only be one private note for a single coach's client.
+            </remarks>
             <param name="note"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.PrivateNoteController.UpdateNote(Fitodu.Service.Models.PrivateNote.PrivateNoteInput)">
             <summary>
-            Used to modify an existing private note.
+            Modifies an existing private note.
             </summary>
             <param name="note"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.PrivateNoteController.DeleteNote(System.String)">
             <summary>
-            Used to delete an existing private note.
+            Deletes an existing private note.
             </summary>
             <param name="client">Id of the client you wish to delete the private note of</param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.PublicNoteController.GetAllNotes">
             <summary>
-            Used to get a list of all public notes of a requsting coach.
+            Returns a list of all public notes of a requsting coach.
             </summary>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.PublicNoteController.GetUsersNote(System.String)">
             <summary>
-            Used to get a single public note of a client with given Id.
+            Returns a single public note of a client with given Id.
             </summary>
             <param name="client">Id of the client you wish to get the public note of</param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.PublicNoteController.CreateNote(Fitodu.Service.Models.PublicNote.PublicNoteInput)">
             <summary>
-            Used to create a new public note. There can only be one public note for a single coach's client.
+            Creates a new public note. 
             </summary>
+            <remarks>
+            There can only be one public note for a single coach's client.
+            </remarks>
             <param name="note"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.PublicNoteController.UpdateNote(Fitodu.Service.Models.PublicNote.PublicNoteInput)">
             <summary>
-            Used to modify an existing public note.
+            Modifies an existing public note.
             </summary>
             <param name="note"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.PublicNoteController.DeleteNote(System.String)">
             <summary>
-            Used to delete an existing public note.
+            Deletes an existing public note.
             </summary>
             <param name="client">Id of the client you wish to delete the public note of</param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.SummaryController.GetAllSummaries(System.String)">
             <summary>
-            Used by coach to get a list of all summaries of selected client
+            Returns all summaries of client.
             </summary>
             <param name="IdClient"> string type </param>
             <returns> Returns ICollection of SummaryOutput </returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.SummaryController.GetClientSummary(System.String,System.Int32)">
             <summary>
-            Used by coach to get concrete summary of selected client
+            Returns summary of selected client.
             </summary>
             <param name="IdClient"> string type </param>
             <param name="Id"> int type of summary entity key </param>
@@ -301,21 +349,22 @@
         </member>
         <member name="M:Fitodu.Api.Controllers.SummaryController.CreateSummary(Fitodu.Service.Models.SummaryInput)">
             <summary>
-            Used by coach to create a new summary
+            Creates a new summary.
             </summary>
             <param name="sum"> SummaryInput type </param>
-            <returns> returns summary id </returns>
+            <returns></returns>
+            <response code="200" > Returns summary id. </response>
         </member>
         <member name="M:Fitodu.Api.Controllers.SummaryController.UpdateSummary(Fitodu.Service.Models.UpdateSummaryInput)">
             <summary>
-            Used by coach to modify an existing summary
+            Modifies exisiting summary.
             </summary>
             <param name="sum"> UpdateSummaryInput type </param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.SummaryController.DeleteSummary(System.Int32)">
             <summary>
-            Used by coach to delete an existing summary
+            Deletes existing summary.
             </summary>
             <param name="Id"> int type of summary key </param>
             <returns></returns>
@@ -329,30 +378,38 @@
         </member>
         <member name="M:Fitodu.Api.Controllers.TrainingController.GetFutureTrainings(System.String,System.String)">
             <summary>
-            Used to get training with a StartDate greater than given.
+            Returns training with a StartDate greater than given.
             </summary>
             <param name="from">StartDate</param>
             <param name="idClient">if not specified method will return trainings with all coach's clients</param>
-            <returns></returns>
+            <returns>List of trainings</returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.TrainingController.AddTraining(Fitodu.Service.Models.Training.TrainingInput)">
             <summary>
-            Used to create a new training for a requesting coach (can only be used to create a training with a client that does not have an account). Automatically sets seconds property of StartDate and EndDate to 0.
+            Creates a new training for a requesting coach. 
             </summary>
+            <remarks>
+            Can only be used to create a training with a client that does not have an account. Automatically sets seconds property of StartDate and EndDate to 0.
+            </remarks>
             <param name="trainingInput"></param>
-            <returns></returns>
+            <returns>ID of created training</returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.TrainingController.EditTraining(Fitodu.Service.Models.Training.UpdateTrainingInput)">
             <summary>
-            Used to modify an existing training for a requesting coach.  Automatically sets seconds property of StartDate and EndDate to 0.
+            Modifies an existing training for a requesting coach. 
             </summary>
+            <remarks> Automatically sets seconds property of StartDate and EndDate to 0.
+            </remarks>
             <param name="editTrainingInput"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.TrainingController.DeleteTraining(System.Int32,System.Int32)">
             <summary>
-            Used to delete an existing training for a requesting coach. Also deletes all TrainingExercises related to that training.
+            Deletes an existing training for a requesting coach. 
             </summary>
+            <remarks>
+            Also deletes all TrainingExercises related to that training.
+            </remarks>
             <param name="id">Id of the training you wish to delete</param>
             <param name="time_zone_offset"> Timezone offset (in minutes) </param>
             <returns></returns>
@@ -370,6 +427,7 @@
             </summary>
             <param name="trainingExerciseInput"></param>
             <returns></returns>
+            <response code="200"> ID of created training exercises. </response>
         </member>
         <member name="M:Fitodu.Api.Controllers.TrainingExerciseController.EditTrainingExercise(Fitodu.Service.Models.TrainingExercise.UpdateTrainingExerciseInput)">
             <summary>
@@ -387,73 +445,123 @@
         </member>
         <member name="M:Fitodu.Api.Controllers.TrainingResultController.GetTrainingsResults(System.Int32)">
             <summary>
-            Used to get a list of exercises' results for a given training
+            Used to get a list of exercises' results for a given training.
             </summary>
             <param name="idTraining"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.TrainingResultController.AddTrainingResult(Fitodu.Model.Entities.TrainingResultInput)">
             <summary>
-            Used to create a new result
+            Used to create a new training result.
             </summary>
             <param name="trainingResultInput"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.TrainingResultController.EditTrainingResult(Fitodu.Model.Entities.TrainingResult)">
             <summary>
-            Used to modify an existing result
+            Used to modify an existing training result.
             </summary>
             <param name="trainingResult"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.TrainingResultController.DeleteTrainingResult(System.Int32)">
             <summary>
-            Used to delete an existing result
+            Used to delete an existing training result.
             </summary>
             <param name="trainingResultId"></param>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.WeekPlanController.GetWeekPlans">
+        <member name="M:Fitodu.Api.Controllers.UserController.CreateToken(Fitodu.Service.Models.CreateTokenInput)">
             <summary>
-            Used to get all week plans of a coach. If requester is a coach, endpoint  will return all week plans of this coach, if requester is a client
-            endpoint will return all week plans of his coach instead.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Fitodu.Api.Controllers.WeekPlanController.GetWeekPlansShort(Fitodu.Service.Models.WeekPlanListInput)">
-            <summary>
-            Week plans paging test
+            Returns JWT token of selected user.
             </summary>
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:Fitodu.Api.Controllers.WeekPlanController.GetWeekPlansBookedHours(System.Int32)">
+        <member name="M:Fitodu.Api.Controllers.UserController.RefreshToken(Fitodu.Service.Models.RefreshTokenInput)">
             <summary>
-            Creates a weekPlan object based on all the workouts coach has planned for a specified week. TEST METHOD
+            Returns JWT token of selected user.
             </summary>
-            <param name="id">weekPlanId</param>
+            <remarks> Returned access token is refreshed. </remarks>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.UserController.SignOut(Fitodu.Service.Models.SignOutInput)">
+            <summary>
+            Deletes refresh token (signs out).
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.UserController.ForgotPassword(Fitodu.Service.Models.ForgotPasswordInput)">
+            <summary>
+            Sends reset password mail to the user.
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.UserController.ResetPassword(Fitodu.Service.Models.ResetPasswordInput)">
+            <summary>
+            Resets user password with new password.
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.UserController.UpdateAvatar(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Updates user avatar or uploads one if it doesn't exist yet.
+            </summary>
+            <param name="file"></param>
+            <returns></returns>
+            <response code="200"> Returns link to the user avatar. </response>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.UserFeedbackController.AddUserFeedback(Fitodu.Service.Models.UserFeedbackInput)">
+            <summary>
+            Inputs a user's feedback into database.
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.WeekPlanController.GetWeekPlans">
+            <summary>
+            Gets all week plans of a coach. 
+            </summary>
+            <remarks> If requester is a coach, endpoint  will return all week plans of this coach, if requester is a client endpoint will return all week plans of his coach instead.
+            </remarks>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.WeekPlanController.CreateWeekPlan(Fitodu.Service.Models.WeekPlanInput)">
             <summary>
-            Used to create a new week plan with related day plans and workout times. There can not be two different week plans starting at the same day. All week plans have to start on Monday.
+            Creates a new week plan with related day plans and workout times. 
             </summary>
+            <remarks>There can not be two different week plans starting at the same day. All week plans have to start on Monday.</remarks>
             <param name="weekPlanInput"></param>
             <returns></returns>
+            <response code="200"> ID of created week plan. </response>
         </member>
         <member name="M:Fitodu.Api.Controllers.WeekPlanController.EditWeekPlan(Fitodu.Service.Models.WeekPlan.UpdateWeekPlanInput)">
             <summary>
-            Used to modify and existing week plan for a requesting coach (sending a week plan with an empty day plan collection removes 
+            Modifies existing week plan for a requesting coach.
+            </summary>
+            <remarks>
+            Sending a week plan with an empty day plan collection removes 
             related day plans; sending a week plan with a day plan colletion containing objects that do not exist in the database
             will create those objects; sending a week plan with a day plan colletion not containing objects that exist in the database
             will remove those objects. There can not be two different week plans starting at the same day. All week plans have to start on Monday.
+            </remarks>
+            <param name="weekPlan"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Fitodu.Api.Controllers.WeekPlanController.EditDefaultWeekPlan(Fitodu.Service.Models.UpdateDefaultWeekPlanInput)">
+            <summary>
+            Updates coach's default weekplan.
             </summary>
             <param name="weekPlan"></param>
             <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.WeekPlanController.DeleteWeekPlan(System.Int32)">
             <summary>
-            Used to delete an existing week plan with related day plans and workout times
+            Used to delete an existing week plan with related day plans and workout times.
             </summary>
             <param name="id">Id of the weekplan you wish to delete</param>
             <returns></returns>

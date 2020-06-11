@@ -20,7 +20,11 @@ namespace Fitodu.Api.Controllers
             _userFeedbackService = userFeedbackService;
             _userService = userService;
         }
-
+        /// <summary>
+        /// Inputs a user's feedback into database.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPost("user-feedback")]
         [Authorize]
         //[ProducesResponseType(typeof())]

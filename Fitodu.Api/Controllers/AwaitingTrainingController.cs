@@ -22,8 +22,11 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to display awaiting trainings. If type equals "sent" it displays sent training requests, else if type equals "received" it displays received training request, if left empty or something else is type it displays both recieved and sent training requests.
+        /// Returns awaiting trainings of a user.
         /// </summary>
+        /// <remarks>
+        ///  If "sent" is true than returns sent requests. If "received" is true it returns received training request. If both are left empty or something else is type it displays both recieved and sent training requests.
+        /// </remarks>
         /// <param name="sent"></param>
         /// <param name="received"></param>
         /// <returns></returns>
@@ -37,9 +40,11 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to create a new workout request by a coach or a client. 
-        /// Creating a requests sends a mail notification to the requests' receiver and lowers client's available trainings value by one.
+        /// Creates new training request.
         /// </summary>
+        /// <remarks>
+        /// Creating a requests sends a mail notification to the requests' receiver and lowers client's available trainings value by one.
+        /// </remarks>
         /// <param name="awaitingTrainingInput"></param>
         /// <returns></returns>
         [HttpPost("awaiting-trainings")]
@@ -52,13 +57,15 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used to delete, accept or reject awaiting training.
-        /// Deleting can only be used if someone wants to withdrew his workout requests before it gets acctepted or rejected. All actions send a mail notification.
-        /// Deleting or rejecting an awaiting training increases client's available trainings value by one.
+        /// Deletes, accepts or rejects awaiting training.
         /// </summary>
-        /// <param name="accept">bool - true = accept, false = reject, null = delete</param>
-        /// <param name="id">Id of the awaiting training you wish to delete/accept/reject</param>
-        /// <returns> -1 if no training was created, otherwise returns the id of the created trainin</returns>
+        /// <remarks>
+        /// Deleting can only be used if someone wants to cancel his request before it gets acctepted or rejected. All actions send a mail notification. Deleting or rejecting an awaiting training increases client's available trainings value by one.
+        /// </remarks>
+        /// <param name="accept">true = accept, false = reject, null = delete</param>
+        /// <param name="id"></param>
+        /// <returns> -1 if no training was created, otherwise returns the id of the created training </returns>
+        /// <response code="200">Returns -1 if no training was created, otherwise returns the id of the created trainin</response>
         [HttpDelete("awaiting-trainings/{id}")]
         [Authorize]
         [ProducesResponseType(typeof(int), 200)]

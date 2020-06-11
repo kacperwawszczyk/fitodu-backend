@@ -27,8 +27,9 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by coach to get a list of all maximums of all exercises of selected client
+        /// Returns a list of all maximums of all exercises of selected client.
         /// </summary>
+        /// <remarks> Used by coach. </remarks>
         /// <param name="IdClient"> string type </param>
         /// <returns> Returns ICollection of MaximumOutput </returns>
         [HttpGet("maximums/client")]
@@ -41,8 +42,9 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by coach to get a maximum of selected client and exercise
+        /// Returns a maximum of selected client and exercise.
         /// </summary>
+        /// <remarks> Used by coach. </remarks>
         /// <param name="IdClient"> string type </param>
         /// <param name="IdExercise"> int type </param>
         /// <returns> Returns MaximumOutput </returns>
@@ -56,8 +58,9 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by coach to create a new maximum
+        /// Creates a new maximum.
         /// </summary>
+        /// <remarks> Used by coach. </remarks>
         /// <param name="max"> MaximumInput type </param>
         /// <returns></returns>
         [HttpPost("maximums")]
@@ -69,8 +72,9 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by coach to modify an existing maximum
+        /// Modifies an existing maximum.
         /// </summary>
+        /// <remarks> Used by coach. </remarks>
         /// <param name="max"> MaximumInput type </param>
         /// <returns></returns>
         [HttpPut("maximums")]
@@ -82,8 +86,9 @@ namespace Fitodu.Api.Controllers
         }
 
         /// <summary>
-        /// Used by coach to delete an existing maximum
+        /// Deletes an existing maximum.
         /// </summary>
+        /// <remarks> Used by coach. </remarks>
         /// <param name="IdClient"> string type </param>
         /// <param name="IdExercise"> int type </param>
         /// <returns></returns>
