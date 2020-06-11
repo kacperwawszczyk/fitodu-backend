@@ -6,22 +6,20 @@
     <members>
         <member name="M:Fitodu.Api.Controllers.AwaitingTrainingController.GetAwaitingTrainings(System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
             <summary>
-            Returns awaiting trainings of a user.         
-            </summary>         
-            <remarks>         
-            If <paramref name="sent"/> is true then returns sent requests. 
-            If <paramref name="received"/> is true it returns received training request. 
-            If both are left empty or something else is type it displays both recieved and sent training requests.         
-            </remarks>         
-            <param name="sent"></param>         
-            <param name="received"></param>         
-            <returns>AwaitingTrainingOutput[]</returns>
+            Returns awaiting trainings of a user.
+            </summary>
+            <remarks>
+             If "sent" is true than returns sent requests. If "received" is true it returns received training request. If both are left empty or something else is type it displays both recieved and sent training requests.
+            </remarks>
+            <param name="sent"></param>
+            <param name="received"></param>
+            <returns></returns>
         </member>
         <member name="M:Fitodu.Api.Controllers.AwaitingTrainingController.CreateAwaitingTraining(Fitodu.Service.Models.AwaitingTraining.AwaitingTrainingInput)">
             <summary>
-            Used to create a new workout request by a coach or a client. 
-            Creating a requests sends a mail notification to the requests' receiver and lowers client's available trainings value by one.
+            Creates new training request.
             </summary>
+            <remarks>
             <param name="awaitingTrainingInput"></param>
             <returns></returns>
         </member>
