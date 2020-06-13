@@ -130,7 +130,7 @@ namespace Fitodu.Service.Concrete
             if (coachClient.AvailableTrainings <= 0)
             {
                 result.Error = ErrorType.BadRequest;
-                result.ErrorMessage = "Client does not have any trainings left";
+                result.ErrorMessage = "Klient nie ma dostępnych treningów";
                 return result;
             }
             coachClient.AvailableTrainings -= 1;
