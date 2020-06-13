@@ -290,20 +290,20 @@ namespace Fitodu.Service.Concrete
                 var clientsCoach = await _clientService.GetClientCoach(requesterId);
                 if (clientsCoach == null || clientsCoach.Data.Id != awaitingTrainingInput.IdReceiver)
                 {
-                    result.Error = ErrorType.NotFound;
+                    result.Error = ErrorType.BadRequest;
                     result.ErrorMessage = "Coach not found";
                     return result;
                 }
                 var coachClient = await _context.CoachClients.Where(x => x.IdCoach == clientsCoach.Data.Id && x.IdClient == requesterId).FirstOrDefaultAsync();
                 if (coachClient == null)
                 {
-                    result.Error = ErrorType.NotFound;
+                    result.Error = ErrorType.BadRequest;
                     result.ErrorMessage = "User is not a client of this coach";
                     return result;
                 }
                 if (coachClient.AvailableTrainings <= 0)
                 {
-                    result.Error = ErrorType.NotFound;
+                    result.Error = ErrorType.BadRequest;
                     result.ErrorMessage = "Client does not have any trainings left";
                     return result;
                 }
